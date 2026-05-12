@@ -1,6 +1,6 @@
 # Altir Tech Day Builder Handbook
 
-This handbook helps teams get productive quickly during Tech Day. Use any stack you want. These tools and workflows are optional launchpads, not restrictions.
+This handbook helps teams get productive quickly during Tech Day. Use any stack you want. These tools and workflows are optional launchpads, not restrictions
 
 Last link check: 12 May 2026
 
