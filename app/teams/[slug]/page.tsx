@@ -2,6 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Copy, GitBranch, KeyRound, MonitorPlay, Upload } from "lucide-react"
 
+import { logoutAction } from "@/app/login/actions"
 import { getTeamWorkspace } from "@/lib/data"
 import { getSession } from "@/lib/session"
 import { Button } from "@/components/ui/button"
@@ -32,7 +33,12 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
           <div className="hidden rounded border border-[var(--line)] bg-[var(--panel)] px-4 py-1 md:block">
             techday.altir.internal/teams/{team.slug}
           </div>
-          <div className="min-w-20 text-right">{session?.fullName ?? "internal"}</div>
+          <div className="flex items-center gap-3">
+            <span>{session?.fullName ?? "internal"}</span>
+            <form action={logoutAction}>
+              <button className="text-[var(--text-mute)] transition hover:text-white">logout</button>
+            </form>
+          </div>
         </div>
 
         <div className="mx-auto w-full max-w-[1440px] px-4 py-6 lg:px-8">

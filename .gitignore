@@ -29,3 +29,5 @@ prisma/*.db-journal
 
 # misc
 .vercel/
+playwright-report/
+test-results/

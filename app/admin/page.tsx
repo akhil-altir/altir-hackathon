@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { createApiKey, assignApiKey, createEventScore, toggleEventScore, updateUserRole } from "@/app/admin/actions"
+import { logoutAction } from "@/app/login/actions"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { db } from "@/lib/db"
@@ -52,9 +53,16 @@ export default async function AdminPage() {
                 Manage admin and judge privileges, create API keys, assign keys to teams, and define event score rules used by the command center.
               </p>
             </div>
-            <Button asChild variant="outline" className="rounded-none font-mono uppercase tracking-[0.12em]">
-              <Link href="/">Back to flow</Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button asChild variant="outline" className="rounded-none font-mono uppercase tracking-[0.12em]">
+                <Link href="/">Back to flow</Link>
+              </Button>
+              <form action={logoutAction}>
+                <Button variant="outline" className="rounded-none font-mono uppercase tracking-[0.12em]">
+                  Logout
+                </Button>
+              </form>
+            </div>
           </div>
         </header>
 

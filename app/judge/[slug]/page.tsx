@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { notFound, redirect } from "next/navigation"
 
+import { logoutAction } from "@/app/login/actions"
 import { submitJudgeScoresAction } from "./actions"
 import { getTeamWorkspace } from "@/lib/data"
 import { db } from "@/lib/db"
@@ -41,7 +42,12 @@ export default async function JudgeTeamPage({ params }: { params: Promise<{ slug
             <span className="size-2 rounded-full bg-[var(--acid)]" />
             <span className="ml-3 uppercase tracking-[0.28em] text-[var(--text-mute)]">judge / {team.name}</span>
           </div>
-          <div className="min-w-20 text-right">{session.fullName}</div>
+          <div className="flex items-center gap-3">
+            <span>{session.fullName}</span>
+            <form action={logoutAction}>
+              <button className="text-[var(--text-mute)] transition hover:text-white">logout</button>
+            </form>
+          </div>
         </div>
 
         <div className="mx-auto w-full max-w-5xl px-4 py-8 lg:px-8">

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 
+import { logoutAction } from "@/app/login/actions"
 import { TeamFormClient } from "./team-form"
 import { getAvailableEmployees, getUserTeam } from "@/lib/data"
 import { getSession } from "@/lib/session"
@@ -32,7 +33,12 @@ export default async function NewTeamPage() {
           <div className="hidden rounded border border-[var(--line)] bg-[var(--panel)] px-4 py-1 md:block">
             techday.altir.internal/teams/new
           </div>
-          <div className="min-w-20 text-right text-[var(--text-dim)]">{session.fullName}</div>
+          <div className="flex items-center gap-3">
+            <span className="text-[var(--text-dim)]">{session.fullName}</span>
+            <form action={logoutAction}>
+              <button className="text-[var(--text-mute)] transition hover:text-white">logout</button>
+            </form>
+          </div>
         </div>
 
         <div className="mx-auto w-full max-w-5xl px-4 py-8 lg:px-8">
