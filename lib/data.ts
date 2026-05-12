@@ -247,6 +247,13 @@ export async function listLeaderboard() {
         })),
         idea: team.ideas[0] ?? null,
         submissionStatus: team.submission?.status ?? "NOT_STARTED",
+        submission: team.submission
+          ? {
+              repoUrl: team.submission.repoUrl,
+              demoUrl: team.submission.demoUrl,
+              presentationUrl: team.submission.presentationUrl,
+            }
+          : null,
         eventPoints,
         judgeAverage: Number(judgeAverage.toFixed(2)),
         normalizedEvent,

@@ -68,14 +68,12 @@ const availablePeople = [
 ]
 
 const flow = [
-  { label: "Landing", href: "/" },
-  { label: "Login", href: "/login" },
-  { label: "Team", href: "/teams/new" },
-  { label: "Idea", href: "/teams/quotebot/idea" },
-  { label: "Workspace", href: "/teams/quotebot" },
-  { label: "Submit", href: "/teams/quotebot/submit" },
-  { label: "Live", href: "/leaderboard" },
-  { label: "Results", href: "/results" },
+  { key: "workspace", label: "Workspace", href: "/teams/quotebot" },
+  { key: "idea", label: "Idea", href: "/teams/quotebot/idea" },
+  { key: "submit", label: "Submit", href: "/teams/quotebot/submit" },
+  { key: "gallery", label: "Gallery", href: "/gallery" },
+  { key: "leaderboard", label: "Leaderboard", href: "/leaderboard" },
+  { key: "handbook", label: "Handbook", href: "/handbook" },
 ]
 
 export function TechDayScreen({ screen }: { screen: Screen }) {
@@ -137,22 +135,24 @@ function Topbar({
 }) {
   return (
     <div className="sticky top-0 z-30 border-b border-[var(--line)] bg-black/85 backdrop-blur">
-      <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-3 px-4 py-3 lg:px-8">
+      <div className="mx-auto flex max-w-[1680px] flex-wrap items-center justify-between gap-3 px-4 py-3 lg:px-8">
         <Link href="/" className="flex items-center gap-3">
-          <Image src="/logo.png" alt="Altir" width={34} height={34} className="rounded-sm" />
+          <div className="flex size-9 items-center justify-center border border-[rgba(196,255,0,0.35)] bg-[rgba(196,255,0,0.1)]">
+            <Image src="/logo.png" alt="Altir" width={22} height={22} className="size-6 object-contain" />
+          </div>
           <div>
-            <div className="text-sm font-bold tracking-[0.28em] text-white">ALTIR TECH DAY</div>
-            <div className="text-[10px] uppercase tracking-[0.24em] text-[var(--text-mute)]">command center</div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-white">Altir // Tech-Day-2026</div>
+            <div className="text-[9px] uppercase tracking-[0.2em] text-[var(--text-mute)]">command center</div>
           </div>
         </Link>
-        <nav className="hidden items-center gap-1 lg:flex">
+        <nav className="hidden flex-wrap items-center gap-1 lg:flex">
           {flow.map((item) => (
             <Link
-              key={item.href}
+              key={item.key}
               href={item.href}
               className={cn(
-                "rounded px-3 py-2 text-[11px] uppercase tracking-[0.16em] text-[var(--text-dim)] transition hover:bg-white/5 hover:text-white",
-                active === item.label.toLowerCase() && "bg-[var(--panel-3)] text-white"
+                "rounded-[2px] border px-2.5 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)] transition sm:px-3",
+                active === item.key ? "border-white/80 bg-[var(--panel-3)] text-white" : "border-transparent hover:border-[var(--line)] hover:bg-[var(--panel-2)] hover:text-white"
               )}
             >
               {item.label}
@@ -161,7 +161,7 @@ function Topbar({
         </nav>
         <div className="flex items-center gap-3 text-xs">
           <span className="hidden text-[var(--text-mute)] sm:inline">{phase}</span>
-          <span className="rounded border border-[var(--acid)]/40 bg-[var(--acid)]/10 px-3 py-1 font-bold text-[var(--acid)]">{countdown}</span>
+          <span className="rounded border border-[var(--acid)]/40 bg-[var(--acid)]/10 px-3 py-1 font-bold text-[var(--acid)]">ends in {countdown}</span>
           <span className="hidden text-[var(--text-dim)] md:inline">jordan.l@altir.co</span>
         </div>
       </div>
@@ -431,7 +431,7 @@ function FormTeam() {
   return (
     <>
       <BrowserChrome title="form a team" url="techday.altir.internal/teams/new" />
-      <Topbar active="team" countdown="00:42:17" phase="TEAM LOCK" />
+      <Topbar active="workspace" countdown="00:42:17" phase="TEAM LOCK" />
       <Stage>
         <SectionTitle kicker="step 01 / form a team" right={<Badge tone="warn">team lock 13:00 / in 42 min</Badge>}>
           Pick yourself + one partner.
@@ -534,7 +534,7 @@ function TeamLocked() {
   return (
     <>
       <BrowserChrome title="team locked" url="techday.altir.internal/teams/quotebot" right={<span className="text-[var(--acid)]">team ready</span>} />
-      <Topbar active="team" countdown="01:34:00" phase="BUILD OPENS" />
+      <Topbar active="workspace" countdown="01:34:00" phase="BUILD OPENS" />
       <Stage>
         <Panel className="relative overflow-hidden">
           <CardContent className="p-8 md:p-12">
@@ -838,7 +838,7 @@ function Gallery() {
   return (
     <>
       <BrowserChrome title="public submission gallery" url="techday.altir.internal/gallery" />
-      <Topbar active="live" countdown="00:11:20" phase="GALLERY LIVE" />
+      <Topbar active="gallery" countdown="00:11:20" phase="GALLERY LIVE" />
       <Stage>
         <SectionTitle kicker="step 05 / gallery" right={<FlowButton href="/leaderboard" variant="outline">Open live energy</FlowButton>}>
           Public submission gallery.
@@ -877,7 +877,7 @@ function Leaderboard() {
   return (
     <>
       <BrowserChrome title="live energy / participant view" url="techday.altir.internal/leaderboard" />
-      <Topbar active="live" countdown="00:47:03" phase="DEMOS SOON" />
+      <Topbar active="leaderboard" countdown="00:47:03" phase="DEMOS SOON" />
       <Stage>
         <SectionTitle kicker="step 05 / live ops" right={<FlowButton href="/tv" variant="outline">TV mode</FlowButton>}>
           Live energy board.
@@ -975,7 +975,7 @@ function JudgeConsole() {
   return (
     <>
       <BrowserChrome title="judge scoring console" url="techday.altir.internal/judge/quotebot" />
-      <Topbar active="results" countdown="00:22:00" phase="JUDGING" />
+      <Topbar active="leaderboard" countdown="00:22:00" phase="JUDGING" />
       <Stage>
         <SectionTitle kicker="step 06 / judging" right={<Badge tone="acid">judge console</Badge>}>
           Score QUOTEBOT.
@@ -1030,7 +1030,7 @@ function Results() {
   return (
     <>
       <BrowserChrome title="winners / final standings" url="techday.altir.internal/results" right={<span className="text-[var(--acid)]">final</span>} />
-      <Topbar active="results" countdown="00:00:00" phase="COMPLETE" />
+      <Topbar active="leaderboard" countdown="00:00:00" phase="COMPLETE" />
       <Stage>
         <SectionTitle kicker="step 06 / results">
           Final standings.
