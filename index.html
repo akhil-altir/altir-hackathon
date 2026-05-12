@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Altir Tech Day Command Center PRD</title>
+    <meta
+      name="description"
+      content="A visual walkthrough of the Altir Tech Day Command Center product requirements."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,600;6..72,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Altir Tech Day Command Center home">
+        <span class="brand-mark" aria-hidden="true">A</span>
+        <span>
+          <strong>Altir</strong>
+          <small>Tech Day Command Center</small>
+        </span>
+      </a>
+      <nav class="top-nav" aria-label="Page sections">
+        <a href="#overview">Overview</a>
+        <a href="#journey">Flow</a>
+        <a href="#scoring">Scoring</a>
+        <a href="#roles">Roles</a>
+        <a href="#build">Build</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top">
+        <div class="hero-content">
+          <p class="section-label">Internal hackathon platform PRD</p>
+          <h1>One live operating system for Altir Tech Day.</h1>
+          <p class="hero-copy">
+            A Replit-friendly web platform where employees form two-person teams,
+            submit ideas, unlock API keys, track milestone points, and move into
+            judge scoring and final rankings without spreadsheet chaos.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#overview">Walk through the PRD</a>
+            <a class="button secondary" href="docs/tech-day-command-center-prd.md">Open source PRD</a>
+          </div>
+        </div>
+
+        <aside class="event-board" aria-label="Event snapshot">
+          <div class="event-board-top">
+            <span>Friday</span>
+            <strong>22 May 2026</strong>
+          </div>
+          <div class="countdown-card">
+            <span>Build window</span>
+            <strong>2:30 - 5:30 PM</strong>
+            <div class="progress-track" aria-hidden="true">
+              <span></span>
+            </div>
+          </div>
+          <div class="event-grid">
+            <div>
+              <span>Team size</span>
+              <strong>2</strong>
+            </div>
+            <div>
+              <span>Team lock</span>
+              <strong>1:00 PM</strong>
+            </div>
+            <div>
+              <span>Key rule</span>
+              <strong>Idea first</strong>
+            </div>
+            <div>
+              <span>Ranking</span>
+              <strong>60 / 40</strong>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="overview-section" id="overview">
+        <div class="section-heading">
+          <p class="section-label">What we are building</p>
+          <h2>A command center, not just a registration form.</h2>
+          <p>
+            The product has two equal responsibilities: make the event easy to run
+            and make it feel alive. Participants get a simple team workspace.
+            Admins get control. Judges get structured scoring. The office gets a
+            TV-ready live view.
+          </p>
+        </div>
+
+        <div class="mission-layout">
+          <article class="mission-panel">
+            <span class="panel-number">01</span>
+            <h3>Smooth operations</h3>
+            <p>
+              Team formation, individual login, shared team workspace, idea
+              submission, API key release, admin overrides, and judge scoring all
+              live in one place.
+            </p>
+          </article>
+          <article class="mission-panel accent">
+            <span class="panel-number">02</span>
+            <h3>High event energy</h3>
+            <p>
+              Milestone points, live leaderboards, countdowns, team progress,
+              public idea visibility, and TV mode make the hackathon feel active
+              from start to finish.
+            </p>
+          </article>
+        </div>
+
+        <div class="snapshot-strip" aria-label="Core product facts">
+          <div>
+            <span>Participants</span>
+            <strong>Individual accounts</strong>
+          </div>
+          <div>
+            <span>Teams</span>
+            <strong>Shared workspace</strong>
+          </div>
+          <div>
+            <span>Stack</span>
+            <strong>Anything goes</strong>
+          </div>
+          <div>
+            <span>API keys</span>
+            <strong>Preloaded pool</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="journey-section" id="journey">
+        <div class="section-heading compact">
+          <p class="section-label">Event flow</p>
+          <h2>The participant journey.</h2>
+        </div>
+
+        <div class="timeline">
+          <article class="timeline-item">
+            <div class="timeline-time">Before 1:00 PM</div>
+            <div>
+              <h3>Form a team</h3>
+              <p>
+                A participant selects a team name, themselves, and one available
+                partner. Once submitted, both people disappear from the available
+                employee dropdown.
+              </p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-time">Until lock</div>
+            <div>
+              <h3>Edit or disband</h3>
+              <p>
+                Before lock time, teams can be corrected. After 1:00 PM, only an
+                admin can split, merge, replace, or override team membership.
+              </p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-time">Before key reveal</div>
+            <div>
+              <h3>Submit an idea</h3>
+              <p>
+                Teams pick from the idea bank or submit a custom idea. They can
+                change it later, but the first idea submission is required before
+                their API key can be revealed.
+              </p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-time">2:30 PM</div>
+            <div>
+              <h3>Unlock the API key</h3>
+              <p>
+                Each complete team receives one preloaded API key. The key stays
+                hidden until event start and is visible only inside the team
+                workspace.
+              </p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-time">5:00 - 5:30 PM</div>
+            <div>
+              <h3>Submit final assets</h3>
+              <p>
+                Teams add their GitHub repo, demo video, presentation, stack tags,
+                and final submission status. Early final submission can earn bonus
+                event points.
+              </p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-time">5:30 - 6:30 PM</div>
+            <div>
+              <h3>Present and score</h3>
+              <p>
+                Judges log in individually, score teams by criterion, and admins
+                can enter or override scores with audit notes when needed.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="workspace-section">
+        <div class="section-heading">
+          <p class="section-label">Team workspace</p>
+          <h2>Both members log in separately, then land in the same team space.</h2>
+        </div>
+
+        <div class="workspace-shell">
+          <aside class="workspace-sidebar" aria-label="Workspace navigation mock">
+            <strong>Team Nova</strong>
+            <a class="active" href="#workspace">Dashboard</a>
+            <a href="#workspace">Idea</a>
+            <a href="#workspace">API Key</a>
+            <a href="#workspace">Submissions</a>
+            <a href="#workspace">Score</a>
+            <a href="#workspace">Handbook</a>
+          </aside>
+          <div class="workspace-main" id="workspace">
+            <div class="workspace-header">
+              <div>
+                <span>Current step</span>
+                <h3>Idea submitted. Key unlocks at 2:30 PM.</h3>
+              </div>
+              <button type="button">Edit idea</button>
+            </div>
+
+            <div class="workspace-grid">
+              <article>
+                <span>Idea</span>
+                <h4>AI claims assistant for internal insurance workflows</h4>
+                <p>
+                  A compact assistant that explains required documents, highlights
+                  missing information, and prepares next-step guidance.
+                </p>
+              </article>
+              <article>
+                <span>API key</span>
+                <h4>Locked until start</h4>
+                <p>
+                  The key is assigned, hidden from public views, and appears here
+                  only for this team after eligibility is met.
+                </p>
+              </article>
+              <article>
+                <span>Submissions</span>
+                <h4>Repo, demo, deck</h4>
+                <p>
+                  Any stack is allowed. Teams submit links and optional stack tags
+                  so judges and viewers can understand the build. After the deadline,
+                  all final submissions open in a shared gallery.
+                </p>
+              </article>
+              <article>
+                <span>Handbook</span>
+                <h4>Builder setup and agent skills</h4>
+                <p>
+                  A practical guide for Claude Code, Codex, Cursor, Replit,
+                  Lovable, API key safety, demo prep, and reusable agent prompts.
+                </p>
+                <a class="inline-resource" href="docs/hackathon-builder-handbook.md">Open handbook</a>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="scoring-section" id="scoring">
+        <div class="section-heading">
+          <p class="section-label">Scoring system</p>
+          <h2>Two score layers: momentum during the event, quality at the end.</h2>
+          <p>
+            Event points keep the room energized. Judge scores decide most of the
+            outcome. The final ranking uses a configurable weighted blend, defaulting
+            to 60% judge score and 40% event points, with admins able to tune event
+            points between 35% and 40%.
+          </p>
+        </div>
+
+        <div class="score-layout">
+          <article class="score-card event-points">
+            <div class="score-card-header">
+              <h3>Event points</h3>
+              <strong>40%</strong>
+            </div>
+            <ul class="criteria-list">
+              <li><span>Complete team formed</span><strong>10</strong></li>
+              <li><span>Different departments</span><strong>+5</strong></li>
+              <li><span>Very different functions</span><strong>+10</strong></li>
+              <li><span>Team formed before lock</span><strong>+5</strong></li>
+              <li><span>Idea submitted</span><strong>10</strong></li>
+              <li><span>Idea bank selected</span><strong>+3</strong></li>
+              <li><span>Custom idea submitted</span><strong>+5</strong></li>
+              <li><span>GitHub repo submitted</span><strong>10</strong></li>
+              <li><span>README/setup notes</span><strong>+5</strong></li>
+              <li><span>Demo video submitted</span><strong>15</strong></li>
+              <li><span>Presentation submitted</span><strong>10</strong></li>
+              <li><span>Final submission before deadline</span><strong>10</strong></li>
+              <li><span>Submitted before 5:15 PM</span><strong>+5</strong></li>
+              <li><span>Submitted before 5:00 PM</span><strong>+10</strong></li>
+            </ul>
+          </article>
+
+          <article class="score-card judge-points">
+            <div class="score-card-header">
+              <h3>Judge score</h3>
+              <strong>60%</strong>
+            </div>
+            <div class="judge-meter">
+              <div style="--value: 88%">
+                <span>Innovation</span>
+                <b></b>
+              </div>
+              <div style="--value: 82%">
+                <span>Business usefulness</span>
+                <b></b>
+              </div>
+              <div style="--value: 76%">
+                <span>Execution</span>
+                <b></b>
+              </div>
+              <div style="--value: 91%">
+                <span>Demo quality</span>
+                <b></b>
+              </div>
+              <div style="--value: 84%">
+                <span>Presentation clarity</span>
+                <b></b>
+              </div>
+            </div>
+            <div class="formula-box">
+              <span>Final score</span>
+              <code>(Judge x 0.60) + (Event x 0.40)</code>
+            </div>
+          </article>
+        </div>
+
+        <div class="config-note">
+          <strong>Admin flexibility:</strong>
+          Criteria, point values, active status, manual awards, judge criteria, and
+          final score weights should be editable without code changes.
+        </div>
+      </section>
+
+      <section class="roles-section" id="roles">
+        <div class="section-heading compact">
+          <p class="section-label">Role map</p>
+          <h2>Every role gets a clear surface.</h2>
+        </div>
+
+        <div class="role-grid">
+          <article>
+            <h3>Participant</h3>
+            <p>
+              Logs in, forms a team, submits ideas, sees guidelines, views public
+              leaderboards, and accesses the team API key when eligible.
+            </p>
+          </article>
+          <article>
+            <h3>Team</h3>
+            <p>
+              Shared workspace for two members, including idea, key status, repo,
+              demo, presentation, stack tags, event points, and judge summary.
+            </p>
+          </article>
+          <article>
+            <h3>Admin</h3>
+            <p>
+              Manages event settings, employees, teams, API keys, scoring rules,
+              judges, guide content, announcements, overrides, and TV mode.
+            </p>
+          </article>
+          <article>
+            <h3>Judge</h3>
+            <p>
+              Logs in individually, reviews team details, saves draft scores, and
+              submits structured evaluations by configured criteria.
+            </p>
+          </article>
+          <article>
+            <h3>Public viewer</h3>
+            <p>
+              Sees team list, ideas, progress, event points, countdowns, and final
+              winners. Sensitive fields never appear here.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="gallery-section">
+        <div class="section-heading">
+          <p class="section-label">After time is up</p>
+          <h2>A clean gallery for every final submission.</h2>
+          <p>
+            Once the submission deadline passes, or when admins manually publish it,
+            teams can browse everyone’s work from one easy page: ideas, GitHub repos,
+            demo videos, presentation links, stack tags, and team details.
+          </p>
+        </div>
+
+        <div class="submission-gallery" id="submission-gallery">
+          <div class="gallery-toolbar">
+            <strong>All Submissions</strong>
+            <div>
+              <span>Search teams, stack, ideas</span>
+              <span>Filter: Demo ready</span>
+            </div>
+          </div>
+          <div class="submission-grid">
+            <article>
+              <div class="submission-top">
+                <span>Team Nova</span>
+                <strong>AI claims assistant</strong>
+              </div>
+              <p>Explains required documents, flags missing info, and prepares next-step guidance.</p>
+              <div class="submission-tags">
+                <span>Python</span>
+                <span>OpenAI</span>
+                <span>Internal Ops</span>
+              </div>
+              <div class="submission-links">
+                <a href="#submission-gallery">Repo</a>
+                <a href="#submission-gallery">Demo video</a>
+                <a href="#submission-gallery">Presentation</a>
+              </div>
+            </article>
+            <article>
+              <div class="submission-top">
+                <span>PromptOps</span>
+                <strong>Support triage copilot</strong>
+              </div>
+              <p>Routes support tickets, summarizes urgency, and drafts the first response.</p>
+              <div class="submission-tags">
+                <span>Next.js</span>
+                <span>Automation</span>
+                <span>Support</span>
+              </div>
+              <div class="submission-links">
+                <a href="#submission-gallery">Repo</a>
+                <a href="#submission-gallery">Demo video</a>
+                <a href="#submission-gallery">Presentation</a>
+              </div>
+            </article>
+            <article>
+              <div class="submission-top">
+                <span>ClaimCraft</span>
+                <strong>Document checklist builder</strong>
+              </div>
+              <p>Turns messy requirement notes into a clean checklist for claims and reviews.</p>
+              <div class="submission-tags">
+                <span>Replit</span>
+                <span>Sheets</span>
+                <span>Workflow</span>
+              </div>
+              <div class="submission-links">
+                <a href="#submission-gallery">Repo</a>
+                <a href="#submission-gallery">Demo video</a>
+                <a href="#submission-gallery">Presentation</a>
+              </div>
+            </article>
+          </div>
+          <p class="gallery-privacy">
+            API keys, passwords, admin notes, and audit details stay private.
+          </p>
+        </div>
+      </section>
+
+      <section class="admin-section">
+        <div class="admin-visual">
+          <div class="admin-toolbar">
+            <span>Admin Console</span>
+            <button type="button">Publish TV Mode</button>
+          </div>
+          <div class="admin-columns">
+            <div>
+              <h3>Control room</h3>
+              <ul>
+                <li>Employee import and role metadata</li>
+                <li>Team edits, lock override, incomplete team rescue</li>
+                <li>API key pool, assignment, replacement, revoke</li>
+                <li>Event timeline, lock time, release time, deadlines</li>
+                <li>Scoring criteria, weights, manual adjustments</li>
+                <li>Submission gallery release and visibility controls</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Audit trail</h3>
+              <p>
+                Sensitive actions should record actor, timestamp, action, target,
+                and reason where appropriate. This matters for key changes and
+                judge-score overrides.
+              </p>
+              <div class="audit-row">
+                <span>Score override</span>
+                <strong>Reason required</strong>
+              </div>
+              <div class="audit-row">
+                <span>Key replacement</span>
+                <strong>Logged</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tv-section">
+        <div class="section-heading">
+          <p class="section-label">Office display</p>
+          <h2>TV mode turns the platform into the event heartbeat.</h2>
+        </div>
+
+        <div class="tv-frame">
+          <div class="tv-header">
+            <strong>Altir Tech Day Live</strong>
+            <span>Build ends in 01:14:32</span>
+          </div>
+          <div class="tv-grid">
+            <div class="leaderboard">
+              <h3>Live Energy Leaderboard</h3>
+              <ol>
+                <li><span>Team Nova</span><strong>74 pts</strong></li>
+                <li><span>PromptOps</span><strong>69 pts</strong></li>
+                <li><span>ClaimCraft</span><strong>63 pts</strong></li>
+              </ol>
+            </div>
+            <div class="progress-board">
+              <h3>Team Progress</h3>
+              <div><span>Teams formed</span><strong>12 / 12</strong></div>
+              <div><span>Ideas submitted</span><strong>11 / 12</strong></div>
+              <div><span>Repos added</span><strong>7 / 12</strong></div>
+              <div><span>Demos ready</span><strong>3 / 12</strong></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="requirements-section">
+        <div class="section-heading">
+          <p class="section-label">Feature inventory</p>
+          <h2>The PRD as buildable modules.</h2>
+        </div>
+
+        <div class="module-list">
+          <details open>
+            <summary>Authentication and access</summary>
+            <ul>
+              <li>Individual login for participants, admins, and judges.</li>
+              <li>Two team members use separate accounts but share one workspace.</li>
+              <li>Role-based permissions across private, admin, judge, and public views.</li>
+              <li>Public pages may be open or protected later, depending on deployment choice.</li>
+            </ul>
+          </details>
+
+          <details open>
+            <summary>Employee and team management</summary>
+            <ul>
+              <li>Admin upload or manual employee entry.</li>
+              <li>Name, email, department, role, and eligibility status.</li>
+              <li>Exactly two members per team.</li>
+              <li>Used employees disappear from team creation dropdowns.</li>
+              <li>Team edits allowed until 1:00 PM, then admin override only.</li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>Ideas and API keys</summary>
+            <ul>
+              <li>Teams can select from an idea bank or submit a custom idea.</li>
+              <li>Idea title and description are required before API key access.</li>
+              <li>Teams can change the idea later.</li>
+              <li>Admins preload API keys and assign one per complete team.</li>
+              <li>Keys reveal only after idea submission and configured release time.</li>
+              <li>Keys never appear in public views or TV mode.</li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>Submissions and handbook</summary>
+            <ul>
+              <li>GitHub repository link.</li>
+              <li>Demo video link or upload reference.</li>
+              <li>Presentation link or upload reference.</li>
+              <li>Technology stack tags with no restrictions.</li>
+              <li>Post-deadline gallery for browsing all final team submissions.</li>
+              <li>Search and filters by team, department, idea, stack, and status.</li>
+              <li>Event handbook, setup guides, timeline, and starter tracks.</li>
+              <li>Builder handbook for Claude Code, Codex, Cursor, Replit, Lovable, and agent skill prompts.</li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>Judging and final rankings</summary>
+            <ul>
+              <li>Judge accounts and per-judge score submissions.</li>
+              <li>Configurable judge criteria and max points.</li>
+              <li>Draft and submitted score states.</li>
+              <li>Admin entry on behalf of judges.</li>
+              <li>Score override with audit note.</li>
+              <li>Normalized final ranking with configurable judge/event weights.</li>
+            </ul>
+          </details>
+        </div>
+      </section>
+
+      <section class="stories-section">
+        <div class="section-heading">
+          <p class="section-label">User stories</p>
+          <h2>Sixty-five stories grouped into product areas.</h2>
+        </div>
+
+        <div class="story-tabs" role="tablist" aria-label="User story groups">
+          <button class="story-tab active" type="button" data-target="team-stories">Team formation</button>
+          <button class="story-tab" type="button" data-target="idea-stories">Ideas and keys</button>
+          <button class="story-tab" type="button" data-target="score-stories">Scoring</button>
+          <button class="story-tab" type="button" data-target="ops-stories">Ops and display</button>
+        </div>
+
+        <div class="story-panel active" id="team-stories">
+          <ol>
+            <li>Admin uploads or enters the employee list.</li>
+            <li>Employee records include name, email, department, and role.</li>
+            <li>Participants log in with individual accounts.</li>
+            <li>Participants create a team quickly without admin help.</li>
+            <li>Teams choose a public team name.</li>
+            <li>Participants select themselves and one available partner.</li>
+            <li>Unavailable employees disappear from the team creation dropdown.</li>
+            <li>Participants see department and role before confirming the team.</li>
+            <li>Teams form immediately after submission.</li>
+            <li>Both members access the same team workspace.</li>
+            <li>Teams can leave or disband before 1:00 PM.</li>
+            <li>Team changes lock after 1:00 PM.</li>
+            <li>Admins can override the lock for exceptions.</li>
+            <li>Admins can edit, split, merge, or delete teams.</li>
+            <li>Admins can see incomplete teams separately.</li>
+          </ol>
+        </div>
+
+        <div class="story-panel" id="idea-stories">
+          <ol>
+            <li>Team members see guidelines and event timeline.</li>
+            <li>Teams browse an idea bank built for 2.5-3 hour projects.</li>
+            <li>Teams can submit custom ideas.</li>
+            <li>Teams submit idea title and description before API key access.</li>
+            <li>Teams can edit or change ideas later.</li>
+            <li>Current ideas can be visible publicly.</li>
+            <li>Admins can see idea history.</li>
+            <li>Admins preload API keys into the database.</li>
+            <li>Each complete team receives one assigned key.</li>
+            <li>Keys stay hidden until release time.</li>
+            <li>Teams see keys only after idea submission and release time.</li>
+            <li>Admins can configure key release time.</li>
+            <li>Admins can reveal, revoke, replace, or reassign keys.</li>
+            <li>Public viewers never see API keys.</li>
+          </ol>
+        </div>
+
+        <div class="story-panel" id="score-stories">
+          <ol>
+            <li>Teams submit GitHub repo, demo video, and presentation links.</li>
+            <li>Teams tag any technology stack they use.</li>
+            <li>Teams view all final submissions after the deadline.</li>
+            <li>The submissions gallery shows repos, demo videos, presentations, ideas, stack, and team details.</li>
+            <li>Teams search or filter submissions by team, department, idea, or stack.</li>
+            <li>Admins control when the all-submissions gallery becomes visible.</li>
+            <li>Judges use the submissions gallery as a review surface.</li>
+            <li>Admins configure milestone scoring criteria.</li>
+            <li>Admins add, disable, award, or deduct point criteria.</li>
+            <li>Participants see why they received each event point.</li>
+            <li>Participants see a live event leaderboard.</li>
+            <li>Cross-functional teams receive bonus points.</li>
+            <li>Department and role combinations drive diversity scoring.</li>
+            <li>Judges log in with individual accounts.</li>
+            <li>Judges see idea, repo, demo, presentation, and stack.</li>
+            <li>Judges enter structured scores and save drafts.</li>
+            <li>Admins monitor judge completion.</li>
+            <li>Admins can enter or override judge scores with audit notes.</li>
+            <li>Final ranking blends judge score and event points.</li>
+            <li>Admins configure final score weights.</li>
+          </ol>
+        </div>
+
+        <div class="story-panel" id="ops-stories">
+          <ol>
+            <li>Public viewers see live event points and final winners.</li>
+            <li>Admins publish a TV display mode.</li>
+            <li>TV mode shows start time, end time, countdowns, progress, and announcements.</li>
+            <li>Admins update handbook content and setup guides.</li>
+            <li>Team members use setup guides for Claude Code, API keys, and starter tracks.</li>
+            <li>Sensitive admin actions are auditable.</li>
+            <li>The platform has a simple Replit-friendly deployment path.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="build-section" id="build">
+        <div class="section-heading">
+          <p class="section-label">Build plan</p>
+          <h2>MVP sequence for Replit.</h2>
+        </div>
+
+        <div class="build-roadmap">
+          <div><span>1</span><p>Authentication and role-based access</p></div>
+          <div><span>2</span><p>Employee upload and team formation</p></div>
+          <div><span>3</span><p>Team workspace with idea submission</p></div>
+          <div><span>4</span><p>API key preload, assignment, and gated reveal</p></div>
+          <div><span>5</span><p>Configurable event point scoring and leaderboard</p></div>
+          <div><span>6</span><p>Admin console for teams, settings, scoring, and keys</p></div>
+          <div><span>7</span><p>Judge login and judge scoring</p></div>
+          <div><span>8</span><p>Weighted final ranking</p></div>
+          <div><span>9</span><p>TV display mode</p></div>
+          <div><span>10</span><p>Handbook, setup guides, and idea bank polish</p></div>
+        </div>
+      </section>
+
+      <section class="data-section">
+        <div class="section-heading compact">
+          <p class="section-label">Data model</p>
+          <h2>Suggested entities.</h2>
+        </div>
+        <div class="entity-cloud" aria-label="Suggested data entities">
+          <span>User</span>
+          <span>Employee</span>
+          <span>Team</span>
+          <span>TeamMember</span>
+          <span>Idea</span>
+          <span>IdeaBankItem</span>
+          <span>ApiKey</span>
+          <span>EventSettings</span>
+          <span>EventPointCriterion</span>
+          <span>EventPointAward</span>
+          <span>JudgeCriterion</span>
+          <span>JudgeScore</span>
+          <span>Submission</span>
+          <span>Announcement</span>
+          <span>AuditLog</span>
+        </div>
+      </section>
+
+      <section class="open-questions-section">
+        <div class="section-heading compact">
+          <p class="section-label">Decisions remaining</p>
+          <h2>Open questions for implementation.</h2>
+        </div>
+        <ul class="question-list">
+          <li>Should public pages be accessible only inside the company network, or public URLs with login protection?</li>
+          <li>Should API keys be encrypted at rest with application encryption, database encryption, or Replit secret-backed encryption?</li>
+          <li>Should final judge scores be visible immediately or only after admins publish winners?</li>
+          <li>Should the idea bank be entered manually or imported from a document?</li>
+          <li>Should the MVP support direct file uploads, or should teams submit links only?</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        Tech Day Command Center PRD walkthrough. Built from
+        <a href="docs/tech-day-command-center-prd.md">the source PRD</a>.
+      </p>
+      <a href="#top">Back to top</a>
+    </footer>
+
+    <script>
+      const tabs = document.querySelectorAll(".story-tab");
+      const panels = document.querySelectorAll(".story-panel");
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          tabs.forEach((item) => item.classList.remove("active"));
+          panels.forEach((panel) => panel.classList.remove("active"));
+          tab.classList.add("active");
+          document.getElementById(tab.dataset.target).classList.add("active");
+        });
+      });
+    </script>
+  </body>
+</html>
