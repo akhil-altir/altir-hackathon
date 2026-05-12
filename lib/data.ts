@@ -53,6 +53,37 @@ export async function getSeedLoginHints(limit = 12) {
   }));
 }
 
+export async function getUserTeam(userId: string) {
+  const membership = await db.teamMember.findFirst({
+    where: { userId },
+    include: { team: true },
+  });
+  return membership?.team ?? null;
+}
+
+export async function getAvailableEmployees() {
+  const takenUserIds = (await db.teamMember.findMany({ select: { userId: true } })).map(
+    (m) => m.userId,
+  );
+
+  return db.user.findMany({
+    where: {
+      isActive: true,
+      isEligible: true,
+      id: { notIn: takenUserIds },
+    },
+    orderBy: [{ fullName: "asc" }],
+    select: {
+      id: true,
+      email: true,
+      fullName: true,
+      title: true,
+      primaryAssignment: true,
+      secondaryAssignment: true,
+    },
+  });
+}
+
 export async function getEmployeeDirectory() {
   return db.user.findMany({
     where: {
