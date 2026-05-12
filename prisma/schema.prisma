@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String            @id
+  email               String            @unique
+  password            String
+  employeeId          String?           @unique
+  fullName            String
+  title               String?
+  reportingManager    String?
+  primaryAssignment   String?
+  secondaryAssignment String?
+  isEligible          Boolean           @default(true)
+  isActive            Boolean           @default(true)
+  isAdmin             Boolean           @default(false)
+  isJudge             Boolean           @default(false)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  memberships         TeamMember[]
+  ideasSubmitted      Idea[]            @relation("IdeaSubmitter")
+  pointAwardsGranted  EventPointAward[] @relation("PointAwardGranter")
+  judgeScoresAuthored JudgeScore[]      @relation("JudgeScoreJudge")
+  judgeScoresEntered  JudgeScore[]      @relation("JudgeScoreEnteredBy")
+  announcements       Announcement[]
+  timelineItems       TimelineItem[]
+}
+
+model Team {
+  id              String            @id @default(cuid())
+  slug            String            @unique
+  name            String            @unique
+  status          String            @default("FORMED")
+  formedAt        DateTime          @default(now())
+  lockedAt        DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  memberships     TeamMember[]
+  ideas           Idea[]
+  apiKey          ApiKey?
+  submission      Submission?
+  pointAwards     EventPointAward[]
+  judgeScores     JudgeScore[]
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  teamId     String
+  userId     String
+  isCaptain  Boolean  @default(false)
+  addedAt    DateTime @default(now())
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+}
+
+model Idea {
+  id            String   @id @default(cuid())
+  teamId         String
+  submittedById  String
+  title          String
+  summary        String
+  sourceType     String
+  stackSummary   String?
+  bankCategory   String?
+  pivotReason    String?
+  isCurrent      Boolean  @default(true)
+  isPublic       Boolean  @default(true)
+  submittedAt    DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  team           Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  submittedBy    User     @relation("IdeaSubmitter", fields: [submittedById], references: [id], onDelete: Restrict)
+}
+
+model ApiKey {
+  id           String   @id @default(cuid())
+  provider     String
+  label        String   @unique
+  secret       String
+  status       String   @default("ASSIGNED")
+  assignedTeamId String? @unique
+  assignedAt   DateTime?
+  visibleFrom  DateTime?
+  revealedAt   DateTime?
+  revokedAt    DateTime?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  assignedTeam Team?    @relation(fields: [assignedTeamId], references: [id], onDelete: SetNull)
+}
+
+model Submission {
+  id                 String   @id @default(cuid())
+  teamId             String   @unique
+  status             String   @default("IN_PROGRESS")
+  repoUrl            String?
+  demoUrl            String?
+  presentationUrl    String?
+  stackTags          String
+  buildSummary       String?
+  repoReadmeReady    Boolean  @default(false)
+  submittedAt        DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  team               Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model ScoreCriterion {
+  id          String            @id @default(cuid())
+  key         String            @unique
+  label       String
+  description String?
+  category    String
+  pointsValue Int?
+  maxScore    Int?
+  sortOrder   Int               @default(0)
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  pointAwards EventPointAward[]
+  judgeScores JudgeScore[]
+}
+
+model EventPointAward {
+  id            String          @id @default(cuid())
+  teamId         String
+  criterionId    String?
+  grantedById    String?
+  points         Int
+  source         String         @default("SYSTEM")
+  reason         String
+  grantedAt      DateTime       @default(now())
+  team           Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  criterion      ScoreCriterion? @relation(fields: [criterionId], references: [id], onDelete: SetNull)
+  grantedBy      User?          @relation("PointAwardGranter", fields: [grantedById], references: [id], onDelete: SetNull)
+}
+
+model JudgeScore {
+  id           String         @id @default(cuid())
+  judgeId       String
+  enteredById   String?
+  teamId        String
+  criterionId   String
+  score         Int
+  note          String?
+  status        String         @default("SUBMITTED")
+  submittedAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  judge         User           @relation("JudgeScoreJudge", fields: [judgeId], references: [id], onDelete: Cascade)
+  enteredBy     User?          @relation("JudgeScoreEnteredBy", fields: [enteredById], references: [id], onDelete: SetNull)
+  team          Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  criterion     ScoreCriterion @relation(fields: [criterionId], references: [id], onDelete: Cascade)
+
+  @@unique([judgeId, teamId, criterionId])
+}
+
+model Announcement {
+  id           String   @id @default(cuid())
+  title        String
+  message      String
+  level        String   @default("INFO")
+  isPinned     Boolean  @default(false)
+  isPublished  Boolean  @default(true)
+  publishedAt  DateTime @default(now())
+  expiresAt    DateTime?
+  createdById  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+}
+
+model TimelineItem {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  kind         String
+  startsAt     DateTime
+  endsAt       DateTime?
+  sortOrder    Int      @default(0)
+  isPublic     Boolean  @default(true)
+  createdById  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+}

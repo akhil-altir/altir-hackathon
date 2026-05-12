@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", "Menlo", monospace;
+  --color-background: #050505;
+  --color-foreground: #fafafa;
+  --color-card: #090909;
+  --color-card-foreground: #fafafa;
+  --color-popover: #090909;
+  --color-popover-foreground: #fafafa;
+  --color-primary: #c4ff00;
+  --color-primary-foreground: #050505;
+  --color-secondary: #141414;
+  --color-secondary-foreground: #fafafa;
+  --color-muted: #101010;
+  --color-muted-foreground: #71717a;
+  --color-accent: #161616;
+  --color-accent-foreground: #fafafa;
+  --color-destructive: #ef4444;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-input: rgba(255, 255, 255, 0.12);
+  --color-ring: rgba(196, 255, 0, 0.45);
+  --radius: 1rem;
+  --bg: #000000;
+  --panel: #0a0a0a;
+  --panel-2: #101010;
+  --panel-3: #161616;
+  --line: #1f1f1f;
+  --line-2: #2a2a2a;
+  --line-3: #363636;
+  --text: #ebedf0;
+  --text-dim: #9aa0a6;
+  --text-mute: #6f7479;
+  --text-faint: #495057;
+  --acid: #c4ff00;
+  --acid-2: #9fd800;
+  --acid-glow: rgba(196, 255, 0, 0.18);
+  --warn: #ffb020;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: #050505;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(196, 255, 0, 0.08), transparent 28%),
+    linear-gradient(180deg, #040404 0%, #000000 35%, #020202 100%);
+  color: #fafafa;
+  font-family: var(--font-mono), monospace;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(196, 255, 0, 0.3);
+  color: #ffffff;
+}
+
+.scanlines::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.015) 0,
+    rgba(255, 255, 255, 0.015) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}
+
+.grid-overlay::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.4;
+}
+
+.panel-surface {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 35%),
+    var(--panel);
+  border: 1px solid var(--line);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 0 1px rgba(0, 0, 0, 0.65);
+}
+
+.panel-highlight {
+  box-shadow:
+    inset 0 0 0 1px rgba(196, 255, 0, 0.42),
+    0 0 0 1px rgba(196, 255, 0, 0.28),
+    0 0 28px rgba(196, 255, 0, 0.16);
+}
+
+.acid-text-shadow {
+  text-shadow: 0 0 18px rgba(196, 255, 0, 0.16);
+}
+
+.terminal-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-thumb {
+  background: #232323;
+  border: 2px solid #050505;
+}
