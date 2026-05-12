@@ -68,14 +68,11 @@ export async function createTeamAction(_prevState: { error: string } | null, for
     select: { primaryAssignment: true },
   });
 
-  const pointAwards: Array<{ key: string; points: number; reason: string }> = [
-    { key: "team_formed", points: 10, reason: "Team formed with two confirmed members." },
-  ];
+  const pendingAwards: Array<{ key: string; reason: string }> = [{ key: "team_formed", reason: "Team formed with two confirmed members." }];
 
   if (partner && session.primaryAssignment !== partner.primaryAssignment) {
-    pointAwards.push({
+    pendingAwards.push({
       key: "cross_assignment",
-      points: 5,
       reason: `Different primary assignments: ${session.primaryAssignment ?? "none"} and ${partner.primaryAssignment ?? "none"}.`,
     });
   }
@@ -83,28 +80,30 @@ export async function createTeamAction(_prevState: { error: string } | null, for
   // Check if formed before lock (1 PM IST on May 22 = 7:30 AM UTC)
   const TEAM_LOCK = new Date("2026-05-22T07:30:00.000Z");
   if (new Date() < TEAM_LOCK) {
-    pointAwards.push({ key: "formed_before_lock", points: 5, reason: "Team formed before the lock deadline." });
+    pendingAwards.push({ key: "formed_before_lock", reason: "Team formed before the lock deadline." });
   }
 
-  // Look up criterion IDs
   const criteria = await db.scoreCriterion.findMany({
-    where: { key: { in: pointAwards.map((p) => p.key) } },
-    select: { id: true, key: true },
+    where: { category: "EVENT", key: { in: pendingAwards.map((p) => p.key) } },
+    select: { id: true, key: true, pointsValue: true },
   });
-  const criterionMap = new Map(criteria.map((c) => [c.key, c.id]));
+  const criterionByKey = new Map(criteria.map((c) => [c.key, c]));
 
   await db.eventPointAward.createMany({
-    data: pointAwards.map((award) => ({
-      teamId: team.id,
-      criterionId: criterionMap.get(award.key) ?? null,
-      grantedById: session.userId,
-      points: award.points,
-      source: "SYSTEM",
-      reason: award.reason,
-    })),
+    data: pendingAwards.map((award) => {
+      const row = criterionByKey.get(award.key);
+      return {
+        teamId: team.id,
+        criterionId: row?.id ?? null,
+        grantedById: session.userId,
+        points: row?.pointsValue ?? 0,
+        source: "SYSTEM" as const,
+        reason: award.reason,
+      };
+    }),
   });
 
   revalidatePath("/leaderboard");
   revalidatePath("/gallery");
-  redirect(`/teams/${team.slug}`);
+  redirect(`/teams/${team.slug}/locked`);
 }

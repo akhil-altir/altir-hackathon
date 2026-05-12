@@ -1,8 +1,11 @@
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { Copy, GitBranch, KeyRound, MonitorPlay, Upload } from "lucide-react"
 
+import { ParticipantOnboardingStrip } from "@/components/team/participant-onboarding-strip"
 import { getTeamWorkspace } from "@/lib/data"
+import { getActiveEventPointsByKeys } from "@/lib/event-score-display"
+import { getTeamOnboardingState } from "@/lib/participant-onboarding"
 import { loadParticipantNavContext } from "@/lib/participant-nav-context"
 import { getSession } from "@/lib/session"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
@@ -14,14 +17,26 @@ export const dynamic = "force-dynamic"
 export default async function TeamWorkspacePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const session = await getSession()
+  if (!session) redirect("/login")
+
   const team = await getTeamWorkspace(slug)
   if (!team) notFound()
 
+  const isMember = team.members.some((m) => m.id === session.userId)
+  if (!isMember) notFound()
+
+  if (!team.currentIdea) {
+    redirect(`/teams/${slug}/locked`)
+  }
+
   const nav = await loadParticipantNavContext()
   const eventPoints = team.pointBreakdown.reduce((s, a) => s + a.points, 0)
+  const onboarding = getTeamOnboardingState(team)
+  const earlyPts = (await getActiveEventPointsByKeys(["before_515"])).before_515
 
   return (
     <ParticipantAppShell
+      lead={<ParticipantOnboardingStrip teamSlug={team.slug} state={onboarding} />}
       browserTitle="team workspace"
       urlDisplay={`techday.altir.internal/teams/${team.slug}`}
       browserRight={<span className="text-[var(--acid)]">team ready</span>}
@@ -107,7 +122,9 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
                       </>
                     )}
                   </h1>
-                  <p className="mt-2 text-sm text-[var(--text-dim)]">Add your GitHub repo before 17:00 to keep the +10 bonus alive.</p>
+                  <p className="mt-2 text-sm text-[var(--text-dim)]">
+                    Add your GitHub repo before 17:00 to keep the +{earlyPts} early-submit bonus in play.
+                  </p>
                 </div>
                 <div className="min-w-48 text-left md:text-right">
                   <div className="text-[11px] uppercase tracking-[0.2em] text-[var(--text-mute)]">event points</div>

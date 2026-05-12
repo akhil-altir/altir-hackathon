@@ -5,6 +5,14 @@ import { useActionState, useState } from "react"
 
 import { createTeamAction } from "./actions"
 import { Button } from "@/components/ui/button"
+import { EVENT_POINT_WEIGHTS, EVENT_TEAM_FORMATION_MAX } from "@/lib/event-point-weights"
+
+type FormationPreview = {
+  completeTeam: number
+  crossAssignment: number
+  formedBeforeLock: number
+  maxIfAllApply: number
+}
 
 type Partner = {
   id: string
@@ -27,14 +35,25 @@ function initials(name: string) {
 export function TeamFormClient({
   currentUser,
   partners,
+  formationPreview,
 }: {
   currentUser: { id: string; fullName: string; primaryAssignment: string | null }
   partners: Partner[]
+  formationPreview?: FormationPreview
 }) {
   const [state, formAction, pending] = useActionState(createTeamAction, null)
   const [selectedPartner, setSelectedPartner] = useState<string>("")
   const [search, setSearch] = useState("")
   const [teamName, setTeamName] = useState("")
+
+  const fp =
+    formationPreview ??
+    ({
+      completeTeam: EVENT_POINT_WEIGHTS.team_formed,
+      crossAssignment: EVENT_POINT_WEIGHTS.cross_assignment,
+      formedBeforeLock: EVENT_POINT_WEIGHTS.formed_before_lock,
+      maxIfAllApply: EVENT_TEAM_FORMATION_MAX,
+    } satisfies FormationPreview)
 
   const filtered = search
     ? partners.filter(
@@ -180,10 +199,9 @@ export function TeamFormClient({
         <div className="mt-4 border border-[var(--line)] bg-[var(--panel-2)] p-4">
           <div className="mb-3 text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">event points you&apos;ll earn</div>
           {[
-            ["Complete team", "+10"],
-            ["Different departments", "+5"],
-            ["Very different functions (cross-track)", "+10"],
-            ["Formed before lock", "+5"],
+            ["Complete team", `+${fp.completeTeam}`],
+            ["Different primary assignments", `+${fp.crossAssignment}`],
+            ["Formed before lock", `+${fp.formedBeforeLock}`],
           ].map(([label, value]) => (
             <div key={label} className="flex justify-between py-1 text-xs">
               <span className="text-[var(--text-dim)]">{label}</span>
@@ -191,8 +209,8 @@ export function TeamFormClient({
             </div>
           ))}
           <div className="mt-3 flex justify-between border-t border-[var(--line)] pt-3">
-            <span className="text-xs uppercase text-[var(--text-dim)]">subtotal</span>
-            <span className="text-2xl font-bold text-[var(--acid)]">30 pts</span>
+            <span className="text-xs uppercase text-[var(--text-dim)]">max if all apply</span>
+            <span className="text-2xl font-bold text-[var(--acid)]">{fp.maxIfAllApply} pts</span>
           </div>
         </div>
 

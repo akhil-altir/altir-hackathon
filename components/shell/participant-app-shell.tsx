@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -8,7 +9,7 @@ import { cn } from "@/lib/utils"
 export type ParticipantNavKey = "workspace" | "idea" | "submit" | "gallery" | "leaderboard" | "handbook" | "none"
 
 type ParticipantAppShellProps = {
-  children: React.ReactNode
+  children: ReactNode
   browserTitle: string
   /** Shown in faux URL bar, e.g. techday.altir.internal/teams/foo */
   urlDisplay: string
@@ -28,6 +29,8 @@ type ParticipantAppShellProps = {
   userName?: string | null
   /** When false, Idea and Submit nav entries are shown disabled (e.g. on /teams/new before a team exists). */
   hasTeam?: boolean
+  /** Onboarding strip + resume banner (participant team routes). */
+  lead?: ReactNode
 }
 
 function BrowserStrip({
@@ -166,6 +169,7 @@ export function ParticipantAppShell({
   userEmail,
   userName,
   hasTeam = true,
+  lead,
 }: ParticipantAppShellProps) {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]">
@@ -188,13 +192,14 @@ export function ParticipantAppShell({
             hasTeam={hasTeam}
           />
         ) : null}
+        {lead ? <div className="mx-auto w-full max-w-[1680px] px-4 pt-3 lg:px-8">{lead}</div> : null}
         {children}
       </div>
     </main>
   )
 }
 
-export function ParticipantStage({ children, wide }: { children: React.ReactNode; wide?: boolean }) {
+export function ParticipantStage({ children, wide }: { children: ReactNode; wide?: boolean }) {
   return (
     <div className={cn("mx-auto w-full flex-1 px-4 py-6 lg:px-8", wide ? "max-w-[1680px]" : "max-w-[1440px]")}>{children}</div>
   )

@@ -3,7 +3,8 @@ import { redirect } from "next/navigation"
 
 import { LoginForm } from "./login-form"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
-import { getSeedLoginHints } from "@/lib/data"
+import { getSeedLoginHints, getTeamWorkspace, getUserTeam } from "@/lib/data"
+import { getParticipantResumeHref } from "@/lib/participant-onboarding"
 import { getSession } from "@/lib/session"
 
 export const dynamic = "force-dynamic"
@@ -12,7 +13,15 @@ export default async function LoginPage() {
   const session = await getSession()
 
   if (session) {
-    redirect(session.isAdmin ? "/admin" : session.isJudge ? "/judge" : "/teams/new")
+    if (session.isAdmin) redirect("/admin/teams")
+    if (session.isJudge) redirect("/judge")
+    const existingTeam = await getUserTeam(session.userId)
+    if (existingTeam) {
+      const workspace = await getTeamWorkspace(existingTeam.slug)
+      if (workspace) redirect(getParticipantResumeHref(workspace))
+      redirect(`/teams/${existingTeam.slug}`)
+    }
+    redirect("/teams/new")
   }
 
   const hints = await getSeedLoginHints(6)

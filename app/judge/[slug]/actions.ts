@@ -16,6 +16,8 @@ export async function submitJudgeScoresAction(formData: FormData) {
   const team = await db.team.findUnique({ where: { slug: teamSlug } });
   if (!team) { redirect("/judge"); }
 
+  const organizerNote = ((formData.get("organizerNote") as string) ?? "").trim() || null;
+
   const criteria = await db.scoreCriterion.findMany({
     where: { category: "JUDGE", isActive: true },
     orderBy: [{ sortOrder: "asc" }],
@@ -38,6 +40,7 @@ export async function submitJudgeScoresAction(formData: FormData) {
       },
       update: {
         score,
+        note: organizerNote,
         status: "SUBMITTED",
         submittedAt: new Date(),
       },
@@ -47,6 +50,7 @@ export async function submitJudgeScoresAction(formData: FormData) {
         teamId: team.id,
         criterionId: criterion.id,
         score,
+        note: organizerNote,
         status: "SUBMITTED",
         submittedAt: new Date(),
       },

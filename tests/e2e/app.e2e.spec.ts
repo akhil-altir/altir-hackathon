@@ -1,6 +1,6 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
-async function login(page: Parameters<typeof test>[0]["page"], email: string, password: string) {
+async function login(page: Page, email: string, password: string) {
   await page.goto("/login");
   await page.getByRole("textbox", { name: /email/i }).fill(email);
   await page.getByLabel(/password/i).fill(password);
@@ -33,8 +33,8 @@ test.describe("Altir Tech Day Command Center e2e", () => {
 
   test("admin can access admin surface", async ({ page }) => {
     await login(page, "akhil@altir.co", "akhil");
-    await expect(page).toHaveURL(/\/admin$/);
-    await expect(page.getByRole("heading", { name: /Run the event without touching SQL/i })).toBeVisible();
+    await expect(page).toHaveURL(/\/admin\/teams$/);
+    await expect(page.getByRole("heading", { name: /Teams & phase/i })).toBeVisible();
   });
 
   test("judge can open scoring console and submit scores", async ({ page }) => {
@@ -43,15 +43,15 @@ test.describe("Altir Tech Day Command Center e2e", () => {
 
     await page.getByRole("link", { name: /Prompt Ops/i }).first().click();
     await expect(page).toHaveURL(/\/judge\/prompt-ops$/);
-    await expect(page.getByRole("heading", { name: /Score Prompt Ops/i })).toBeVisible();
+    await expect(page.getByText(/\/\/\s*your scores/i)).toBeVisible();
 
-    const inputs = page.locator('input[type="number"]');
-    const count = await inputs.count();
+    const sliders = page.getByRole("slider");
+    const count = await sliders.count();
     for (let i = 0; i < count; i += 1) {
-      await inputs.nth(i).fill("8");
+      await sliders.nth(i).fill("8");
     }
 
-    await page.getByRole("button", { name: /Save scores/i }).click();
+    await page.getByRole("button", { name: /Submit final score/i }).first().click();
     await expect(page).toHaveURL(/\/judge$/);
   });
 });

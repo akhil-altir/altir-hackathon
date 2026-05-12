@@ -46,34 +46,37 @@ export async function submitProjectAction(formData: FormData) {
       .map((a) => a.reason),
   );
 
-  const newAwards: Array<{ key: string; points: number; reason: string }> = [];
+  const newAwards: Array<{ key: string; reason: string }> = [];
 
   if (repoUrl && !existingAwardKeys.has("GitHub repository linked.")) {
-    newAwards.push({ key: "repo_submitted", points: 10, reason: "GitHub repository linked." });
+    newAwards.push({ key: "repo_submitted", reason: "GitHub repository linked." });
   }
   if (demoUrl && !existingAwardKeys.has("Demo video attached.")) {
-    newAwards.push({ key: "demo_uploaded", points: 15, reason: "Demo video attached." });
+    newAwards.push({ key: "demo_uploaded", reason: "Demo video attached." });
   }
   if (presentationUrl && !existingAwardKeys.has("Presentation deck shared.")) {
-    newAwards.push({ key: "deck_uploaded", points: 10, reason: "Presentation deck shared." });
+    newAwards.push({ key: "deck_uploaded", reason: "Presentation deck shared." });
   }
 
   if (newAwards.length > 0) {
     const criteria = await db.scoreCriterion.findMany({
-      where: { key: { in: newAwards.map((a) => a.key) } },
-      select: { id: true, key: true },
+      where: { category: "EVENT", key: { in: newAwards.map((a) => a.key) } },
+      select: { id: true, key: true, pointsValue: true },
     });
-    const criterionMap = new Map(criteria.map((c) => [c.key, c.id]));
+    const criterionMap = new Map(criteria.map((c) => [c.key, c]));
 
     await db.eventPointAward.createMany({
-      data: newAwards.map((award) => ({
-        teamId: team.id,
-        criterionId: criterionMap.get(award.key) ?? null,
-        grantedById: session.userId,
-        points: award.points,
-        source: "SYSTEM",
-        reason: award.reason,
-      })),
+      data: newAwards.map((award) => {
+        const row = criterionMap.get(award.key);
+        return {
+          teamId: team.id,
+          criterionId: row?.id ?? null,
+          grantedById: session.userId,
+          points: row?.pointsValue ?? 0,
+          source: "SYSTEM" as const,
+          reason: award.reason,
+        };
+      }),
     });
   }
 

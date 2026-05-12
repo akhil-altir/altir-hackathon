@@ -1,6 +1,7 @@
 import Image from "next/image"
 
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
+import { TvEventTimer } from "@/components/tv/tv-event-timer"
 import { listLeaderboard, getTimelineAndAnnouncements } from "@/lib/data"
 import { teamHueFromSlug } from "@/lib/team-visual"
 
@@ -23,6 +24,7 @@ export default async function TVPage() {
       browserRight={<span className="text-[var(--acid)]">1920 × 1080</span>}
     >
       <ParticipantStage wide>
+        <TvEventTimer />
         <div className="grid min-h-[calc(100vh-80px)] gap-6 lg:grid-cols-[1.3fr_0.7fr]">
           <section className="flex flex-col justify-between border border-[var(--line)] bg-black/60 p-8">
             <div className="flex items-center justify-between">
@@ -44,7 +46,10 @@ export default async function TVPage() {
                       <div className="truncate text-sm text-[var(--text-dim)]">{team.idea?.title ?? "Idea pending"}</div>
                     </div>
                   </div>
-                  <div className="text-5xl font-bold text-[var(--acid)]">{team.finalScore.toFixed(1)}</div>
+                  <div className="text-5xl font-bold text-[var(--acid)]">
+                  {Math.round(team.finalScore)}
+                  <span className="text-2xl font-normal text-[var(--text-mute)]">/1000</span>
+                </div>
                 </div>
               ))}
             </div>

@@ -65,7 +65,10 @@ export default async function LeaderboardPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-bold text-[var(--acid)]">{team.finalScore.toFixed(1)}</div>
+                    <div className="text-3xl font-bold text-[var(--acid)]">
+                      {Math.round(team.finalScore)}
+                      <span className="text-lg font-normal text-[var(--text-mute)]">/1000</span>
+                    </div>
                     <div className="text-xs text-[var(--text-mute)]">
                       event {team.eventPoints} · judge {team.judgeAverage.toFixed(1)}
                     </div>

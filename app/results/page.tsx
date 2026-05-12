@@ -74,7 +74,10 @@ export default async function ResultsPage() {
                     </div>
                     <div className="mt-4 text-2xl font-bold uppercase tracking-[0.1em] text-white">{team.teamName}</div>
                     <p className="mt-2 text-sm text-[var(--text-dim)]">{team.idea?.title ?? ""}</p>
-                    <div className="mt-6 text-5xl font-bold text-[var(--acid)]">{team.finalScore.toFixed(1)}</div>
+                    <div className="mt-6 text-5xl font-bold text-[var(--acid)]">
+                    {Math.round(team.finalScore)}
+                    <span className="text-2xl font-normal text-[var(--text-mute)]">/1000</span>
+                  </div>
                     <div className="mt-2 text-[10px] uppercase tracking-[0.14em] text-[var(--text-mute)]">blended</div>
                   </CardContent>
                 </Card>
@@ -141,7 +144,9 @@ export default async function ResultsPage() {
                     event {team.eventPoints} · judge {team.judgeAverage.toFixed(1)}
                   </span>
                 </div>
-                <span className="font-bold text-[var(--acid)]">{team.finalScore.toFixed(1)}</span>
+                <span className="font-bold text-[var(--acid)]">
+                {Math.round(team.finalScore)}/1000
+              </span>
               </div>
             ))}
           </CardContent>

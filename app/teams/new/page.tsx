@@ -2,7 +2,9 @@ import { redirect } from "next/navigation"
 
 import { TeamFormClient } from "./team-form"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
-import { getAvailableEmployees, getUserTeam } from "@/lib/data"
+import { getAvailableEmployees, getTeamWorkspace, getUserTeam } from "@/lib/data"
+import { getActiveEventPointsByKeys } from "@/lib/event-score-display"
+import { getParticipantResumeHref } from "@/lib/participant-onboarding"
 import { loadParticipantNavContext } from "@/lib/participant-nav-context"
 import { getSession } from "@/lib/session"
 
@@ -13,11 +15,24 @@ export default async function NewTeamPage() {
   if (!session) redirect("/login")
 
   const existingTeam = await getUserTeam(session.userId)
-  if (existingTeam) redirect(`/teams/${existingTeam.slug}`)
+  if (existingTeam) {
+    const workspace = await getTeamWorkspace(existingTeam.slug)
+    if (workspace) redirect(getParticipantResumeHref(workspace))
+    redirect(`/teams/${existingTeam.slug}`)
+  }
 
   const availableEmployees = await getAvailableEmployees()
   const partners = availableEmployees.filter((e) => e.id !== session.userId)
   const nav = await loadParticipantNavContext()
+
+  const formationKeys = ["team_formed", "cross_assignment", "formed_before_lock"] as const
+  const formationPts = await getActiveEventPointsByKeys(formationKeys)
+  const formationPreview = {
+    completeTeam: formationPts.team_formed,
+    crossAssignment: formationPts.cross_assignment,
+    formedBeforeLock: formationPts.formed_before_lock,
+    maxIfAllApply: formationPts.team_formed + formationPts.cross_assignment + formationPts.formed_before_lock,
+  }
 
   return (
     <ParticipantAppShell
@@ -53,6 +68,7 @@ export default async function NewTeamPage() {
         <TeamFormClient
           currentUser={{ id: session.userId, fullName: session.fullName, primaryAssignment: session.primaryAssignment }}
           partners={partners}
+          formationPreview={formationPreview}
         />
       </ParticipantStage>
     </ParticipantAppShell>

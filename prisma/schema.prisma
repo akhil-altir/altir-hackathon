@@ -32,6 +32,21 @@ model User {
   timelineItems       TimelineItem[]
 }
 
+model IdeaBankEntry {
+  id                 String   @id @default(cuid())
+  title              String
+  problemStatement   String
+  description        String
+  expectedOutcome    String
+  stackHint          String?
+  category           String?
+  sortOrder          Int      @default(0)
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  ideas              Idea[]
+}
+
 model Team {
   id              String            @id @default(cuid())
   slug            String            @unique
@@ -62,21 +77,23 @@ model TeamMember {
 }
 
 model Idea {
-  id            String   @id @default(cuid())
-  teamId         String
-  submittedById  String
-  title          String
-  summary        String
-  sourceType     String
-  stackSummary   String?
-  bankCategory   String?
-  pivotReason    String?
-  isCurrent      Boolean  @default(true)
-  isPublic       Boolean  @default(true)
-  submittedAt    DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  team           Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  submittedBy    User     @relation("IdeaSubmitter", fields: [submittedById], references: [id], onDelete: Restrict)
+  id                String          @id @default(cuid())
+  teamId            String
+  submittedById   String
+  title             String
+  summary           String
+  sourceType        String
+  stackSummary      String?
+  bankCategory      String?
+  pivotReason       String?
+  ideaBankEntryId   String?
+  isCurrent         Boolean         @default(true)
+  isPublic          Boolean         @default(true)
+  submittedAt       DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  team              Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  submittedBy       User            @relation("IdeaSubmitter", fields: [submittedById], references: [id], onDelete: Restrict)
+  ideaBankEntry     IdeaBankEntry?  @relation(fields: [ideaBankEntryId], references: [id], onDelete: SetNull)
 }
 
 model ApiKey {
@@ -190,4 +207,10 @@ model TimelineItem {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   createdBy    User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+}
+
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
 }

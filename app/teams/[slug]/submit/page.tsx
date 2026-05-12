@@ -1,15 +1,18 @@
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { Check, Pencil } from "lucide-react"
 
 import { submitProjectAction } from "./actions"
-import { getTeamWorkspace } from "@/lib/data"
-import { loadParticipantNavContext } from "@/lib/participant-nav-context"
-import { teamHueFromSlug } from "@/lib/team-visual"
-import { getSession } from "@/lib/session"
+import { ParticipantOnboardingStrip } from "@/components/team/participant-onboarding-strip"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { getTeamWorkspace } from "@/lib/data"
+import { getActiveEventPointsByKeys } from "@/lib/event-score-display"
+import { getTeamOnboardingState } from "@/lib/participant-onboarding"
+import { loadParticipantNavContext } from "@/lib/participant-nav-context"
+import { teamHueFromSlug } from "@/lib/team-visual"
+import { getSession } from "@/lib/session"
 
 export const dynamic = "force-dynamic"
 
@@ -51,8 +54,14 @@ function Row({
 export default async function SubmitPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const session = await getSession()
+  if (!session) redirect("/login")
+
   const team = await getTeamWorkspace(slug)
   if (!team) notFound()
+
+  if (!team.members.some((m) => m.id === session.userId)) notFound()
+
+  const onboarding = getTeamOnboardingState(team)
   const nav = await loadParticipantNavContext()
   const s = team.submission
   const hue = teamHueFromSlug(team.slug)
@@ -65,8 +74,11 @@ export default async function SubmitPage({ params }: { params: Promise<{ slug: s
 
   const eventPoints = team.pointBreakdown.reduce((acc, a) => acc + a.points, 0)
 
+  const evPts = await getActiveEventPointsByKeys(["repo_submitted", "demo_uploaded", "deck_uploaded", "before_515"])
+
   return (
     <ParticipantAppShell
+      lead={<ParticipantOnboardingStrip teamSlug={team.slug} state={onboarding} />}
       browserTitle="final submission"
       urlDisplay={`techday.altir.internal/teams/${team.slug}/submit`}
       browserRight={<span className="text-[var(--warn)]">deadline</span>}
@@ -100,10 +112,10 @@ export default async function SubmitPage({ params }: { params: Promise<{ slug: s
               ok={repoOk}
               detail={s?.repoUrl ?? ""}
               sub="public or org-readable · main branch demoable"
-              points="+10"
+              points={`+${evPts.repo_submitted}`}
             />
-            <Row label="demo video / url" ok={demoOk} detail={s?.demoUrl ?? ""} sub="90s max · narrate the build" points="+15" />
-            <Row label="presentation" ok={deckOk} detail={s?.presentationUrl ?? ""} sub="slides or figma" points="+10" />
+            <Row label="demo video / url" ok={demoOk} detail={s?.demoUrl ?? ""} sub="90s max · narrate the build" points={`+${evPts.demo_uploaded}`} />
+            <Row label="presentation" ok={deckOk} detail={s?.presentationUrl ?? ""} sub="slides or figma" points={`+${evPts.deck_uploaded}`} />
             <Row label="tech stack tags" ok={stackOk} detail={s?.stackTags ?? team.currentIdea?.stackSummary ?? ""} points="—" />
 
             <form action={submitProjectAction} id="submission-form" className="space-y-4 border border-[var(--line)] bg-black/30 p-5">
@@ -168,7 +180,7 @@ export default async function SubmitPage({ params }: { params: Promise<{ slug: s
               </div>
               <div className="border border-orange-400/35 bg-orange-400/5 p-4">
                 <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-200">bonus window</div>
-                <div className="mt-2 text-lg font-bold text-orange-100">submit before 17:00 → +10</div>
+                <div className="mt-2 text-lg font-bold text-orange-100">submit before 17:00 → +{evPts.before_515}</div>
                 <div className="mt-3 h-1.5 overflow-hidden bg-black">
                   <div className="h-full bg-orange-400/80" style={{ width: `${Math.min(100, filled * 25)}%` }} />
                 </div>

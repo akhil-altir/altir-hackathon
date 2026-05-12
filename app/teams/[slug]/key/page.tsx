@@ -1,25 +1,34 @@
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { ArrowRight, KeyRound } from "lucide-react"
 
-import { getTeamWorkspace } from "@/lib/data"
-import { loadParticipantNavContext } from "@/lib/participant-nav-context"
-import { getSession } from "@/lib/session"
+import { ParticipantOnboardingStrip } from "@/components/team/participant-onboarding-strip"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { getTeamWorkspace } from "@/lib/data"
+import { getTeamOnboardingState } from "@/lib/participant-onboarding"
+import { loadParticipantNavContext } from "@/lib/participant-nav-context"
+import { getSession } from "@/lib/session"
 
 export const dynamic = "force-dynamic"
 
 export default async function KeyRevealPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const session = await getSession()
+  if (!session) redirect("/login")
+
   const team = await getTeamWorkspace(slug)
   if (!team) notFound()
+
+  if (!team.members.some((m) => m.id === session.userId)) notFound()
+
+  const onboarding = getTeamOnboardingState(team)
   const nav = await loadParticipantNavContext()
 
   return (
     <ParticipantAppShell
+      lead={<ParticipantOnboardingStrip teamSlug={team.slug} state={onboarding} />}
       browserTitle="api key"
       urlDisplay={`techday.altir.internal/teams/${team.slug}/key`}
       browserRight={<span className="text-[var(--acid)]">14:30 sharp</span>}
