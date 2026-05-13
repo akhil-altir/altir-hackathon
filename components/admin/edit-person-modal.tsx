@@ -89,6 +89,17 @@ function PersonForm({
   const [isPending, startTransition] = useTransition()
   const isEdit = !!user
 
+  // for auto-populating password in create mode
+  const [email, setEmail] = useState("")
+  const [employeeId, setEmployeeId] = useState("")
+  const [password, setPassword] = useState("")
+  const [passwordTouched, setPasswordTouched] = useState(false)
+
+  const autoPassword = !isEdit
+    ? `${email.split("@")[0]}${employeeId ? `_${employeeId}` : ""}`
+    : ""
+  const passwordValue = !isEdit ? (passwordTouched ? password : autoPassword) : undefined
+
   function handleSubmit(formData: FormData) {
     setError(null)
     startTransition(async () => {
@@ -112,11 +123,33 @@ function PersonForm({
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <Field label="Full Name" name="fullName" defaultValue={user?.fullName} required />
-          <Field label="Email" name="email" defaultValue={user?.email} type="email" required />
+          <div className="space-y-1">
+            <label className="block text-[10px] uppercase tracking-[0.18em] text-[var(--text-mute)]">
+              Email<span className="ml-1 text-[var(--acid)]">*</span>
+            </label>
+            <input
+              name="email"
+              type="email"
+              defaultValue={user?.email ?? ""}
+              required
+              onChange={isEdit ? undefined : (e) => setEmail(e.target.value)}
+              className="w-full border border-[var(--line)] bg-[var(--bg)] px-3 py-2 text-sm text-white placeholder:text-[var(--text-faint)] focus:border-[var(--acid)] focus:outline-none"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Employee ID" name="employeeId" defaultValue={user?.employeeId} placeholder="EMP001" />
+          <div className="space-y-1">
+            <label className="block text-[10px] uppercase tracking-[0.18em] text-[var(--text-mute)]">Employee ID</label>
+            <input
+              name="employeeId"
+              type="text"
+              defaultValue={user?.employeeId ?? ""}
+              placeholder="EMP001"
+              onChange={isEdit ? undefined : (e) => setEmployeeId(e.target.value)}
+              className="w-full border border-[var(--line)] bg-[var(--bg)] px-3 py-2 text-sm text-white placeholder:text-[var(--text-faint)] focus:border-[var(--acid)] focus:outline-none"
+            />
+          </div>
           <Field label="Title" name="title" defaultValue={user?.title} placeholder="Software Engineer" />
         </div>
 
@@ -152,13 +185,24 @@ function PersonForm({
               </span>
             )}
           </label>
-          <input
-            name="password"
-            type="text"
-            required={!isEdit}
-            placeholder={isEdit ? "leave blank to keep current" : "password"}
-            className="w-full border border-[var(--line)] bg-[var(--bg)] px-3 py-2 font-mono text-sm text-white placeholder:text-[var(--text-faint)] focus:border-[var(--acid)] focus:outline-none"
-          />
+          {isEdit ? (
+            <input
+              name="password"
+              type="text"
+              placeholder="leave blank to keep current"
+              className="w-full border border-[var(--line)] bg-[var(--bg)] px-3 py-2 font-mono text-sm text-white placeholder:text-[var(--text-faint)] focus:border-[var(--acid)] focus:outline-none"
+            />
+          ) : (
+            <input
+              name="password"
+              type="text"
+              required
+              value={passwordValue}
+              onChange={(e) => { setPasswordTouched(true); setPassword(e.target.value) }}
+              placeholder="auto-filled from email + employee ID"
+              className="w-full border border-[var(--line)] bg-[var(--bg)] px-3 py-2 font-mono text-sm text-white placeholder:text-[var(--text-faint)] focus:border-[var(--acid)] focus:outline-none"
+            />
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
