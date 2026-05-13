@@ -479,21 +479,32 @@ export async function updateUserDetails(formData: FormData) {
   const isActive = formData.get("isActive") === "true"
   const isEligible = formData.get("isEligible") === "true"
 
-  await db.user.update({
-    where: { id: userId },
-    data: {
-      fullName,
-      email: email.toLowerCase(),
-      ...(password ? { password } : {}),
-      title,
-      employeeId,
-      reportingManager,
-      primaryAssignment,
-      secondaryAssignment,
-      isActive,
-      isEligible,
-    },
-  })
+  try {
+    await db.user.update({
+      where: { id: userId },
+      data: {
+        fullName,
+        email: email.toLowerCase(),
+        ...(password ? { password } : {}),
+        title,
+        employeeId,
+        reportingManager,
+        primaryAssignment,
+        secondaryAssignment,
+        isActive,
+        isEligible,
+      },
+    })
+  } catch (e: unknown) {
+    const code = (e as { code?: string }).code
+    const fields: string[] = (e as { meta?: { target?: string[] } }).meta?.target ?? []
+    if (code === "P2002") {
+      if (fields.includes("email")) throw new Error("That email is already used by another user.")
+      if (fields.includes("employeeId")) throw new Error("That employee ID is already assigned to another user.")
+      throw new Error("Another user already has those details.")
+    }
+    throw e
+  }
 
   revalidatePath("/admin", "layout")
   revalidatePath("/admin/people")
@@ -510,21 +521,32 @@ export async function createUser(formData: FormData) {
   const secondaryAssignment = optionalValue(formData, "secondaryAssignment")
   const isEligible = formData.get("isEligible") === "true"
 
-  await db.user.create({
-    data: {
-      id: email,
-      email,
-      password,
-      fullName,
-      title,
-      employeeId,
-      reportingManager,
-      primaryAssignment,
-      secondaryAssignment,
-      isActive: true,
-      isEligible,
-    },
-  })
+  try {
+    await db.user.create({
+      data: {
+        id: email,
+        email,
+        password,
+        fullName,
+        title,
+        employeeId,
+        reportingManager,
+        primaryAssignment,
+        secondaryAssignment,
+        isActive: true,
+        isEligible,
+      },
+    })
+  } catch (e: unknown) {
+    const code = (e as { code?: string }).code
+    const fields: string[] = (e as { meta?: { target?: string[] } }).meta?.target ?? []
+    if (code === "P2002") {
+      if (fields.includes("email") || fields.includes("id")) throw new Error("A user with that email already exists.")
+      if (fields.includes("employeeId")) throw new Error("That employee ID is already assigned to another user.")
+      throw new Error("A user with those details already exists.")
+    }
+    throw e
+  }
 
   revalidatePath("/admin", "layout")
   revalidatePath("/admin/people")
