@@ -40,24 +40,44 @@ function Divider() {
 
 // ─── HOW IT WORKS ────────────────────────────────────────────────────────────
 
-const HOW_IT_WORKS = [
+type HowItWorksStep = {
+  num: string
+  label: string
+  body: string
+  icon: string
+  deadlines: { label: string; time: string; warn?: boolean }[]
+}
+
+const HOW_IT_WORKS: HowItWorksStep[] = [
   {
     num: "01",
     label: "Form your team",
-    body: "Pair with someone from a different department. Exactly 2 people per team. Lock in before 1:00 PM — late formation forfeits bonuses.",
+    body: "Pair with someone from a different department. Exactly 2 people per team. Cross-dept pairs unlock bonus points.",
     icon: "⇄",
+    deadlines: [
+      { label: "Team lock", time: "1:00 PM · May 22", warn: true },
+    ],
   },
   {
     num: "02",
     label: "Pick an idea",
-    body: "Browse the idea bank or bring your own — both are welcome. Ideas drop May 20. API keys revealed at 2:00 PM for setup; build window opens 2:30 PM.",
+    body: "Browse the idea bank or bring your own — both are welcome. Claim your API key at 2:00 PM, then use the 30-min setup window before build starts.",
     icon: "◈",
+    deadlines: [
+      { label: "Ideas drop", time: "6:00 PM · May 20" },
+      { label: "Keys reveal", time: "2:00 PM · May 22" },
+      { label: "Build starts", time: "2:30 PM · May 22", warn: true },
+    ],
   },
   {
     num: "03",
     label: "Build and ship",
-    body: "Three hours (2:30–5:30 PM). Use any tools — Cursor, Claude, Codex, Replit, Lovable, anything. Host anywhere. Submit before 5:00 PM and demo live.",
+    body: "Three hours. Use any tools — Cursor, Claude, Codex, Replit, Lovable, anything. Host anywhere. Demo live from 5:30 PM.",
     icon: "▶",
+    deadlines: [
+      { label: "Submit by", time: "5:00 PM · May 22", warn: true },
+      { label: "Demos start", time: "5:30 PM · May 22" },
+    ],
   },
 ]
 
@@ -87,6 +107,25 @@ export function HowItWorks() {
               </div>
             </div>
             <p className="text-sm leading-6 text-[var(--text-dim)]">{step.body}</p>
+            <div className="mt-auto flex flex-wrap gap-2 pt-2 border-t border-[var(--line)]">
+              {step.deadlines.map((d) => (
+                <div
+                  key={d.label}
+                  className={`flex flex-col px-2.5 py-1.5 border ${
+                    d.warn
+                      ? "border-[var(--warn)]/40 bg-[var(--warn)]/6"
+                      : "border-[var(--line-2)] bg-[var(--panel-2)]"
+                  }`}
+                >
+                  <span className={`text-[9px] font-semibold uppercase tracking-[0.18em] ${d.warn ? "text-[var(--warn)]" : "text-[var(--text-faint)]"}`}>
+                    {d.label}
+                  </span>
+                  <span className={`text-[11px] font-bold tabular-nums ${d.warn ? "text-white" : "text-[var(--text-dim)]"}`}>
+                    {d.time}
+                  </span>
+                </div>
+              ))}
+            </div>
             <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-[var(--acid)] transition-all duration-300 group-hover:w-full" />
           </div>
         ))}
@@ -286,9 +325,9 @@ const MILESTONE_CRITERIA = [
   { label: "Formed before 1:00 PM lock", bonus: true },
   { label: "Idea submitted", bonus: false },
   { label: "Repo submitted", bonus: false },
-  { label: "Demo video uploaded", bonus: false },
+  { label: "Demo video uploaded", bonus: true },
   { label: "Deck uploaded", bonus: false },
-  { label: "Submitted before 5:00 PM", bonus: true },
+  { label: "Submitted before 5:00 PM (early window)", bonus: true },
 ]
 
 export function ScoringSection() {
@@ -368,7 +407,7 @@ const TIMELINE_EVENTS = [
   { time: "1:00 PM", label: "Team lock", sub: "formation closes", accent: false },
   { time: "2:00 PM", label: "Keys reveal", sub: "env setup starts", accent: false },
   { time: "2:30 PM", label: "Build starts", sub: "3-hour window", accent: true },
-  { time: "5:00 PM", label: "Submission", sub: "deadline window", accent: false },
+  { time: "5:00–5:30 PM", label: "Submissions", sub: "early = bonus", accent: false },
   { time: "5:30 PM", label: "Demos", sub: "live judging", accent: false },
   { time: "6:30 PM", label: "Winners", sub: "drinks + awards", accent: false },
 ]
@@ -452,6 +491,54 @@ export function FAQSection() {
             ))}
           </ul>
         </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── REWARDS ─────────────────────────────────────────────────────────────────
+
+export function RewardsSection() {
+  return (
+    <section className="mx-auto w-full max-w-[1440px] px-4 py-14 lg:px-8">
+      <Divider />
+      <div className="mt-10">
+        <SectionKicker># rewards</SectionKicker>
+        <SectionHeading>What you&apos;re playing for.</SectionHeading>
+        <p className="mt-3 text-sm leading-6 text-[var(--text-dim)]">
+          Top 2 projects will be recognised and rewarded. Details dropping soon.
+        </p>
+        <div className="mt-8 grid gap-px border border-[var(--line)] bg-[var(--line)] sm:grid-cols-2">
+          {[
+            { rank: "1st", label: "Best project" },
+            { rank: "2nd", label: "Runner-up" },
+          ].map((prize) => (
+            <div key={prize.rank} className="group relative overflow-hidden bg-[var(--panel)] p-6">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-mute)]">
+                    {prize.rank} place
+                  </div>
+                  <div className="mt-1 text-xl font-bold tracking-[-0.02em] text-white">
+                    {prize.label}
+                  </div>
+                </div>
+                <span className="text-3xl opacity-20 group-hover:opacity-30 transition-opacity">
+                  {prize.rank === "1st" ? "◆" : "◇"}
+                </span>
+              </div>
+              <div className="mt-6 flex items-center gap-3 border border-dashed border-[var(--line-3)] bg-[var(--panel-2)] px-4 py-3">
+                <span className="size-2 rounded-full bg-[var(--text-faint)] animate-pulse" />
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-faint)]">
+                  Coming soon · reward TBA
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-4 text-[11px] text-[var(--text-faint)]">
+          Reward details will be revealed closer to Tech Day.
+        </p>
       </div>
     </section>
   )
