@@ -465,3 +465,36 @@ export async function deleteIdeaBankEntry(formData: FormData) {
   revalidatePath("/admin", "layout")
   revalidatePath("/gallery")
 }
+
+export async function updateUserDetails(formData: FormData) {
+  const userId = requiredValue(formData, "userId")
+  const fullName = requiredValue(formData, "fullName")
+  const email = requiredValue(formData, "email")
+  const password = optionalValue(formData, "password")
+  const title = optionalValue(formData, "title")
+  const employeeId = optionalValue(formData, "employeeId")
+  const reportingManager = optionalValue(formData, "reportingManager")
+  const primaryAssignment = optionalValue(formData, "primaryAssignment")
+  const secondaryAssignment = optionalValue(formData, "secondaryAssignment")
+  const isActive = formData.get("isActive") === "true"
+  const isEligible = formData.get("isEligible") === "true"
+
+  await db.user.update({
+    where: { id: userId },
+    data: {
+      fullName,
+      email: email.toLowerCase(),
+      ...(password ? { password } : {}),
+      title,
+      employeeId,
+      reportingManager,
+      primaryAssignment,
+      secondaryAssignment,
+      isActive,
+      isEligible,
+    },
+  })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/admin/people")
+}
