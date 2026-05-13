@@ -7,7 +7,7 @@
   "scripts": {
     "predev": "node scripts/sync-schema-provider.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/sync-schema-provider.mjs",
+    "prebuild": "node scripts/sync-schema-provider.mjs && npx prisma generate",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/akhil-altir/altir-hackathon#readme",
   "prisma": {
-    "seed": "node --experimental-strip-types prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
