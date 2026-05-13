@@ -498,6 +498,22 @@ export function FAQSection() {
 
 // ─── REWARDS ─────────────────────────────────────────────────────────────────
 
+const CONFETTI_PIECES = [
+  { color: "#c4ff00", left: "8%",  top: "12%", size: 10, delay: "0s",    dur: "3.2s", rot: 25  },
+  { color: "#ff7ac6", left: "18%", top: "28%", size: 7,  delay: "0.4s",  dur: "2.8s", rot: -40 },
+  { color: "#00d4ff", left: "30%", top: "8%",  size: 12, delay: "0.8s",  dur: "3.6s", rot: 60  },
+  { color: "#ffb020", left: "45%", top: "20%", size: 8,  delay: "0.2s",  dur: "2.5s", rot: -15 },
+  { color: "#9d6dff", left: "58%", top: "10%", size: 11, delay: "1.1s",  dur: "3.1s", rot: 45  },
+  { color: "#ff5a3c", left: "70%", top: "25%", size: 7,  delay: "0.6s",  dur: "2.9s", rot: -60 },
+  { color: "#00ff9d", left: "82%", top: "15%", size: 9,  delay: "0.3s",  dur: "3.4s", rot: 30  },
+  { color: "#c4ff00", left: "90%", top: "32%", size: 6,  delay: "0.9s",  dur: "2.7s", rot: -20 },
+  { color: "#ff7ac6", left: "5%",  top: "65%", size: 8,  delay: "1.3s",  dur: "3.0s", rot: 55  },
+  { color: "#ffb020", left: "25%", top: "72%", size: 10, delay: "0.7s",  dur: "3.3s", rot: -35 },
+  { color: "#00d4ff", left: "50%", top: "68%", size: 7,  delay: "0.5s",  dur: "2.6s", rot: 70  },
+  { color: "#9d6dff", left: "75%", top: "75%", size: 9,  delay: "1.0s",  dur: "3.5s", rot: -50 },
+  { color: "#ff5a3c", left: "92%", top: "60%", size: 6,  delay: "0.1s",  dur: "2.4s", rot: 15  },
+]
+
 export function RewardsSection() {
   return (
     <section className="mx-auto w-full max-w-[1440px] px-4 py-14 lg:px-8">
@@ -506,39 +522,135 @@ export function RewardsSection() {
         <SectionKicker># rewards</SectionKicker>
         <SectionHeading>What you&apos;re playing for.</SectionHeading>
         <p className="mt-3 text-sm leading-6 text-[var(--text-dim)]">
-          Top 2 projects will be recognised and rewarded. Details dropping soon.
+          Top 2 projects get recognised and rewarded. Details dropping soon — build something worth winning.
         </p>
-        <div className="mt-8 grid gap-px border border-[var(--line)] bg-[var(--line)] sm:grid-cols-2">
-          {[
-            { rank: "1st", label: "Best project" },
-            { rank: "2nd", label: "Runner-up" },
-          ].map((prize) => (
-            <div key={prize.rank} className="group relative overflow-hidden bg-[var(--panel)] p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-mute)]">
-                    {prize.rank} place
-                  </div>
-                  <div className="mt-1 text-xl font-bold tracking-[-0.02em] text-white">
-                    {prize.label}
-                  </div>
-                </div>
-                <span className="text-3xl opacity-20 group-hover:opacity-30 transition-opacity">
-                  {prize.rank === "1st" ? "◆" : "◇"}
-                </span>
+
+        {/* Main rewards arena */}
+        <div className="relative mt-8 overflow-hidden border border-[var(--line)]"
+          style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(196,255,0,0.07) 0%, rgba(0,0,0,0) 65%), linear-gradient(180deg, #060606 0%, #020202 100%)" }}
+        >
+          {/* Confetti pieces */}
+          {CONFETTI_PIECES.map((p, i) => (
+            <span
+              key={i}
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                left: p.left,
+                top: p.top,
+                width: p.size,
+                height: p.size,
+                background: p.color,
+                opacity: 0.7,
+                transform: `rotate(${p.rot}deg)`,
+                animation: `confetti-float ${p.dur} ${p.delay} ease-in-out infinite alternate`,
+                borderRadius: i % 3 === 0 ? "50%" : i % 3 === 1 ? "0" : "1px",
+                boxShadow: `0 0 ${p.size * 2}px ${p.color}88`,
+              }}
+            />
+          ))}
+
+          <style>{`
+            @keyframes confetti-float {
+              0%   { transform: rotate(var(--rot, 0deg)) translateY(0px) scale(1); opacity: 0.6; }
+              100% { transform: rotate(calc(var(--rot, 0deg) + 25deg)) translateY(-12px) scale(1.15); opacity: 0.9; }
+            }
+          `}</style>
+
+          {/* Prize cards */}
+          <div className="relative z-10 grid sm:grid-cols-2">
+            {/* 1st place */}
+            <div className="relative flex flex-col items-center gap-5 border-b border-[var(--line)] p-10 sm:border-b-0 sm:border-r">
+              <div
+                className="flex size-20 items-center justify-center text-5xl"
+                style={{ filter: "drop-shadow(0 0 24px rgba(255,176,32,0.6))" }}
+              >
+                🏆
               </div>
-              <div className="mt-6 flex items-center gap-3 border border-dashed border-[var(--line-3)] bg-[var(--panel-2)] px-4 py-3">
-                <span className="size-2 rounded-full bg-[var(--text-faint)] animate-pulse" />
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-faint)]">
-                  Coming soon · reward TBA
+              <div className="text-center">
+                <div
+                  className="text-[11px] font-bold uppercase tracking-[0.3em]"
+                  style={{ color: "#ffb020" }}
+                >
+                  1st place
+                </div>
+                <div className="mt-1 text-3xl font-bold tracking-[-0.04em] text-white">
+                  Best Project
+                </div>
+              </div>
+              <div
+                className="w-full border border-dashed px-5 py-3 text-center"
+                style={{ borderColor: "rgba(255,176,32,0.35)", background: "rgba(255,176,32,0.06)" }}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <span
+                    className="size-1.5 animate-pulse rounded-full"
+                    style={{ background: "#ffb020" }}
+                  />
+                  <span
+                    className="text-xs font-bold uppercase tracking-[0.22em]"
+                    style={{ color: "#ffb020" }}
+                  >
+                    Coming soon
+                  </span>
                 </span>
+                <p className="mt-1 text-[11px] text-[var(--text-faint)]">
+                  Reward details reveal on Tech Day
+                </p>
               </div>
             </div>
-          ))}
+
+            {/* 2nd place */}
+            <div className="relative flex flex-col items-center gap-5 p-10">
+              <div
+                className="flex size-20 items-center justify-center text-5xl"
+                style={{ filter: "drop-shadow(0 0 24px rgba(148,163,184,0.5))" }}
+              >
+                🥈
+              </div>
+              <div className="text-center">
+                <div
+                  className="text-[11px] font-bold uppercase tracking-[0.3em]"
+                  style={{ color: "#94a3b8" }}
+                >
+                  2nd place
+                </div>
+                <div className="mt-1 text-3xl font-bold tracking-[-0.04em] text-white">
+                  Runner-up
+                </div>
+              </div>
+              <div
+                className="w-full border border-dashed px-5 py-3 text-center"
+                style={{ borderColor: "rgba(148,163,184,0.3)", background: "rgba(148,163,184,0.05)" }}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <span
+                    className="size-1.5 animate-pulse rounded-full"
+                    style={{ background: "#94a3b8" }}
+                  />
+                  <span
+                    className="text-xs font-bold uppercase tracking-[0.22em]"
+                    style={{ color: "#94a3b8" }}
+                  >
+                    Coming soon
+                  </span>
+                </span>
+                <p className="mt-1 text-[11px] text-[var(--text-faint)]">
+                  Reward details reveal on Tech Day
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom strip */}
+          <div className="relative z-10 border-t border-[var(--line)] bg-black/40 px-8 py-4 text-center">
+            <p className="text-[11px] text-[var(--text-faint)]">
+              Winners announced at{" "}
+              <span className="text-[var(--text-dim)]">6:30 PM · May 22</span>
+              {" "}— right after demos.
+            </p>
+          </div>
         </div>
-        <p className="mt-4 text-[11px] text-[var(--text-faint)]">
-          Reward details will be revealed closer to Tech Day.
-        </p>
       </div>
     </section>
   )
