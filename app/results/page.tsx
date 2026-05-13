@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Trophy } from "lucide-react"
 
+import { BuildCountdown } from "@/components/shell/build-countdown"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { listLeaderboard } from "@/lib/data"
 import { loadParticipantNavContext } from "@/lib/participant-nav-context"
@@ -34,8 +35,7 @@ export default async function ResultsPage() {
       workspaceHref={nav.workspaceHref}
       ideaHref={nav.ideaHref}
       submitHref={nav.submitHref}
-      phase="EVENT ENDS IN WRAP"
-      countdown="00:00:00"
+      countdownSlot={<BuildCountdown />}
       teamSlug={nav.teamSlug}
       teamName={nav.teamName}
       userEmail={session?.email ?? null}

@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation"
 
 import { TeamLockedCelebration } from "@/components/team/team-locked-celebration"
 import { ParticipantOnboardingStrip } from "@/components/team/participant-onboarding-strip"
+import { BuildCountdown } from "@/components/shell/build-countdown"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { getTeamWorkspace } from "@/lib/data"
 import { getTeamOnboardingState } from "@/lib/participant-onboarding"
@@ -44,8 +45,7 @@ export default async function TeamLockedPage({ params }: { params: Promise<{ slu
       workspaceHref={nav.workspaceHref}
       ideaHref={nav.ideaHref}
       submitHref={nav.submitHref}
-      phase="BUILD OPENS"
-      countdown="01:34:00"
+      countdownSlot={<BuildCountdown />}
       teamSlug={team.slug}
       teamName={team.name}
       userEmail={session.email}

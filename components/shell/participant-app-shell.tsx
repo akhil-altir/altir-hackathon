@@ -3,6 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 import { logoutAction } from "@/app/login/actions"
+import { TECH_DAY_BUILD_START_MS } from "@/lib/tech-day-schedule"
 import { teamHueFromSlug } from "@/lib/team-visual"
 import { cn } from "@/lib/utils"
 
@@ -21,8 +22,12 @@ type ParticipantAppShellProps = {
   workspaceHref: string
   ideaHref: string
   submitHref: string
-  phase: string
-  countdown: string
+  /** Static fallback phase label — rendered when countdownSlot is not provided. */
+  phase?: string
+  /** Static fallback countdown string — rendered when countdownSlot is not provided. */
+  countdown?: string
+  /** Live client countdown node. When provided, replaces phase + countdown in the nav bar. */
+  countdownSlot?: ReactNode
   teamSlug?: string | null
   teamName?: string | null
   userEmail?: string | null
@@ -65,19 +70,28 @@ function ParticipantTopbar({
   submitHref,
   phase,
   countdown,
+  countdownSlot,
   teamSlug,
   teamName,
   userEmail,
   userName,
   hasTeam = true,
-}: Omit<ParticipantAppShellProps, "children" | "browserTitle" | "urlDisplay" | "browserRight" | "showTopbar">) {
+}: Omit<ParticipantAppShellProps, "children" | "browserTitle" | "urlDisplay" | "browserRight" | "showTopbar" | "lead">) {
+  const buildStarted = Date.now() >= TECH_DAY_BUILD_START_MS
+
   const nav = [
-    { key: "workspace" as const, label: "Workspace", href: workspaceHref, lock: false },
-    { key: "idea" as const, label: "Idea", href: ideaHref, lock: !hasTeam },
-    { key: "submit" as const, label: "Submit", href: submitHref, lock: !hasTeam },
-    { key: "gallery" as const, label: "Gallery", href: "/gallery", lock: false },
-    { key: "leaderboard" as const, label: "Leaderboard", href: "/leaderboard", lock: false },
-    { key: "handbook" as const, label: "Handbook", href: "/handbook", lock: false },
+    { key: "workspace" as const, label: "Workspace", href: workspaceHref, lock: false, lockReason: "" },
+    { key: "idea" as const, label: "Idea", href: ideaHref, lock: !hasTeam, lockReason: "Form your team first" },
+    {
+      key: "submit" as const,
+      label: "Submit",
+      href: submitHref,
+      lock: !hasTeam || !buildStarted,
+      lockReason: !hasTeam ? "Form your team first" : "Available after build opens at 14:30 IST on 22 May",
+    },
+    { key: "gallery" as const, label: "Gallery", href: "/gallery", lock: false, lockReason: "" },
+    { key: "leaderboard" as const, label: "Leaderboard", href: "/leaderboard", lock: false, lockReason: "" },
+    { key: "handbook" as const, label: "Handbook", href: "/handbook", lock: false, lockReason: "" },
   ] as const
 
   const hue = teamSlug ? teamHueFromSlug(teamSlug) : "#ff7ac6"
@@ -102,7 +116,7 @@ function ParticipantTopbar({
             item.lock ? (
               <span
                 key={item.key}
-                title="Form your team first"
+                title={item.lockReason}
                 className="shrink-0 cursor-not-allowed px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--text-faint)] opacity-40"
               >
                 {item.label}
@@ -128,8 +142,12 @@ function ParticipantTopbar({
         <div className="ml-auto flex shrink-0 items-center gap-3">
           <div className="hidden items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--warn)] sm:flex">
             <span className="size-1.5 rounded-full bg-[var(--warn)]" style={{ boxShadow: "0 0 6px var(--warn)" }} />
-            <span className="hidden md:inline">{phase}</span>
-            <span className="text-white">{countdown}</span>
+            {countdownSlot ?? (
+              <>
+                <span className="hidden md:inline">{phase}</span>
+                <span className="text-white">{countdown}</span>
+              </>
+            )}
           </div>
           {teamName ? (
             <div className="hidden items-center gap-1.5 border border-[var(--line-2)] bg-[var(--panel-2)] px-2 py-1 sm:flex">
@@ -164,6 +182,7 @@ export function ParticipantAppShell({
   submitHref,
   phase,
   countdown,
+  countdownSlot,
   teamSlug,
   teamName,
   userEmail,
@@ -185,6 +204,7 @@ export function ParticipantAppShell({
             submitHref={submitHref}
             phase={phase}
             countdown={countdown}
+            countdownSlot={countdownSlot}
             teamSlug={teamSlug}
             teamName={teamName}
             userEmail={userEmail}

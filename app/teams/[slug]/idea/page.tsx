@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation"
 import { submitIdeaAction } from "./actions"
 import { IdeaBankPicker } from "@/components/idea/idea-bank-picker"
 import { ParticipantOnboardingStrip } from "@/components/team/participant-onboarding-strip"
+import { BuildCountdown } from "@/components/shell/build-countdown"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -52,8 +53,7 @@ export default async function IdeaPage({ params }: { params: Promise<{ slug: str
       workspaceHref={nav.workspaceHref}
       ideaHref={nav.ideaHref}
       submitHref={nav.submitHref}
-      phase="KEY UNLOCKS IN"
-      countdown="01:21:10"
+      countdownSlot={<BuildCountdown />}
       teamSlug={team.slug}
       teamName={team.name}
       userEmail={session?.email ?? null}

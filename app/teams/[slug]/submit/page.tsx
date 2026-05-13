@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation"
 
 import { submitProjectAction } from "./actions"
 import { ParticipantOnboardingStrip } from "@/components/team/participant-onboarding-strip"
+import { BuildCountdown } from "@/components/shell/build-countdown"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { Button } from "@/components/ui/button"
 import { getTeamWorkspace } from "@/lib/data"
@@ -99,8 +100,7 @@ export default async function SubmitPage({ params }: { params: Promise<{ slug: s
       workspaceHref={nav.workspaceHref}
       ideaHref={nav.ideaHref}
       submitHref={nav.submitHref}
-      phase="DEADLINE IN"
-      countdown="00:08:21"
+      countdownSlot={<BuildCountdown />}
       teamSlug={team.slug}
       teamName={team.name}
       userEmail={session?.email ?? null}

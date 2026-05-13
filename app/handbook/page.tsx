@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises"
 import path from "node:path"
 
+import { BuildCountdown } from "@/components/shell/build-countdown"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { loadParticipantNavContext } from "@/lib/participant-nav-context"
 
@@ -27,8 +28,7 @@ export default async function HandbookPage() {
       workspaceHref={nav.workspaceHref}
       ideaHref={nav.ideaHref}
       submitHref={nav.submitHref}
-      phase="BUILD WINDOW"
-      countdown="--:--:--"
+      countdownSlot={<BuildCountdown />}
       teamSlug={nav.teamSlug}
       teamName={nav.teamName}
       userEmail={session?.email ?? null}

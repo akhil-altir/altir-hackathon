@@ -8,6 +8,7 @@ import { getActiveEventPointsByKeys } from "@/lib/event-score-display"
 import { getTeamOnboardingState } from "@/lib/participant-onboarding"
 import { loadParticipantNavContext } from "@/lib/participant-nav-context"
 import { getSession } from "@/lib/session"
+import { BuildCountdown } from "@/components/shell/build-countdown"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -44,8 +45,7 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
       workspaceHref={nav.workspaceHref}
       ideaHref={nav.ideaHref}
       submitHref={nav.submitHref}
-      phase="BUILD ENDS IN"
-      countdown="02:14:08"
+      countdownSlot={<BuildCountdown />}
       teamSlug={team.slug}
       teamName={team.name}
       userEmail={session?.email ?? null}

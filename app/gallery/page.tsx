@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
+import { BuildCountdown } from "@/components/shell/build-countdown"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { listLeaderboard } from "@/lib/data"
 import { loadParticipantNavContext } from "@/lib/participant-nav-context"
@@ -66,8 +67,7 @@ export default async function GalleryPage({ searchParams }: { searchParams: Prom
       workspaceHref={nav.workspaceHref}
       ideaHref={nav.ideaHref}
       submitHref={nav.submitHref}
-      phase="GALLERY LIVE"
-      countdown="00:11:20"
+      countdownSlot={<BuildCountdown />}
       teamSlug={nav.teamSlug}
       teamName={nav.teamName}
       userEmail={session?.email ?? null}

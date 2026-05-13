@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 
 import { TeamFormClient } from "./team-form"
+import { BuildCountdown } from "@/components/shell/build-countdown"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { getAvailableEmployees, getTeamWorkspace, getUserTeam } from "@/lib/data"
 import { getActiveEventPointsByKeys } from "@/lib/event-score-display"
@@ -43,8 +44,7 @@ export default async function NewTeamPage() {
       workspaceHref={nav.workspaceHref}
       ideaHref={nav.ideaHref}
       submitHref={nav.submitHref}
-      phase="LOCK ENDS IN"
-      countdown="00:42:17"
+      countdownSlot={<BuildCountdown />}
       teamSlug={null}
       teamName={null}
       userEmail={session.email}

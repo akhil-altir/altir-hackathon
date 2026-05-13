@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Star } from "lucide-react"
 
+import { BuildCountdown } from "@/components/shell/build-countdown"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { listLeaderboard } from "@/lib/data"
 import { loadParticipantNavContext } from "@/lib/participant-nav-context"
@@ -32,8 +33,7 @@ export default async function LeaderboardPage() {
       workspaceHref={nav.workspaceHref}
       ideaHref={nav.ideaHref}
       submitHref={nav.submitHref}
-      phase="DEMOS SOON"
-      countdown="00:47:03"
+      countdownSlot={<BuildCountdown />}
       teamSlug={nav.teamSlug}
       teamName={nav.teamName}
       userEmail={session?.email ?? null}
