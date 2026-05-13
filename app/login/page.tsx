@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 
 import { LoginForm } from "./login-form"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
-import { getSeedLoginHints, getTeamWorkspace, getUserTeam } from "@/lib/data"
+import { getTeamWorkspace, getUserTeam } from "@/lib/data"
 import { getParticipantResumeHref } from "@/lib/participant-onboarding"
 import { getSession } from "@/lib/session"
 
@@ -24,7 +24,14 @@ export default async function LoginPage() {
     redirect("/teams/new")
   }
 
-  const hints = await getSeedLoginHints(6)
+  const hints = [
+    { id: "1", fullName: "Priya Sharma", email: "psharma@altir.co" },
+    { id: "2", fullName: "Rahul Mehta", email: "rmehta@altir.co" },
+    { id: "3", fullName: "Ananya Iyer", email: "aiyer@altir.co" },
+    { id: "4", fullName: "Karan Nair", email: "knair@altir.co" },
+    { id: "5", fullName: "Divya Patel", email: "dpatel@altir.co" },
+    { id: "6", fullName: "Vikram Joshi", email: "vjoshi@altir.co" },
+  ]
 
   return (
     <ParticipantAppShell

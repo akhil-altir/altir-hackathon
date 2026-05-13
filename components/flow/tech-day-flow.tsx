@@ -106,14 +106,14 @@ const flow = [
   { key: "handbook", label: "Handbook", href: "/handbook" },
 ]
 
-export function TechDayScreen({ screen }: { screen: Screen }) {
+export function TechDayScreen({ screen, teamsFormed = 0 }: { screen: Screen; teamsFormed?: number }) {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]">
       <div className="grid-overlay absolute inset-0" />
       <div className="scanlines absolute inset-0" />
       <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-[var(--acid)]/10 blur-3xl" />
       <div className="relative z-10">
-        {screen === "lockscreen" && <Lockscreen />}
+        {screen === "lockscreen" && <Lockscreen teamsFormed={teamsFormed} />}
         {screen === "login" && <Login />}
         {screen === "form-team" && <FormTeam />}
         {screen === "team-locked" && <TeamLocked />}
@@ -312,7 +312,7 @@ function Metric({ label, value, accent = false }: { label: string; value: string
   )
 }
 
-function Lockscreen() {
+function Lockscreen({ teamsFormed = 0 }: { teamsFormed?: number }) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
     queueMicrotask(() => setMounted(true))
@@ -487,7 +487,7 @@ function Lockscreen() {
             </Panel>
             <div className="grid grid-cols-2 gap-3">
               <Metric label="employees" value="24" />
-              <Metric label="expected teams" value="12" />
+              <Metric label="teams formed" value={String(teamsFormed)} accent={teamsFormed > 0} />
               <Metric label="preloaded keys" value="12" accent />
               <Metric label="judges" value="4" />
             </div>

@@ -54,52 +54,61 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
     >
       <ParticipantStage>
         <div className="grid gap-5 lg:grid-cols-[230px_1fr]">
-          <Card className="panel-surface gap-0 self-start rounded-none py-0">
-            <CardContent className="p-4">
-              <div className="mb-3 text-[11px] uppercase tracking-[0.2em] text-[var(--text-mute)]">workspace</div>
-              {[
-                { label: "Dashboard", href: `/teams/${team.slug}`, active: true },
-                { label: "Idea", href: `/teams/${team.slug}/idea` },
-                { label: "API key", href: `/teams/${team.slug}/key` },
-                { label: "Submissions", href: `/teams/${team.slug}/submit` },
-                { label: "Handbook", href: "/handbook" },
-              ].map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={`flex justify-between px-3 py-2 text-xs text-[var(--text-dim)] hover:bg-white/5 ${item.active ? "bg-[var(--panel-3)] font-bold text-white" : ""}`}
-                >
-                  <span>
-                    {item.active ? "> " : ""}
-                    {item.label}
-                  </span>
-                </Link>
-              ))}
+          {/* Sidebar — workspace sub-nav only (global pages live in topbar) */}
+          <div className="panel-surface self-start p-3">
+            <div className="mb-2 px-2 text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">workspace</div>
+            {[
+              { label: "▸ Dashboard", href: `/teams/${team.slug}`, active: true, right: null },
+              { label: "  Idea", href: `/teams/${team.slug}/idea`, active: false, right: null },
+              { label: "  API key", href: `/teams/${team.slug}/key`, active: false, right: team.apiKey?.status === "ASSIGNED" ? "◆" : null },
+              { label: "  Submissions", href: `/teams/${team.slug}/submit`, active: false, right: `${[team.submission?.repoUrl, team.submission?.demoUrl, team.submission?.presentationUrl].filter(Boolean).length}/3` },
+            ].map((item) => (
               <Link
-                href="/leaderboard"
-                className="flex justify-between px-3 py-2 text-xs text-[var(--text-dim)] hover:bg-white/5"
+                key={item.label}
+                href={item.href}
+                className={`flex items-center justify-between rounded-[2px] px-2 py-2 font-mono text-[11px] transition-colors ${
+                  item.active
+                    ? "bg-[var(--panel-3)] font-bold text-white"
+                    : "text-[var(--text-dim)] hover:bg-[var(--panel-2)] hover:text-white"
+                }`}
               >
-                <span>Leaderboard</span>
+                <span>{item.label}</span>
+                {item.right && (
+                  <span className={item.right === "◆" ? "text-[var(--acid)]" : "text-[var(--text-mute)]"} style={{ fontSize: 10 }}>
+                    {item.right}
+                  </span>
+                )}
               </Link>
-              <div className="my-4 border-t border-[var(--line)]" />
-              <div className="mb-2 text-[11px] uppercase tracking-[0.2em] text-[var(--text-mute)]">teammates</div>
-              <div className="space-y-2 text-xs">
-                {team.members.map((m) => (
-                  <div key={m.id} className="flex items-center gap-2">
-                    <span className="grid size-7 place-items-center bg-[var(--acid)] text-[10px] font-bold text-black">
-                      {m.fullName
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .slice(0, 2)}
-                    </span>
-                    <span className="text-white">{m.fullName}</span>
-                    <span className="text-[10px] text-[var(--acid)]">· online</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+            ))}
+
+            {/* Static info items — not links, just scoreboard context */}
+            <div className="mt-1 flex items-center justify-between rounded-[2px] px-2 py-2 font-mono text-[11px] text-[var(--text-dim)]">
+              <span>  Event points</span>
+              <span className="text-[10px] font-bold text-[var(--acid)]">{eventPoints}</span>
+            </div>
+            <div className="flex items-center justify-between rounded-[2px] px-2 py-2 font-mono text-[11px] text-[var(--text-dim)]">
+              <span>  Judge score</span>
+              <span className="text-[10px] text-[var(--text-mute)]">
+                {team.judgeSummary.length > 0
+                  ? `${(team.judgeSummary.reduce((s, j) => s + j.total, 0) / team.judgeSummary.length).toFixed(1)} avg`
+                  : "—"}
+              </span>
+            </div>
+
+            <div className="my-3 border-t border-[var(--line)]" />
+            <div className="mb-2 px-2 text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">teammates</div>
+            <div className="space-y-1">
+              {team.members.map((m) => (
+                <div key={m.id} className="flex items-center gap-2 px-2 py-1.5">
+                  <span className="grid size-6 shrink-0 place-items-center bg-[var(--acid)] font-mono text-[9px] font-bold text-black">
+                    {m.fullName.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                  </span>
+                  <span className="truncate font-mono text-[11px] text-white">{m.fullName.split(" ")[0]}</span>
+                  <span className="ml-auto shrink-0 text-[9px] text-[var(--acid)]">●</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <div className="space-y-4">
             <Card

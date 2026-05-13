@@ -83,25 +83,27 @@ function ParticipantTopbar({
   const hue = teamSlug ? teamHueFromSlug(teamSlug) : "#ff7ac6"
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-black/88 backdrop-blur">
-      <div className="mx-auto flex max-w-[1680px] flex-wrap items-center justify-between gap-3 px-4 py-3 lg:px-8">
-        <Link href="/" className="flex shrink-0 items-center gap-3">
-          <div className="flex size-9 items-center justify-center border border-[rgba(196,255,0,0.35)] bg-[rgba(196,255,0,0.1)]">
-            <Image src="/logo.png" alt="Altir" width={22} height={22} className="size-6 object-contain" />
+    <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-black/90 backdrop-blur">
+      <div className="flex h-14 items-center gap-4 px-4 lg:px-6">
+        {/* Brand */}
+        <Link href="/" className="flex shrink-0 items-center gap-2.5">
+          <div className="flex size-8 items-center justify-center border border-[rgba(196,255,0,0.35)] bg-[rgba(196,255,0,0.08)]">
+            <Image src="/logo.png" alt="Altir" width={18} height={18} className="size-5 object-contain" />
           </div>
-          <div className="leading-tight">
-            <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-white">Altir // Tech-Day-2026</div>
-            <div className="text-[9px] uppercase tracking-[0.2em] text-[var(--text-mute)]">command center</div>
+          <div className="hidden leading-tight sm:block">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">Altir // Tech-Day-2026</div>
+            <div className="text-[9px] uppercase tracking-[0.16em] text-[var(--text-mute)]">command center</div>
           </div>
         </Link>
 
-        <nav className="order-3 flex w-full flex-wrap items-center gap-1 lg:order-none lg:w-auto lg:flex-nowrap lg:justify-center">
+        {/* Nav — scrollable on small screens */}
+        <nav className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto">
           {nav.map((item) =>
             item.lock ? (
               <span
                 key={item.key}
                 title="Form your team first"
-                className="cursor-not-allowed rounded-[2px] border border-transparent px-2.5 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-faint)] opacity-50 sm:px-3"
+                className="shrink-0 cursor-not-allowed px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--text-faint)] opacity-40"
               >
                 {item.label}
               </span>
@@ -110,10 +112,10 @@ function ParticipantTopbar({
                 key={item.key}
                 href={item.href}
                 className={cn(
-                  "rounded-[2px] border px-2.5 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)] transition sm:px-3",
+                  "shrink-0 px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] transition-colors duration-150",
                   activeNav === item.key
-                    ? "border-white/80 bg-[var(--panel-3)] text-white"
-                    : "border-transparent hover:border-[var(--line)] hover:bg-[var(--panel-2)] hover:text-white",
+                    ? "bg-[var(--panel-3)] text-white"
+                    : "text-[var(--text-mute)] hover:bg-[var(--panel-2)] hover:text-white",
                 )}
               >
                 {item.label}
@@ -122,26 +124,24 @@ function ParticipantTopbar({
           )}
         </nav>
 
-        <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--warn)] sm:text-[11px]">
-            <span className="size-1.5 shrink-0 rounded-full bg-[var(--warn)] shadow-[0_0_8px_var(--warn)]" />
-            <span className="hidden sm:inline">{phase}</span>
-            <span className="text-white">ends in {countdown}</span>
+        {/* Right — countdown, team pill, logout */}
+        <div className="ml-auto flex shrink-0 items-center gap-3">
+          <div className="hidden items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--warn)] sm:flex">
+            <span className="size-1.5 rounded-full bg-[var(--warn)]" style={{ boxShadow: "0 0 6px var(--warn)" }} />
+            <span className="hidden md:inline">{phase}</span>
+            <span className="text-white">{countdown}</span>
           </div>
           {teamName ? (
-            <div className="flex items-center gap-2 border border-[var(--line-2)] bg-[var(--panel-2)] px-2 py-1">
-              <span className="size-3 shrink-0 shadow-[0_0_10px_currentColor]" style={{ backgroundColor: hue }} />
-              <span className="max-w-[120px] truncate font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-white sm:max-w-[160px]">
+            <div className="hidden items-center gap-1.5 border border-[var(--line-2)] bg-[var(--panel-2)] px-2 py-1 sm:flex">
+              <span className="size-2.5 shrink-0" style={{ backgroundColor: hue, boxShadow: `0 0 8px ${hue}` }} />
+              <span className="max-w-[110px] truncate font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-white">
                 {teamName}
               </span>
             </div>
           ) : null}
-          <div className="hidden text-[10px] uppercase tracking-[0.14em] text-[var(--text-mute)] md:block">
-            you · {userEmail ?? "—"}
-          </div>
           {userName ? (
             <form action={logoutAction} className="shrink-0">
-              <button type="submit" className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-mute)] transition hover:text-white">
+              <button type="submit" className="font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--text-mute)] transition hover:text-white">
                 logout
               </button>
             </form>
