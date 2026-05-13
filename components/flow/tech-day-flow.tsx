@@ -21,14 +21,17 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { EVENT_POINT_WEIGHTS, EVENT_SUBMISSION_MILESTONES_MAX, EVENT_TEAM_FORMATION_MAX } from "@/lib/event-point-weights"
-import { TECH_DAY_BUILD_START_MS as BUILD_OPENS_AT_MS } from "@/lib/tech-day-schedule"
+import { TECH_DAY_BUILD_START_MS as BUILD_OPENS_AT_MS, TECH_DAY_KEYS_REVEAL_MS } from "@/lib/tech-day-schedule"
+import type { PublicIdeaEntry } from "@/lib/idea-bank-public"
+import { HowItWorks, IdeaBankSection, ScoringSection, DayTimeline, FAQSection, CTAFooter } from "@/components/landing/lockscreen-sections"
 import { cn } from "@/lib/utils"
 
 /** Agenda wall times are IST; rendered in each viewer's local zone after hydration */
 const LOCKSCREEN_AGENDA_IST = [
   { atMs: Date.parse("2026-05-22T12:00:00+05:30"), label: "Doors open / check-in", highlight: false },
   { atMs: Date.parse("2026-05-22T13:00:00+05:30"), label: "Team formation locks", highlight: false },
-  { atMs: BUILD_OPENS_AT_MS, label: "Build starts / keys reveal", highlight: true },
+  { atMs: TECH_DAY_KEYS_REVEAL_MS, label: "Keys reveal + env setup", highlight: false },
+  { atMs: BUILD_OPENS_AT_MS, label: "Build starts", highlight: true },
   { atMs: Date.parse("2026-05-22T17:00:00+05:30"), label: "Submission deadline window", highlight: false },
   { atMs: Date.parse("2026-05-22T17:30:00+05:30"), label: "Demos + judging", highlight: false },
   { atMs: Date.parse("2026-05-22T18:30:00+05:30"), label: "Winners + drinks", highlight: false },
@@ -106,14 +109,36 @@ const flow = [
   { key: "handbook", label: "Handbook", href: "/handbook" },
 ]
 
-export function TechDayScreen({ screen, teamsFormed = 0 }: { screen: Screen; teamsFormed?: number }) {
+export function TechDayScreen({
+  screen,
+  teamsFormed = 0,
+  ideaBankRevealed = false,
+  ideas = [],
+  ideaBankTotal = 0,
+  ideaBankCategoryCounts = {},
+}: {
+  screen: Screen
+  teamsFormed?: number
+  ideaBankRevealed?: boolean
+  ideas?: PublicIdeaEntry[]
+  ideaBankTotal?: number
+  ideaBankCategoryCounts?: Record<string, number>
+}) {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]">
+    <main className="relative min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <div className="grid-overlay absolute inset-0" />
       <div className="scanlines absolute inset-0" />
       <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-[var(--acid)]/10 blur-3xl" />
       <div className="relative z-10">
-        {screen === "lockscreen" && <Lockscreen teamsFormed={teamsFormed} />}
+        {screen === "lockscreen" && (
+          <Lockscreen
+            teamsFormed={teamsFormed}
+            ideaBankRevealed={ideaBankRevealed}
+            ideas={ideas}
+            ideaBankTotal={ideaBankTotal}
+            ideaBankCategoryCounts={ideaBankCategoryCounts}
+          />
+        )}
         {screen === "login" && <Login />}
         {screen === "form-team" && <FormTeam />}
         {screen === "team-locked" && <TeamLocked />}
@@ -312,7 +337,19 @@ function Metric({ label, value, accent = false }: { label: string; value: string
   )
 }
 
-function Lockscreen({ teamsFormed = 0 }: { teamsFormed?: number }) {
+function Lockscreen({
+  teamsFormed = 0,
+  ideaBankRevealed = false,
+  ideas = [],
+  ideaBankTotal = 0,
+  ideaBankCategoryCounts = {},
+}: {
+  teamsFormed?: number
+  ideaBankRevealed?: boolean
+  ideas?: PublicIdeaEntry[]
+  ideaBankTotal?: number
+  ideaBankCategoryCounts?: Record<string, number>
+}) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
     queueMicrotask(() => setMounted(true))
@@ -494,6 +531,17 @@ function Lockscreen({ teamsFormed = 0 }: { teamsFormed?: number }) {
           </aside>
         </div>
       </Stage>
+      <HowItWorks />
+      <IdeaBankSection
+        revealed={ideaBankRevealed}
+        ideas={ideas}
+        ideaBankTotal={ideaBankTotal}
+        ideaBankCategoryCounts={ideaBankCategoryCounts}
+      />
+      <ScoringSection />
+      <DayTimeline />
+      <FAQSection />
+      <CTAFooter />
     </>
   )
 }
