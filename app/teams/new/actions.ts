@@ -77,8 +77,8 @@ export async function createTeamAction(_prevState: { error: string } | null, for
     });
   }
 
-  // Check if formed before lock (1 PM IST on May 22 = 7:30 AM UTC)
-  const TEAM_LOCK = new Date("2026-05-22T07:30:00.000Z");
+  // Check if formed before lock (12 PM IST on May 22 = 6:30 AM UTC)
+  const TEAM_LOCK = new Date("2026-05-22T06:30:00.000Z");
   if (new Date() < TEAM_LOCK) {
     pendingAwards.push({ key: "formed_before_lock", reason: "Team formed before the lock deadline." });
   }

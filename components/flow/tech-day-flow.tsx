@@ -28,13 +28,13 @@ import { cn } from "@/lib/utils"
 
 /** Agenda wall times are IST; rendered in each viewer's local zone after hydration */
 const LOCKSCREEN_AGENDA_IST = [
-  { atMs: Date.parse("2026-05-22T12:00:00+05:30"), label: "Doors open / check-in", highlight: false },
-  { atMs: Date.parse("2026-05-22T13:00:00+05:30"), label: "Team formation locks", highlight: false },
+  { atMs: Date.parse("2026-05-22T11:00:00+05:30"), label: "Doors open / check-in", highlight: false },
+  { atMs: Date.parse("2026-05-22T12:00:00+05:30"), label: "Team formation locks", highlight: false },
   { atMs: TECH_DAY_KEYS_REVEAL_MS, label: "Keys reveal + env setup", highlight: false },
   { atMs: BUILD_OPENS_AT_MS, label: "Build starts", highlight: true },
-  { atMs: Date.parse("2026-05-22T17:00:00+05:30"), label: "Submission deadline window", highlight: false },
-  { atMs: Date.parse("2026-05-22T17:30:00+05:30"), label: "Demos + judging", highlight: false },
-  { atMs: Date.parse("2026-05-22T18:30:00+05:30"), label: "Wrap up — TBD", highlight: false },
+  { atMs: Date.parse("2026-05-22T17:00:00+05:30"), label: "Early-submit bonus cutoff", highlight: false },
+  { atMs: Date.parse("2026-05-22T17:30:00+05:30"), label: "Submissions due · demos + judging start", highlight: true },
+  { atMs: Date.parse("2026-05-22T19:00:00+05:30"), label: "Wrap up — TBD", highlight: false },
 ] as const
 
 function pad2(n: number) {
@@ -424,10 +424,10 @@ function Lockscreen({
     remainingMs <= 0
       ? mounted && opensAtLine
         ? `Build window is open · started ${opensAtLine}`
-        : "Build window is open · started May 22, 2026 · 2:30 PM IST"
+        : "Build window is open · started May 22, 2026 · 1:30 PM IST"
       : mounted && opensAtLine
         ? `Until build opens · ${opensAtLine} (your time)`
-        : "Until build opens · May 22, 2026 · 2:30 PM IST — local times appear after load"
+        : "Until build opens · May 22, 2026 · 1:30 PM IST — local times appear after load"
 
   return (
     <>
@@ -611,11 +611,11 @@ function FormTeam() {
       <BrowserChrome title="form a team" url="techday.altir.internal/teams/new" />
       <Topbar active="workspace" countdown="00:42:17" phase="TEAM LOCK" />
       <Stage>
-        <SectionTitle kicker="step 01 / form a team" right={<Badge tone="warn">team lock 13:00 / in 42 min</Badge>}>
+        <SectionTitle kicker="step 01 / form a team" right={<Badge tone="warn">team lock 12:00 / in 42 min</Badge>}>
           Pick yourself + one partner.
         </SectionTitle>
         <p className="mb-6 max-w-3xl text-sm leading-6 text-[var(--text-dim)]">
-          Teams are exactly 2 people. Cross-department pairs unlock bonus event points. You can edit until 13:00; after that, only an admin can override.
+          Teams are exactly 2 people. Cross-department pairs unlock bonus event points. You can edit until 12:00; after that, only an admin can override.
         </p>
         <div className="grid gap-5 lg:grid-cols-[1.35fr_0.85fr]">
           <Panel>
@@ -722,7 +722,7 @@ function TeamLocked() {
                 <span className="text-pink-300 drop-shadow-[0_0_24px_rgba(244,114,182,0.45)]">QUOTEBOT</span> is in the room.
               </h1>
               <p className="mt-5 max-w-2xl text-sm leading-6 text-[var(--text-dim)]">
-                Both members are signed in and your workspace is live. Next up: pick or submit an idea before the API key reveals at 14:30.
+                Both members are signed in and your workspace is live. Next up: pick or submit an idea before the API key reveals at 13:00.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <FlowButton href="/teams/quotebot">
@@ -870,7 +870,7 @@ function Workspace() {
                 <div>
                   <div className="text-[11px] uppercase tracking-[0.22em] text-[var(--acid)]"># current step / build</div>
                   <h1 className="mt-2 text-3xl font-bold tracking-[-0.03em] text-white">Idea locked. API key released. <span className="text-[var(--acid)]">Ship something.</span></h1>
-                  <p className="mt-2 text-sm text-[var(--text-dim)]">Add your GitHub repo before 17:00 to keep the +{EVENT_POINT_WEIGHTS.before_515} early-submit bonus in play.</p>
+                  <p className="mt-2 text-sm text-[var(--text-dim)]">Add your GitHub repo before 17:00 to keep the +{EVENT_POINT_WEIGHTS.before_515} early-submit bonus in play. Final deadline 17:30.</p>
                 </div>
                 <div className="min-w-56 text-left md:text-right">
                   <div className="text-[11px] uppercase tracking-[0.2em] text-[var(--text-mute)]">build window left</div>
@@ -894,7 +894,7 @@ function Workspace() {
                 </CardContent>
               </Panel>
               <Panel className="panel-highlight">
-                <PanelHead title="// api key / unlocked 14:30" right={<span className="text-[var(--acid)]">live</span>} />
+                <PanelHead title="// api key / unlocked 13:00" right={<span className="text-[var(--acid)]">live</span>} />
                 <CardContent className="p-5">
                   <div className="text-[11px] uppercase tracking-[0.2em] text-[var(--text-mute)]">your preloaded key</div>
                   <div className="mt-3 flex items-center justify-between border border-[var(--acid)]/40 bg-black p-3 text-xs text-[var(--acid)]">
@@ -930,15 +930,15 @@ function ActionCard({ icon, title, body, href }: { icon: React.ReactNode; title:
 function KeyReveal() {
   return (
     <>
-      <BrowserChrome title="api key reveal" url="techday.altir.internal/teams/quotebot/key" right={<span className="text-[var(--acid)]">14:30 sharp</span>} />
+      <BrowserChrome title="api key reveal" url="techday.altir.internal/teams/quotebot/key" right={<span className="text-[var(--acid)]">13:00 sharp</span>} />
       <Topbar active="workspace" countdown="03:00:00" phase="BUILD STARTS" />
       <Stage>
         <div className="grid min-h-[70vh] place-items-center">
           <Panel className="panel-highlight max-w-4xl">
             <CardContent className="p-8 text-center md:p-14">
               <KeyRound className="mx-auto size-14 text-[var(--acid)]" />
-              <div className="mt-6 text-[11px] uppercase tracking-[0.26em] text-[var(--acid)]"># key reveal / 14:30:00</div>
-              <h1 className="mt-4 text-5xl font-bold leading-none tracking-[-0.05em] text-white md:text-7xl">Your key is live. Three hours. Go.</h1>
+              <div className="mt-6 text-[11px] uppercase tracking-[0.26em] text-[var(--acid)]"># key reveal / 13:00:00</div>
+              <h1 className="mt-4 text-5xl font-bold leading-none tracking-[-0.05em] text-white md:text-7xl">Your key is live. Four hours. Go.</h1>
               <div className="mx-auto mt-7 max-w-xl border border-[var(--acid)]/40 bg-black p-4 text-left text-sm text-[var(--acid)]">sk-td-quotebot-4f9c-7a11-92ab</div>
               <FlowButton href="/teams/quotebot" className="mt-7">
                 Open workspace <ArrowRight />
@@ -957,7 +957,7 @@ function Submission() {
       <BrowserChrome title="final submission form" url="techday.altir.internal/teams/quotebot/submit" />
       <Topbar active="submit" countdown="00:18:44" phase="SUBMISSION CLOSES" />
       <Stage>
-        <SectionTitle kicker="step 05 / submission" right={<Badge tone="warn">deadline 17:00</Badge>}>
+        <SectionTitle kicker="step 05 / submission" right={<Badge tone="warn">deadline 17:30</Badge>}>
           Package the demo for judges.
         </SectionTitle>
         <div className="grid gap-5 lg:grid-cols-[1fr_0.85fr]">
@@ -1139,7 +1139,7 @@ function TVMode() {
             <Metric label="judges online" value="4 / 4" accent />
             <Panel>
               <PanelHead title="// now" />
-              <CardContent className="p-5 text-3xl font-bold leading-tight text-white">Final pushes. Rehearse the 3-minute demo. No new keys after 17:00.</CardContent>
+              <CardContent className="p-5 text-3xl font-bold leading-tight text-white">Final pushes. Rehearse the 3-minute demo. No new keys after 13:00.</CardContent>
             </Panel>
           </aside>
         </div>

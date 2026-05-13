@@ -1,12 +1,12 @@
 export const EVENT_PHASES = [
-  { id: "CHECK_IN", label: "12:00 CHECK-IN" },
-  { id: "TEAM_LOCK", label: "13:00 TEAM LOCK" },
-  { id: "KEY_RELEASE", label: "14:30 KEY RELEASE" },
-  { id: "BUILD", label: "15:00 BUILD" },
-  { id: "SUBMISSION", label: "17:00 SUBMISSION" },
+  { id: "CHECK_IN", label: "11:00 CHECK-IN" },
+  { id: "TEAM_LOCK", label: "12:00 TEAM LOCK" },
+  { id: "KEY_RELEASE", label: "13:00 KEY RELEASE" },
+  { id: "BUILD", label: "13:30 BUILD" },
+  { id: "SUBMISSION", label: "17:30 SUBMISSION" },
   { id: "DEMOS", label: "17:30 DEMOS" },
   { id: "JUDGING", label: "18:00 JUDGING" },
-  { id: "RESULTS", label: "18:30 RESULTS" },
+  { id: "RESULTS", label: "19:00 RESULTS" },
 ] as const;
 
 export type EventPhaseId = (typeof EVENT_PHASES)[number]["id"];

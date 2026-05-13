@@ -1,0 +1,3 @@
+[     479ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ blob:http://localhost:9876/14dc26d8-97a0-41f4-b1a2-d51f31add96b:29904
+[     585ms] [WARNING] You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/ @ blob:http://localhost:9876/f775c308-3b84-4460-99cb-b5613e35604c:2
+[     829ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:9876/favicon.ico:0

@@ -50,7 +50,7 @@ export function BuildCountdown() {
   if (now === null) {
     return (
       <>
-        <span className="hidden md:inline">22 MAY · 14:30 IST</span>
+        <span className="hidden md:inline">22 MAY · 13:30 IST</span>
         <span className="text-white">--d --h --m</span>
       </>
     )

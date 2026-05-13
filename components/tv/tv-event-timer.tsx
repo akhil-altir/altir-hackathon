@@ -58,7 +58,7 @@ export function TvEventTimer() {
       </div>
       <div className="text-right text-[10px] uppercase tracking-[0.18em] text-[var(--text-dim)]">
         <div className="text-[var(--text-mute)]">build opens (IST)</div>
-        <div className="mt-1 font-mono text-xs text-white">2026-05-22 · 14:30</div>
+        <div className="mt-1 font-mono text-xs text-white">2026-05-22 · 13:30</div>
       </div>
     </div>
   )

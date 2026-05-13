@@ -13,10 +13,11 @@ const EVENT_POINT_WEIGHTS = {
   before_515: 40,
 } as const;
 
-const EVENT_DAY = new Date("2026-05-22T09:00:00.000Z");
-const TEAM_LOCK_TIME = new Date("2026-05-22T07:30:00.000Z");
-const API_KEY_RELEASE_TIME = new Date("2026-05-22T09:00:00.000Z");
+const EVENT_DAY = new Date("2026-05-22T08:00:00.000Z");
+const TEAM_LOCK_TIME = new Date("2026-05-22T06:30:00.000Z");
+const API_KEY_RELEASE_TIME = new Date("2026-05-22T07:30:00.000Z");
 const SUBMISSION_DEADLINE = new Date("2026-05-22T12:00:00.000Z");
+const DEMOS_SOFT_END = new Date("2026-05-22T13:30:00.000Z");
 
 const adminEmails = new Set(["himanshu@altir.co", "sthatikonda@altir.co", "akhil@altir.co"]);
 const judgeEmails = new Set(["asarraf@altir.co", "dnagboth@altir.co", "anjan@altir.co"]);
@@ -76,12 +77,12 @@ const employeeSeedRows = [
 const eventCriteria = [
   { key: "team_formed", label: "Complete team formed", description: "Two members locked into a team.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.team_formed, sortOrder: 1 },
   { key: "cross_assignment", label: "Different assignments", description: "Members come from different primary assignments.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.cross_assignment, sortOrder: 2 },
-  { key: "formed_before_lock", label: "Formed before lock", description: "Team formed before the 1:00 PM lock time.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.formed_before_lock, sortOrder: 3 },
+  { key: "formed_before_lock", label: "Formed before lock", description: "Team formed before the 12:00 PM lock time.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.formed_before_lock, sortOrder: 3 },
   { key: "idea_submitted", label: "Idea submitted", description: "Team committed to an idea before build start.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.idea_submitted, sortOrder: 4 },
   { key: "repo_submitted", label: "GitHub repo submitted", description: "Repository link added for review.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.repo_submitted, sortOrder: 5 },
   { key: "demo_uploaded", label: "Demo submitted", description: "Demo video uploaded or linked.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.demo_uploaded, sortOrder: 6 },
   { key: "deck_uploaded", label: "Presentation submitted", description: "Presentation deck shared for judges.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.deck_uploaded, sortOrder: 7 },
-  { key: "before_515", label: "Submitted before 5:15 PM", description: "Final package ready ahead of the late cutoff.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.before_515, sortOrder: 8 },
+  { key: "before_515", label: "Submitted before 5:00 PM", description: "Final package ready 30 minutes ahead of the 5:30 PM deadline.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.before_515, sortOrder: 8 },
 ];
 
 
@@ -218,7 +219,7 @@ async function main() {
     data: [
       {
         title: "Check-in open",
-        message: "Team formation is open. Lock-in happens at 1:00 PM sharp.",
+        message: "Team formation is open. Lock-in happens at 12:00 PM sharp.",
         level: "INFO",
         isPinned: true,
         isPublished: true,
@@ -227,7 +228,7 @@ async function main() {
       },
       {
         title: "API key unlock rule",
-        message: "Submit an idea before 2:30 PM to unlock your team API key right at build start.",
+        message: "Submit an idea before 1:30 PM to unlock your team API key right at build start.",
         level: "ACTION",
         isPinned: true,
         isPublished: true,
@@ -282,7 +283,7 @@ async function main() {
         description: "Each team gets a short demo and judge Q&A.",
         kind: "PRESENT",
         startsAt: SUBMISSION_DEADLINE,
-        endsAt: new Date("2026-05-22T13:00:00.000Z"),
+        endsAt: DEMOS_SOFT_END,
         sortOrder: 4,
         isPublic: true,
         createdById: adminUser,

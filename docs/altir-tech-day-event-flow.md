@@ -25,13 +25,14 @@ An internal hackathon where Altir employees form two-person teams, build an AI-p
 
 | Time | Phase | What Happens |
 |------|-------|--------------|
-| Before 1:00 PM | **Team Formation** | Employees log in, form two-person teams, choose a team name. Platform prevents duplicates and enforces one team per person. |
-| **1:00 PM** | **Team Lock** | Teams are locked. Changes require admin override. |
-| 1:00–2:30 PM | **Idea Submission** | Each team submits an idea title and short description. Platform unlocks their AI API key only after submission. |
-| **2:30 PM** | **Build Starts** | 3-hour build window opens. Teams build using any stack. Live leaderboard goes live on the office TV and web. |
+| Before 12:00 PM | **Team Formation** | Employees log in, form two-person teams, choose a team name. Platform prevents duplicates and enforces one team per person. |
+| **12:00 PM** | **Team Lock** | Teams are locked. Changes require admin override. |
+| 12:00–1:30 PM | **Idea Submission** | Each team submits an idea title and short description. Platform unlocks their AI API key only after submission. |
+| **1:00 PM** | **Keys Reveal** | API keys revealed; 30-min env setup window before build opens. |
+| **1:30 PM** | **Build Starts** | 4-hour build window opens. Teams build using any stack. Live leaderboard goes live on the office TV and web. |
 | **5:30 PM** | **Submissions Due** | Teams submit GitHub repo, demo video link, and presentation link before the deadline. |
-| 5:30–6:30 PM | **Presentations & Judging** | Each team presents. Judges score independently on: Innovation, Business Usefulness, Execution, Demo Quality, Presentation Clarity. |
-| **After 6:30 PM** | **Winner Announcement** | Final scores (judge scores + event milestone points) aggregated and published. Timing based on judge review & leadership availability. |
+| **5:30 PM onwards** | **Presentations & Judging** | Each team presents. Judges score independently on: Innovation, Business Usefulness, Execution, Demo Quality, Presentation Clarity. No fixed end time. |
+| **After demos** | **Winner Announcement** | Final scores (judge scores + event milestone points) aggregated and published. Timing based on judge review & leadership availability. |
 
 ---
 

@@ -55,27 +55,28 @@ const HOW_IT_WORKS: HowItWorksStep[] = [
     body: "Pair with someone from a different department. Exactly 2 people per team. Cross-dept pairs unlock bonus points.",
     icon: "⇄",
     deadlines: [
-      { label: "Team lock", time: "1:00 PM · May 22", warn: true },
+      { label: "Team lock", time: "12:00 PM · May 22", warn: true },
     ],
   },
   {
     num: "02",
     label: "Pick an idea",
-    body: "Browse the idea bank or bring your own — both are welcome. Claim your API key at 2:00 PM, then use the 30-min setup window before build starts.",
+    body: "Browse the idea bank or bring your own — both are welcome. Claim your API key at 1:00 PM, then use the 30-min setup window before build starts.",
     icon: "◈",
     deadlines: [
       { label: "Ideas drop", time: "6:00 PM · May 20" },
-      { label: "Keys reveal", time: "2:00 PM · May 22" },
-      { label: "Build starts", time: "2:30 PM · May 22", warn: true },
+      { label: "Keys reveal", time: "1:00 PM · May 22" },
+      { label: "Build starts", time: "1:30 PM · May 22", warn: true },
     ],
   },
   {
     num: "03",
     label: "Build and ship",
-    body: "Three hours. Use any tools — Cursor, Claude, Codex, Replit, Lovable, anything. Host anywhere. Demo live from 5:30 PM.",
+    body: "Four hours. Use any tools — Cursor, Claude, Codex, Replit, Lovable, anything. Host anywhere. Demo live from 5:30 PM.",
     icon: "▶",
     deadlines: [
-      { label: "Submit by", time: "5:00 PM · May 22", warn: true },
+      { label: "Submit by", time: "5:30 PM · May 22", warn: true },
+      { label: "Early bonus", time: "5:00 PM · May 22" },
       { label: "Demos start", time: "5:30 PM · May 22" },
     ],
   },
@@ -322,7 +323,7 @@ const JUDGE_CRITERIA = [
 const MILESTONE_CRITERIA = [
   { label: "Team formed", bonus: false },
   { label: "Cross-functional pairing", bonus: true },
-  { label: "Formed before 1:00 PM lock", bonus: true },
+  { label: "Formed before 12:00 PM lock", bonus: true },
   { label: "Idea submitted", bonus: false },
   { label: "Repo submitted", bonus: false },
   { label: "Demo video uploaded", bonus: true },
@@ -403,13 +404,13 @@ export function ScoringSection() {
 // ─── DAY TIMELINE ────────────────────────────────────────────────────────────
 
 const TIMELINE_EVENTS = [
-  { time: "12:00 PM", label: "Doors open", sub: "check-in", accent: false },
-  { time: "1:00 PM", label: "Team lock", sub: "formation closes", accent: false },
-  { time: "2:00 PM", label: "Keys reveal", sub: "env setup starts", accent: false },
-  { time: "2:30 PM", label: "Build starts", sub: "3-hour window", accent: true },
-  { time: "5:00–5:30 PM", label: "Submissions", sub: "early = bonus", accent: false },
-  { time: "5:30 PM", label: "Demos", sub: "live judging", accent: false },
-  { time: "6:30 PM+", label: "Wrap up", sub: "TBD", accent: false },
+  { time: "11:00 AM", label: "Doors open", sub: "check-in", accent: false },
+  { time: "12:00 PM", label: "Team lock", sub: "formation closes", accent: false },
+  { time: "1:00 PM", label: "Keys reveal", sub: "env setup starts", accent: false },
+  { time: "1:30 PM", label: "Build starts", sub: "4-hour window", accent: true },
+  { time: "5:00 PM", label: "Early bonus", sub: "submit early = bonus", accent: false },
+  { time: "5:30 PM", label: "Submissions + Demos", sub: "live judging", accent: true },
+  { time: "7:00 PM+", label: "Wrap up", sub: "TBD", accent: false },
 ]
 
 export function DayTimeline() {

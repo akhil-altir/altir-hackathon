@@ -1,0 +1,30 @@
+- generic [ref=e3]:
+  - generic [ref=e6]:
+    - generic [ref=e753]:
+      - generic [ref=e755]:
+        - generic [ref=e756]: A
+        - generic [ref=e757]:
+          - generic [ref=e758]: ALTIR //
+          - generic [ref=e759]: TECH DAY 26
+      - generic [ref=e760]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - generic [ref=e761]:
+        - text: Pick a partner.
+        - text: Pitch your weirdest idea.
+      - generic [ref=e763]: $
+      - generic [ref=e766]: ENTRY OPENS · MON 09:00 PT · techday.altir.internal
+    - generic [ref=e14]: REC · ALTIR-TD26-TRAILER
+    - generic [ref=e15]:
+      - generic [ref=e16]: NOV·21·26
+      - generic [ref=e17]: 4K · 24FPS
+      - generic [ref=e18]: SCN 8/08
+    - generic [ref=e19]:
+      - generic [ref=e20]: TC · 00:00:29.08
+      - generic [ref=e21]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - generic [ref=e22]: // FOR INTERNAL EYES ONLY
+  - generic [ref=e23]:
+    - button "Return to start (0)" [ref=e24] [cursor=pointer]:
+      - img [ref=e25]
+    - button "Play/pause (space)" [ref=e27] [cursor=pointer]:
+      - img [ref=e28]
+    - generic [ref=e31]: 0:29.07
+    - generic [ref=e35]: 0:33.00

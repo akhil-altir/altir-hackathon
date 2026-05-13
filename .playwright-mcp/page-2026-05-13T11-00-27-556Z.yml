@@ -1,0 +1,33 @@
+- generic [ref=e3]:
+  - generic [ref=e6]:
+    - generic [ref=e665]:
+      - generic [ref=e667]: $altir n
+      - generic [ref=e669]:
+        - generic [ref=e670]:
+          - generic [ref=e671]: "# the_brief"
+          - generic [ref=e672]:
+            - text: BUILD
+            - generic [ref=e673]: WEIRD WEIRD WEIRD
+            - text: SHIT.
+          - generic [ref=e674]:
+            - text: No roadmap. No standup. No PM.
+            - text: Just you, a partner, and 36 hours to ship something the rest of us will steal next quarter.
+        - generic [ref=e676]:
+          - generic [ref=e677]: live · commit_stream
+          - generic [ref=e680]: STREAMING
+    - generic [ref=e14]: REC · ALTIR-TD26-TRAILER
+    - generic [ref=e15]:
+      - generic [ref=e16]: NOV·21·26
+      - generic [ref=e17]: 4K · 24FPS
+      - generic [ref=e18]: SCN 5/08
+    - generic [ref=e19]:
+      - generic [ref=e20]: TC · 00:00:19.59
+      - generic [ref=e21]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - generic [ref=e22]: // FOR INTERNAL EYES ONLY
+  - generic [ref=e23]:
+    - button "Return to start (0)" [ref=e24] [cursor=pointer]:
+      - img [ref=e25]
+    - button "Play/pause (space)" [ref=e27] [cursor=pointer]:
+      - img [ref=e28]
+    - generic [ref=e31]: 0:19.59
+    - generic [ref=e35]: 0:33.00

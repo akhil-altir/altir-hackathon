@@ -391,13 +391,13 @@ export function CommandCenterShell({ data }: { data: DashboardData }) {
                           <div className="text-[10px] uppercase tracking-[0.22em] text-[var(--text-mute)]">
                             Build window
                           </div>
-                          <div className="mt-2 text-[13px] font-semibold text-white">14:30 → 17:30</div>
+                          <div className="mt-2 text-[13px] font-semibold text-white">13:30 → 17:30</div>
                         </div>
                         <div className="rounded-[4px] border border-[var(--line-2)] bg-black/40 px-3 py-3">
                           <div className="text-[10px] uppercase tracking-[0.22em] text-[var(--text-mute)]">
                             Presentation block
                           </div>
-                          <div className="mt-2 text-[13px] font-semibold text-white">17:30 → 18:30</div>
+                          <div className="mt-2 text-[13px] font-semibold text-white">17:30 → onwards</div>
                         </div>
                         <div className="rounded-[4px] border border-[var(--line-2)] bg-black/40 px-3 py-3">
                           <div className="text-[10px] uppercase tracking-[0.22em] text-[var(--text-mute)]">

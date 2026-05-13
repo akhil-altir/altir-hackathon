@@ -28,7 +28,7 @@ export default async function ResultsPage() {
       browserRight={
         <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.12em] text-[var(--warn)]">
           <span className="size-1.5 rounded-full bg-[var(--acid)]" />
-          published 18:30:00
+          published after demos
         </span>
       }
       activeNav="leaderboard"
