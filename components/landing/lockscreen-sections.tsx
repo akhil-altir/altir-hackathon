@@ -409,7 +409,7 @@ const TIMELINE_EVENTS = [
   { time: "2:30 PM", label: "Build starts", sub: "3-hour window", accent: true },
   { time: "5:00–5:30 PM", label: "Submissions", sub: "early = bonus", accent: false },
   { time: "5:30 PM", label: "Demos", sub: "live judging", accent: false },
-  { time: "6:30 PM", label: "Winners", sub: "drinks + awards", accent: false },
+  { time: "6:30 PM+", label: "Wrap up", sub: "TBD", accent: false },
 ]
 
 export function DayTimeline() {
@@ -645,9 +645,7 @@ export function RewardsSection() {
           {/* Bottom strip */}
           <div className="relative z-10 border-t border-[var(--line)] bg-black/40 px-8 py-4 text-center">
             <p className="text-[11px] text-[var(--text-faint)]">
-              Winners announced at{" "}
-              <span className="text-[var(--text-dim)]">6:30 PM · May 22</span>
-              {" "}— right after demos.
+              Winners announced after demos wrap — timing TBD.
             </p>
           </div>
         </div>

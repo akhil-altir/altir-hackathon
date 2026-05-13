@@ -34,7 +34,7 @@ const LOCKSCREEN_AGENDA_IST = [
   { atMs: BUILD_OPENS_AT_MS, label: "Build starts", highlight: true },
   { atMs: Date.parse("2026-05-22T17:00:00+05:30"), label: "Submission deadline window", highlight: false },
   { atMs: Date.parse("2026-05-22T17:30:00+05:30"), label: "Demos + judging", highlight: false },
-  { atMs: Date.parse("2026-05-22T18:30:00+05:30"), label: "Winners + drinks", highlight: false },
+  { atMs: Date.parse("2026-05-22T18:30:00+05:30"), label: "Wrap up — TBD", highlight: false },
 ] as const
 
 function pad2(n: number) {
