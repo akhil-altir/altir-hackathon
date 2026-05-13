@@ -498,3 +498,48 @@ export async function updateUserDetails(formData: FormData) {
   revalidatePath("/admin", "layout")
   revalidatePath("/admin/people")
 }
+
+export async function createUser(formData: FormData) {
+  const fullName = requiredValue(formData, "fullName")
+  const email = requiredValue(formData, "email").toLowerCase()
+  const password = requiredValue(formData, "password")
+  const title = optionalValue(formData, "title")
+  const employeeId = optionalValue(formData, "employeeId")
+  const reportingManager = optionalValue(formData, "reportingManager")
+  const primaryAssignment = optionalValue(formData, "primaryAssignment")
+  const secondaryAssignment = optionalValue(formData, "secondaryAssignment")
+  const isEligible = formData.get("isEligible") === "true"
+
+  await db.user.create({
+    data: {
+      id: email,
+      email,
+      password,
+      fullName,
+      title,
+      employeeId,
+      reportingManager,
+      primaryAssignment,
+      secondaryAssignment,
+      isActive: true,
+      isEligible,
+    },
+  })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/admin/people")
+}
+
+export async function deleteUser(formData: FormData) {
+  const userId = requiredValue(formData, "userId")
+
+  const ideaCount = await db.idea.count({ where: { submittedById: userId } })
+  if (ideaCount > 0) {
+    throw new Error(`Cannot delete: user has ${ideaCount} submitted idea${ideaCount > 1 ? "s" : ""}. Remove those first.`)
+  }
+
+  await db.user.delete({ where: { id: userId } })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/admin/people")
+}
