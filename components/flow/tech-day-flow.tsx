@@ -437,7 +437,12 @@ function Lockscreen({
           <section className="flex flex-col justify-between py-6">
             <div>
               <Image src="/logo.png" alt="Altir" width={76} height={76} className="rounded-sm" />
-              <div className="mt-14 text-[11px] uppercase tracking-[0.26em] text-[var(--acid)]"># 22 may 2026 / friday / hq + remote</div>
+              <div className="mt-6 flex items-center gap-2">
+                <span className="text-sm font-bold uppercase tracking-[0.28em] text-white">Altir</span>
+                <span className="text-[var(--line-3)]">/</span>
+                <span className="text-sm uppercase tracking-[0.22em] text-[var(--text-dim)]">Tech Day Hackathon 2026</span>
+              </div>
+              <div className="mt-8 text-[11px] uppercase tracking-[0.26em] text-[var(--acid)]"># 22 may 2026 / friday / hq + remote</div>
               <h1 className="mt-5 max-w-4xl text-6xl font-bold leading-[0.9] tracking-[-0.06em] text-white md:text-8xl">
                 Three hours.
                 <br />

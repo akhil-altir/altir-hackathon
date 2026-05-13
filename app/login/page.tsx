@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 import { redirect } from "next/navigation"
 
 import { LoginForm } from "./login-form"
@@ -47,7 +48,15 @@ export default async function LoginPage() {
       <ParticipantStage>
         <div className="grid min-h-[calc(100vh-92px)] border border-[var(--line)] bg-black/35 lg:grid-cols-2">
           <section className="flex flex-col justify-between border-b border-[var(--line)] p-8 lg:border-b-0 lg:border-r lg:p-14">
-            <Image src="/logo.png" alt="Altir" width={68} height={68} className="rounded-sm" />
+            <div className="flex items-center justify-between">
+              <Image src="/logo.png" alt="Altir" width={68} height={68} className="rounded-sm" />
+              <Link
+                href="/"
+                className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-[var(--text-mute)] transition hover:text-[var(--acid)]"
+              >
+                ← Home
+              </Link>
+            </div>
             <div className="my-14 space-y-4 text-sm leading-7 text-[var(--text-dim)]">
               <div>
                 <span className="text-[var(--acid)]">$</span> altir-techday --version
