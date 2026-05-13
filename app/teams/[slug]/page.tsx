@@ -30,7 +30,7 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
   }
 
   const nav = await loadParticipantNavContext()
-  const eventPoints = team.pointBreakdown.reduce((s, a) => s + a.points, 0)
+  const eventPoints = team.pointBreakdown.reduce((s, a) => s + (a.criterion?.pointsValue ?? a.points), 0)
   const onboarding = getTeamOnboardingState(team)
   const earlyPts = (await getActiveEventPointsByKeys(["before_515"])).before_515
 
@@ -227,12 +227,15 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
                   <CardTitle className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-dim)]">{"// "}event points breakdown</CardTitle>
                 </CardHeader>
                 <CardContent className="p-5">
-                  {team.pointBreakdown.map((award) => (
-                    <div key={award.id} className="flex justify-between border-b border-[var(--line)] py-2 last:border-0">
-                      <span className="text-xs text-[var(--text-dim)]">{award.reason}</span>
-                      <span className="font-bold text-[var(--acid)]">+{award.points}</span>
-                    </div>
-                  ))}
+                  {team.pointBreakdown.map((award) => {
+                    const pts = award.criterion?.pointsValue ?? award.points
+                    return (
+                      <div key={award.id} className="flex justify-between border-b border-[var(--line)] py-2 last:border-0">
+                        <span className="text-xs text-[var(--text-dim)]">{award.reason}</span>
+                        <span className="font-bold text-[var(--acid)]">+{pts}</span>
+                      </div>
+                    )
+                  })}
                   <div className="mt-3 flex justify-between border-t border-[var(--line)] pt-3">
                     <span className="text-xs uppercase text-[var(--text-dim)]">total</span>
                     <span className="text-2xl font-bold text-[var(--acid)]">{eventPoints} pts</span>

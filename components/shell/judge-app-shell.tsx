@@ -33,7 +33,7 @@ function BrowserStrip({ title, urlDisplay }: { title: string; urlDisplay: string
         <span className="size-2 shrink-0 rounded-full bg-pink-400" />
         <span className="ml-3 truncate uppercase tracking-[0.28em] text-[var(--text-mute)]">{title}</span>
       </div>
-      <div className="hidden max-w-[55%] truncate rounded border border-[var(--line)] bg-[var(--panel)] px-4 py-1 font-mono md:block">
+      <div className="hidden max-w-[55%] truncate border border-[var(--line)] bg-[var(--panel)] px-4 py-1 font-mono md:block">
         https://{urlDisplay}
       </div>
       <div className="shrink-0 text-[10px] uppercase tracking-[0.16em] text-[var(--text-mute)]">conn ok</div>
@@ -64,7 +64,7 @@ export function JudgeAppShell({
         <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-black/90 backdrop-blur">
           <div className="mx-auto flex max-w-[1680px] flex-wrap items-center justify-between gap-3 px-4 py-3 lg:px-8">
             <div className="flex items-center gap-2">
-              <span className="grid size-8 place-items-center bg-pink-500 text-xs font-bold text-white">J</span>
+              <span className="grid size-8 place-items-center bg-[#ff7ac6] text-xs font-bold text-black" style={{ boxShadow: '0 0 14px rgba(255,122,198,0.45)' }}>J</span>
               <div className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-white">
                 Judge console <span className="text-[var(--text-mute)]">{"//"}</span>{" "}
                 <span className="text-[var(--text-dim)]">signed in as {local}</span>
@@ -84,7 +84,7 @@ export function JudgeAppShell({
               </Link>
             </nav>
             <div className="flex items-center gap-3">
-              <div className="rounded border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-200">
+              <div className="border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-200">
                 {remainingCount} of {queueCount} teams left
               </div>
               <form action={logoutAction}>
@@ -116,7 +116,7 @@ export function JudgeAppShell({
                     <span className="flex min-w-0 items-center gap-2">
                       <span
                         className={cn(
-                          "size-2 shrink-0 rounded-full",
+                          "size-2 shrink-0",
                           t.complete ? "bg-[var(--acid)]" : t.scored > 0 ? "bg-[var(--warn)]" : "border border-[var(--line-3)] bg-transparent",
                         )}
                       />

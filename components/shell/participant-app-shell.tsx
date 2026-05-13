@@ -50,7 +50,7 @@ function BrowserStrip({
         <span className="size-2 shrink-0 rounded-full bg-[var(--acid)]" />
         <span className="ml-3 truncate uppercase tracking-[0.28em] text-[var(--text-mute)]">{title}</span>
       </div>
-      <div className="hidden min-w-0 max-w-[50%] truncate rounded border border-[var(--line)] bg-[var(--panel)] px-4 py-1 text-center font-mono md:block">
+      <div className="hidden min-w-0 max-w-[50%] truncate border border-[var(--line)] bg-[var(--panel)] px-4 py-1 text-center font-mono md:block">
         https://{urlDisplay}
       </div>
       <div className="shrink-0 text-right">{right ?? <span className="text-[var(--text-mute)]">internal</span>}</div>

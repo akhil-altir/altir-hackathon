@@ -20,11 +20,19 @@ export function FilterChip({ href, label, active }: { href: string; label: strin
   );
 }
 
-export function MetricPill({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
+export function MetricPill({ label, value, accent = false, danger = false }: { label: string; value: string; accent?: boolean; danger?: boolean }) {
   return (
-    <div className={cn("border border-[var(--line)] bg-black/40 px-3 py-2", accent && "border-[var(--acid)]/40")}>
+    <div className="bg-[var(--panel)] px-3 py-3">
       <div className="text-[9px] uppercase tracking-[0.2em] text-[var(--text-mute)]">{label}</div>
-      <div className={cn("mt-1 truncate font-mono text-sm font-bold", accent ? "text-[var(--acid)]" : "text-white")}>{value}</div>
+      <div
+        className={cn(
+          "mt-1 truncate font-mono text-lg font-bold tracking-[-0.01em]",
+          danger ? "text-[var(--danger)]" : accent ? "text-[var(--acid)]" : "text-white",
+        )}
+        style={accent && !danger ? { textShadow: '0 0 12px var(--acid-glow)' } : undefined}
+      >
+        {value}
+      </div>
     </div>
   );
 }

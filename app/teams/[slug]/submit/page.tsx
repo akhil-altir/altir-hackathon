@@ -1,12 +1,10 @@
 import Link from "next/link"
 import { notFound, redirect } from "next/navigation"
-import { Check, Pencil } from "lucide-react"
 
 import { submitProjectAction } from "./actions"
 import { ParticipantOnboardingStrip } from "@/components/team/participant-onboarding-strip"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getTeamWorkspace } from "@/lib/data"
 import { getActiveEventPointsByKeys } from "@/lib/event-score-display"
 import { getTeamOnboardingState } from "@/lib/participant-onboarding"
@@ -22,31 +20,46 @@ function Row({
   detail,
   sub,
   points,
+  isBonus = false,
 }: {
   label: string
   ok: boolean
   detail: string
   sub?: string
   points: string
+  isBonus?: boolean
 }) {
+  const isDash = points === "—"
   return (
-    <div className="flex flex-col gap-3 border border-[var(--line)] bg-[var(--panel-2)] p-4 sm:flex-row sm:items-start sm:justify-between">
-      <div className="flex min-w-0 gap-3">
-        {ok ? <Check className="mt-0.5 size-5 shrink-0 text-[var(--acid)]" /> : <span className="mt-1 size-5 shrink-0 rounded-full border border-[var(--line-3)]" />}
-        <div className="min-w-0">
-          <div className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--text-mute)]">{label}</div>
-          <div className="mt-1 break-all font-mono text-sm text-white">{detail || "—"}</div>
-          {sub ? <div className="mt-1 text-[11px] text-[var(--text-dim)]">{sub}</div> : null}
-        </div>
+    <div className="flex items-start gap-4 border border-[var(--line)] bg-[var(--panel-2)] px-5 py-4">
+      {/* ✓ / ▸ indicator */}
+      <span
+        className="mt-0.5 shrink-0 font-mono text-base font-bold"
+        style={{ color: ok ? "var(--acid)" : "var(--text-faint)" }}
+      >
+        {ok ? "✓" : "▸"}
+      </span>
+
+      {/* Content */}
+      <div className="min-w-0 flex-1">
+        <div className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-mute)]">{label}</div>
+        <div className="mt-1.5 break-all font-mono text-sm text-white">{detail || <span className="text-[var(--text-faint)]">—</span>}</div>
+        {sub ? <div className="mt-1 text-[11px] text-[var(--text-dim)]">{sub}</div> : null}
       </div>
-      <div className="flex shrink-0 items-center gap-3 sm:flex-col sm:items-end">
-        <span className="rounded-sm border border-[var(--warn)]/40 bg-[var(--warn)]/10 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--warn)]">
+
+      {/* Points pill */}
+      {!isDash && (
+        <span
+          className="mt-0.5 shrink-0 border px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em]"
+          style={
+            isBonus
+              ? { color: "var(--warn)", borderColor: "rgba(255,176,32,0.4)", background: "rgba(255,176,32,0.08)" }
+              : { color: "var(--acid)", borderColor: "rgba(196,255,0,0.4)", background: "rgba(196,255,0,0.06)" }
+          }
+        >
           {points}
         </span>
-        <span className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--text-mute)]">
-          <Pencil className="size-3" /> edit
-        </span>
-      </div>
+      )}
     </div>
   )
 }
@@ -72,7 +85,7 @@ export default async function SubmitPage({ params }: { params: Promise<{ slug: s
   const stackOk = Boolean(s?.stackTags?.trim())
   const filled = [repoOk, demoOk, deckOk, stackOk].filter(Boolean).length
 
-  const eventPoints = team.pointBreakdown.reduce((acc, a) => acc + a.points, 0)
+  const eventPoints = team.pointBreakdown.reduce((acc, a) => acc + (a.criterion?.pointsValue ?? a.points), 0)
 
   const evPts = await getActiveEventPointsByKeys(["repo_submitted", "demo_uploaded", "deck_uploaded", "before_515"])
 
@@ -106,7 +119,7 @@ export default async function SubmitPage({ params }: { params: Promise<{ slug: s
         <p className="mt-3 max-w-2xl text-sm text-[var(--text-dim)]">Checklist mirrors the judge packet. Save often — finalize when every link resolves.</p>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-          <div className="space-y-4">
+          <div className="space-y-3">
             <Row
               label="github repo"
               ok={repoOk}
@@ -118,9 +131,9 @@ export default async function SubmitPage({ params }: { params: Promise<{ slug: s
             <Row label="presentation" ok={deckOk} detail={s?.presentationUrl ?? ""} sub="slides or figma" points={`+${evPts.deck_uploaded}`} />
             <Row label="tech stack tags" ok={stackOk} detail={s?.stackTags ?? team.currentIdea?.stackSummary ?? ""} points="—" />
 
-            <form action={submitProjectAction} id="submission-form" className="space-y-4 border border-[var(--line)] bg-black/30 p-5">
+            <form action={submitProjectAction} id="submission-form" className="space-y-3 border border-[var(--line)] bg-black/30 p-5">
               <input type="hidden" name="teamSlug" value={team.slug} />
-              <div className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">quick edit</div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">// edit fields</div>
               <label className="block text-[10px] uppercase text-[var(--text-mute)]">
                 repo url
                 <input
@@ -188,54 +201,75 @@ export default async function SubmitPage({ params }: { params: Promise<{ slug: s
             </div>
           </div>
 
-          <div className="space-y-5">
-            <Card className="panel-surface gap-0 rounded-none py-0">
-              <CardHeader className="min-h-11 border-b border-pink-400/40 bg-pink-500/5 px-4 py-3">
-                <CardTitle className="text-[11px] uppercase tracking-[0.22em] text-pink-300"># public card preview</CardTitle>
-              </CardHeader>
-              <CardContent className="p-5">
-                <div className="flex items-center gap-2">
-                  <span className="size-3 shadow-[0_0_12px_currentColor]" style={{ backgroundColor: hue }} />
-                  <span className="font-mono text-sm font-bold uppercase tracking-[0.12em] text-white">{team.name}</span>
+          <div className="space-y-4">
+            {/* Public card preview */}
+            <div className="panel-surface relative overflow-hidden">
+              {/* Team color top strip */}
+              <div className="h-0.5 w-full" style={{ background: hue, boxShadow: `0 0 12px ${hue}` }} />
+              <div className="p-5">
+                <p className="mb-4 text-[10px] uppercase tracking-[0.2em]" style={{ color: hue }}>
+                  # public card preview
+                </p>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 shrink-0" style={{ background: hue, boxShadow: `0 0 8px ${hue}` }} />
+                    <span className="font-mono text-sm font-bold uppercase tracking-[0.1em] text-white">{team.name}</span>
+                  </div>
+                  <span className="text-[10px] text-[var(--text-mute)]">
+                    {team.members.map((m) => m.primaryAssignment ?? "—").join(" × ").toUpperCase()}
+                  </span>
                 </div>
-                <div className="mt-2 text-[10px] uppercase text-[var(--text-mute)]">{team.members.map((m) => m.primaryAssignment ?? "—").join(" x ")}</div>
-                <div className="mt-4 text-xl font-bold text-white">{team.currentIdea?.title ?? "Idea pending"}</div>
-                <p className="mt-2 text-sm text-[var(--text-dim)]">{team.currentIdea?.summary ?? ""}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-4 text-lg font-bold leading-snug text-white">{team.currentIdea?.title ?? "Idea pending"}</div>
+                <p className="mt-2 text-[12px] leading-relaxed text-[var(--text-dim)]">{team.currentIdea?.summary ?? ""}</p>
+                <div className="mt-4 flex flex-wrap gap-1.5">
                   {(s?.stackTags ?? team.currentIdea?.stackSummary ?? "")
                     .split(",")
                     .map((t) => t.trim())
                     .filter(Boolean)
                     .slice(0, 6)
                     .map((tag) => (
-                      <span key={tag} className="border border-[var(--line)] px-2 py-0.5 font-mono text-[9px] uppercase text-[var(--text-dim)]">
+                      <span key={tag} className="border border-[var(--line-2)] px-2 py-0.5 font-mono text-[9px] uppercase text-[var(--text-dim)]">
                         {tag}
                       </span>
                     ))}
                 </div>
                 <div className="mt-5 grid grid-cols-3 gap-2">
-                  <span className="border border-[var(--line)] py-2 text-center font-mono text-[9px] uppercase text-[var(--text-mute)]">repo</span>
-                  <span className="border border-[var(--line)] py-2 text-center font-mono text-[9px] uppercase text-[var(--text-mute)]">demo</span>
-                  <span className="border border-[var(--line)] py-2 text-center font-mono text-[9px] uppercase text-[var(--text-mute)]">deck</span>
+                  {[["repo", repoOk], ["demo", demoOk], ["deck", deckOk]].map(([label, done]) => (
+                    <span
+                      key={label as string}
+                      className="border py-2 text-center font-mono text-[9px] font-bold uppercase"
+                      style={
+                        done
+                          ? { borderColor: "rgba(196,255,0,0.4)", color: "var(--acid)" }
+                          : { borderColor: "var(--line)", color: "var(--text-mute)" }
+                      }
+                    >
+                      {done ? "✓ " : ""}{label as string}
+                    </span>
+                  ))}
                 </div>
-                <p className="mt-3 text-[10px] text-[var(--text-mute)]">this card appears in the public gallery after publish</p>
-              </CardContent>
-            </Card>
+                <p className="mt-3 text-[10px] text-[var(--text-faint)]">appears in gallery after publish · 17:30</p>
+              </div>
+            </div>
 
-            <Card className="panel-surface panel-highlight gap-0 rounded-none py-0">
-              <CardContent className="p-6 text-center">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">event points (live)</div>
-                <div className="acid-text-shadow mt-2 text-5xl font-bold text-[var(--acid)]">{eventPoints}</div>
-                <p className="mt-2 text-[11px] text-[var(--text-dim)]">rank updates on leaderboard after judging</p>
-                <div className="mx-auto mt-4 h-2 max-w-xs overflow-hidden bg-[var(--panel-3)]">
-                  <div className="h-full bg-[var(--acid)]" style={{ width: "72%" }} />
+            {/* Event points summary */}
+            <div className="panel-surface panel-highlight p-6 text-center">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">event points · live</div>
+                <div
+                  className="mt-2 font-mono text-5xl font-bold leading-none text-[var(--acid)]"
+                  style={{ textShadow: "0 0 24px var(--acid-glow)" }}
+                >
+                  {eventPoints}
                 </div>
-                <Button asChild className="mt-6 w-full rounded-none bg-[var(--acid)] font-mono text-black uppercase tracking-[0.12em] hover:bg-[var(--acid-2)]">
+                <p className="mt-2 text-[11px] text-[var(--text-dim)]">rank updates on leaderboard after judging</p>
+                <div className="mx-auto mt-4 h-1.5 max-w-xs overflow-hidden bg-[var(--panel-3)]">
+                  <div className="h-full bg-[var(--acid)]" style={{ boxShadow: "0 0 8px var(--acid-glow)", width: "72%" }} />
+                </div>
+                <Button asChild className="mt-5 w-full rounded-none bg-[var(--acid)] font-mono text-black uppercase tracking-[0.12em] hover:bg-[var(--acid-2)]">
                   <Link href="/gallery">▶ Finalize &amp; view gallery</Link>
                 </Button>
-                <p className="mt-2 text-[10px] text-[var(--text-mute)]">save checklist first · gallery link is read-only preview</p>
-              </CardContent>
-            </Card>
+                <p className="mt-2 text-[10px] text-[var(--text-mute)]">save checklist first · gallery is read-only</p>
+            </div>
           </div>
         </div>
       </ParticipantStage>

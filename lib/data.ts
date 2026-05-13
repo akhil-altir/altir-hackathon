@@ -213,7 +213,12 @@ export async function listLeaderboard() {
 
   return teams
     .map((team) => {
-      const eventPoints = team.pointAwards.reduce((sum: number, award: { points: number }) => sum + award.points, 0);
+      // Use current criterion value if it exists (reflects admin edits); fall back to stored value.
+      const eventPoints = team.pointAwards.reduce(
+        (sum: number, award: { points: number; criterion: { pointsValue: number | null } | null }) =>
+          sum + (award.criterion?.pointsValue ?? award.points),
+        0,
+      );
       const judgeTeams = new Map<string, number>();
 
       for (const score of team.judgeScores) {

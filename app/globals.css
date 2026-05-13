@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", "SFMono-Regular", "Menlo", monospace;
+  --font-sans: var(--font-jetbrains, "JetBrains Mono"), ui-monospace, monospace;
+  --font-mono: var(--font-jetbrains, "JetBrains Mono"), "SFMono-Regular", "Menlo", monospace;
   --color-background: #050505;
   --color-foreground: #fafafa;
   --color-card: #090909;
@@ -21,7 +21,7 @@
   --color-border: rgba(255, 255, 255, 0.12);
   --color-input: rgba(255, 255, 255, 0.12);
   --color-ring: rgba(196, 255, 0, 0.45);
-  --radius: 1rem;
+  --radius: 2px;
   --bg: #000000;
   --panel: #0a0a0a;
   --panel-2: #101010;
@@ -55,7 +55,7 @@
       radial-gradient(circle at top, rgba(196, 255, 0, 0.08), transparent 28%),
       linear-gradient(180deg, #040404 0%, #000000 35%, #020202 100%);
     color: #fafafa;
-    font-family: var(--font-mono), monospace;
+    font-family: var(--font-jetbrains, "JetBrains Mono"), ui-monospace, monospace;
   }
 
   a {

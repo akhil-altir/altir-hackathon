@@ -27,15 +27,16 @@ export default async function AdminOverviewPage() {
         <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--text-dim)]">
           Each section is its own URL (see left nav). Use the cards below or the sidebar to jump anywhere.
         </p>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+        {/* Stat strip — 1px-gap grid matching reference design */}
+        <div className="mt-6 grid grid-cols-2 gap-px bg-[var(--line)] sm:grid-cols-4 xl:grid-cols-8">
           <MetricPill
             label="phase"
             value={EVENT_PHASES[m.currentPhaseIndex]?.label.split(" ").slice(1).join(" ") ?? "—"}
             accent
           />
-          <MetricPill label="teams" value={String(m.teamCount)} />
-          <MetricPill label="keys live" value={`${m.liveKeys} / ${m.keyTotal}`} />
-          <MetricPill label="ideas" value={String(m.ideasLockedCount)} />
+          <MetricPill label="teams" value={String(m.teamCount)} accent />
+          <MetricPill label="keys live" value={`${m.liveKeys} / ${m.keyTotal}`} accent />
+          <MetricPill label="ideas" value={String(m.ideasLockedCount)} accent />
           <MetricPill label="submitted" value={`${m.submissionReadyCount} / ${m.teamCount}`} />
           <MetricPill label="judge scores" value={`${m.judgeScoreCount} / ${m.expectedJudgeCells}`} />
           <MetricPill label="evt max" value={`${m.eventMaxPts} pts`} />
