@@ -528,7 +528,10 @@ export function CommandCenterShell({ data }: { data: DashboardData }) {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-[18px] font-bold text-white">{team.finalScore.toFixed(1)}</div>
+                          <div className="text-[18px] font-bold text-white">
+                          {Math.round(team.finalScore)}
+                          <span className="text-[12px] font-normal text-[var(--text-mute)]">/1000</span>
+                        </div>
                           <div className="mt-1 text-[11px] uppercase tracking-[0.16em] text-[var(--acid)]">
                             live
                           </div>

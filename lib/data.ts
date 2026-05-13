@@ -1,7 +1,5 @@
 import { db } from "./db";
-
-const DEFAULT_EVENT_WEIGHT = 0.4;
-const DEFAULT_JUDGE_WEIGHT = 0.6;
+import { blendTotalScore } from "./scoring-blend";
 
 function normalizePoints(points: number, maxPoints: number) {
   if (maxPoints <= 0) {
@@ -215,7 +213,12 @@ export async function listLeaderboard() {
 
   return teams
     .map((team) => {
-      const eventPoints = team.pointAwards.reduce((sum: number, award: { points: number }) => sum + award.points, 0);
+      // Use current criterion value if it exists (reflects admin edits); fall back to stored value.
+      const eventPoints = team.pointAwards.reduce(
+        (sum: number, award: { points: number; criterion: { pointsValue: number | null } | null }) =>
+          sum + (award.criterion?.pointsValue ?? award.points),
+        0,
+      );
       const judgeTeams = new Map<string, number>();
 
       for (const score of team.judgeScores) {
@@ -229,9 +232,8 @@ export async function listLeaderboard() {
 
       const normalizedEvent = normalizePoints(eventPoints, eventMax);
       const normalizedJudge = normalizePoints(judgeAverage, judgeMax);
-      const finalScore = Number(
-        (normalizedEvent * DEFAULT_EVENT_WEIGHT + normalizedJudge * DEFAULT_JUDGE_WEIGHT).toFixed(2),
-      );
+      const finalScore = blendTotalScore(normalizedEvent, normalizedJudge);
+      const currentIdea = team.ideas[0] ?? null;
 
       return {
         teamId: team.id,
@@ -245,8 +247,17 @@ export async function listLeaderboard() {
           primaryAssignment: membership.user.primaryAssignment,
           secondaryAssignment: membership.user.secondaryAssignment,
         })),
-        idea: team.ideas[0] ?? null,
+        idea: currentIdea,
+        ideaTitle: currentIdea?.title ?? null,
+        ideaSourceType: currentIdea?.sourceType ?? null,
         submissionStatus: team.submission?.status ?? "NOT_STARTED",
+        submission: team.submission
+          ? {
+              repoUrl: team.submission.repoUrl,
+              demoUrl: team.submission.demoUrl,
+              presentationUrl: team.submission.presentationUrl,
+            }
+          : null,
         eventPoints,
         judgeAverage: Number(judgeAverage.toFixed(2)),
         normalizedEvent,

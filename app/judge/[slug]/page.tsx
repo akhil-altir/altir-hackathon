@@ -1,14 +1,23 @@
 import Link from "next/link"
 import { notFound, redirect } from "next/navigation"
 
-import { submitJudgeScoresAction } from "./actions"
-import { getTeamWorkspace } from "@/lib/data"
+import { getJudgeWorkspace, getTeamWorkspace } from "@/lib/data"
 import { db } from "@/lib/db"
 import { getSession } from "@/lib/session"
-import { Button } from "@/components/ui/button"
+import { JudgeScoringPanel } from "@/components/judge/judge-scoring-panel"
+import { JudgeAppShell, JudgeStage, type JudgeQueueTeam } from "@/components/shell/judge-app-shell"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const dynamic = "force-dynamic"
+
+function formatJudgeBadge(fullName: string) {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return "JUDGE"
+  if (parts.length === 1) return parts[0]!.toUpperCase()
+  const first = parts[0]!
+  const last = parts[parts.length - 1]!
+  return `${first.toUpperCase()} ${last[0]!.toUpperCase()}.`
+}
 
 export default async function JudgeTeamPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -28,110 +37,119 @@ export default async function JudgeTeamPage({ params }: { params: Promise<{ slug
     where: { judgeId: session.userId, teamId: team.id },
   })
   const scoreMap = new Map(existingScores.map((s) => [s.criterionId, s.score]))
+  const initialScores = Object.fromEntries(scoreMap) as Record<string, number>
+  const initialNote = existingScores.map((s) => s.note?.trim()).find(Boolean) ?? ""
+
+  const judgeTeams = await getJudgeWorkspace(session.userId)
+
+  const queue: JudgeQueueTeam[] = judgeTeams.map((t) => {
+    const scored = t.existingScores.length
+    const total = t.criteria.length
+    const complete = total > 0 && scored >= total
+    return { slug: t.slug, name: t.name, complete, scored, total }
+  })
+
+  const submittedCount = queue.filter((q) => q.complete).length
+  const draftsCount = queue.filter((q) => q.scored > 0 && !q.complete).length
+  const remainingCount = queue.filter((q) => !q.complete).length
+
+  const idx = judgeTeams.findIndex((t) => t.slug === slug)
+  const pos = idx >= 0 ? idx + 1 : 0
+
+  const dept = team.members.map((m) => m.primaryAssignment ?? "—").join(" x ")
+
+  const judgeCriteria = criteria.map((c) => ({
+    id: c.id,
+    label: c.label,
+    description: c.description,
+    maxScore: c.maxScore ?? 10,
+  }))
+
+  const teamEventPts = team.pointBreakdown.reduce((s, a) => s + a.points, 0)
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]">
-      <div className="grid-overlay absolute inset-0" />
-      <div className="scanlines absolute inset-0" />
-      <div className="relative z-10">
-        <div className="flex h-11 items-center justify-between border-b border-[var(--line)] bg-black/90 px-4 text-[11px] text-[var(--text-dim)]">
-          <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-red-500" />
-            <span className="size-2 rounded-full bg-amber-400" />
-            <span className="size-2 rounded-full bg-[var(--acid)]" />
-            <span className="ml-3 uppercase tracking-[0.28em] text-[var(--text-mute)]">judge / {team.name}</span>
-          </div>
-          <div className="min-w-20 text-right">{session.fullName}</div>
+    <JudgeAppShell
+      browserTitle={`judge / ${team.name}`}
+      urlDisplay={`techday.altir.internal/judge/${team.slug}`}
+      signedInAs={session.email}
+      queueCount={queue.length}
+      draftsCount={draftsCount}
+      submittedCount={submittedCount}
+      remainingCount={remainingCount}
+      activeSlug={team.slug}
+      queue={queue}
+    >
+      <JudgeStage>
+        <div className="mb-4 lg:hidden">
+          <Link href="/judge" className="text-[11px] uppercase tracking-[0.14em] text-[var(--acid)] hover:underline">
+            ← full queue
+          </Link>
         </div>
 
-        <div className="mx-auto w-full max-w-5xl px-4 py-8 lg:px-8">
-          <div className="mb-2 text-[11px] uppercase tracking-[0.24em] text-[var(--acid)]">judging / score</div>
-          <h1 className="text-4xl font-bold tracking-[-0.04em] text-white md:text-5xl">
-            Score {team.name}.
-          </h1>
-
-          <div className="mt-8 grid gap-6 lg:grid-cols-[0.6fr_1fr]">
-            {/* Team info */}
-            <Card className="panel-surface gap-0 self-start rounded-none py-0">
-              <CardHeader className="min-h-11 border-b border-[var(--line)] px-4 py-3">
-                <CardTitle className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-dim)]">{"// "}team details</CardTitle>
-              </CardHeader>
-              <CardContent className="p-5 space-y-4">
-                <div>
-                  <div className="text-xs text-[var(--text-mute)]">Members</div>
-                  <div className="mt-1 text-sm text-white">{team.members.map((m) => m.fullName).join(" / ")}</div>
-                </div>
-                {team.currentIdea && (
-                  <div>
-                    <div className="text-xs text-[var(--text-mute)]">Idea</div>
-                    <div className="mt-1 text-lg font-bold text-white">{team.currentIdea.title}</div>
-                    <div className="mt-1 text-sm text-[var(--text-dim)]">{team.currentIdea.summary}</div>
-                  </div>
+        <JudgeScoringPanel
+          teamSlug={team.slug}
+          criteria={judgeCriteria}
+          initialScores={initialScores}
+          initialNote={initialNote}
+          teamEventPts={teamEventPts}
+          judgeDisplay={formatJudgeBadge(session.fullName)}
+        >
+          <Card
+            className="panel-surface gap-0 rounded-none py-0"
+            style={{ boxShadow: "inset 0 0 0 1px rgba(244,114,182,0.35)" }}
+          >
+            <CardHeader className="min-h-11 border-b border-pink-400/30 px-4 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <CardTitle className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-pink-200">
+                  <span className="size-2 bg-pink-400" />
+                  {team.name}
+                </CardTitle>
+                <span className="font-mono text-[10px] text-[var(--text-mute)]">
+                  {pos} of {queue.length}
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4 p-5">
+              <div className="text-[10px] uppercase tracking-[0.16em] text-[var(--text-mute)]">{dept}</div>
+              <div className="text-xs text-[var(--text-dim)]">{team.members.map((m) => m.fullName).join(" · ")}</div>
+              {team.currentIdea && (
+                <>
+                  <h2 className="text-xl font-bold text-white">{team.currentIdea.title}</h2>
+                  <p className="text-sm leading-6 text-[var(--text-dim)]">{team.currentIdea.summary}</p>
+                </>
+              )}
+              <div className="flex flex-wrap gap-3 text-[11px]">
+                {team.submission?.repoUrl && (
+                  <a href={team.submission.repoUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--acid)] hover:underline">
+                    GitHub repo →
+                  </a>
                 )}
-                {team.submission && (
-                  <div className="space-y-2">
-                    {team.submission.repoUrl && (
-                      <a href={team.submission.repoUrl} target="_blank" rel="noopener noreferrer"
-                        className="block text-xs text-[var(--acid)] hover:underline">Repo →</a>
-                    )}
-                    {team.submission.demoUrl && (
-                      <a href={team.submission.demoUrl} target="_blank" rel="noopener noreferrer"
-                        className="block text-xs text-[var(--acid)] hover:underline">Demo →</a>
-                    )}
-                    {team.submission.presentationUrl && (
-                      <a href={team.submission.presentationUrl} target="_blank" rel="noopener noreferrer"
-                        className="block text-xs text-[var(--acid)] hover:underline">Presentation →</a>
-                    )}
-                  </div>
+                {team.submission?.demoUrl && (
+                  <a href={team.submission.demoUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--acid)] hover:underline">
+                    Demo →
+                  </a>
                 )}
-              </CardContent>
-            </Card>
-
-            {/* Scoring form */}
-            <Card className="panel-surface gap-0 rounded-none py-0"
-              style={{ boxShadow: "inset 0 0 0 1px rgba(196, 255, 0, 0.42), 0 0 28px rgba(196, 255, 0, 0.16)" }}>
-              <CardHeader className="min-h-11 border-b border-[var(--line)] px-4 py-3">
-                <CardTitle className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-dim)]">{"// "}scoring</CardTitle>
-              </CardHeader>
-              <CardContent className="p-5">
-                <form action={submitJudgeScoresAction} className="space-y-5">
-                  <input type="hidden" name="teamSlug" value={team.slug} />
-
-                  {criteria.map((criterion) => (
-                    <div key={criterion.id}>
-                      <div className="mb-2 flex items-center justify-between">
-                        <span className="text-sm font-bold text-white">{criterion.label}</span>
-                        <span className="text-xs text-[var(--text-mute)]">max {criterion.maxScore ?? 10}</span>
-                      </div>
-                      {criterion.description && (
-                        <p className="mb-2 text-xs text-[var(--text-dim)]">{criterion.description}</p>
-                      )}
-                      <input
-                        name={`score_${criterion.id}`}
-                        type="number"
-                        min={0}
-                        max={criterion.maxScore ?? 10}
-                        defaultValue={scoreMap.get(criterion.id) ?? ""}
-                        placeholder={`0-${criterion.maxScore ?? 10}`}
-                        className="h-11 w-full rounded-none border border-[var(--line)] bg-black px-4 font-mono text-sm text-white outline-none placeholder:text-[var(--text-faint)] focus:border-[var(--acid)]"
-                      />
-                    </div>
-                  ))}
-
-                  <div className="flex gap-3">
-                    <Button type="submit" className="rounded-none font-mono uppercase tracking-[0.12em]">
-                      Save scores
-                    </Button>
-                    <Button asChild variant="outline" className="rounded-none font-mono uppercase tracking-[0.12em]">
-                      <Link href="/judge">Back to queue</Link>
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-    </main>
+                {team.submission?.presentationUrl && (
+                  <a href={team.submission.presentationUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--acid)] hover:underline">
+                    Deck →
+                  </a>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-3 font-mono text-[10px] uppercase text-[var(--text-mute)]">
+                <Link href={idx > 0 ? `/judge/${judgeTeams[idx - 1]!.slug}` : "#"} className={idx > 0 ? "hover:text-white" : "pointer-events-none opacity-30"}>
+                  ← prev
+                </Link>
+                <Link
+                  href={idx >= 0 && idx < judgeTeams.length - 1 ? `/judge/${judgeTeams[idx + 1]!.slug}` : "#"}
+                  className={idx >= 0 && idx < judgeTeams.length - 1 ? "hover:text-white" : "pointer-events-none opacity-30"}
+                >
+                  next →
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </JudgeScoringPanel>
+      </JudgeStage>
+    </JudgeAppShell>
   )
 }

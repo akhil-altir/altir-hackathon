@@ -4,7 +4,15 @@ import { randomUUID } from "node:crypto"
 
 import { revalidatePath } from "next/cache"
 
+import {
+  getAppSetting,
+  setAppSetting,
+  SETTING_ADMIN_EVENT_PHASE,
+  SETTING_SCORE_EVENT_WEIGHT,
+  SETTING_SCORE_JUDGE_WEIGHT,
+} from "@/lib/app-settings"
 import { db } from "@/lib/db"
+import { defaultEventPhaseId, EVENT_PHASES, nextPhaseId, type EventPhaseId } from "@/lib/event-phase"
 
 function requiredValue(formData: FormData, key: string) {
   const value = formData.get(key)
@@ -62,7 +70,7 @@ export async function updateUserRole(formData: FormData) {
     data: role === "admin" ? { isAdmin: enabled } : { isJudge: enabled },
   })
 
-  revalidatePath("/admin")
+  revalidatePath("/admin", "layout")
 }
 
 export async function createApiKey(formData: FormData) {
@@ -71,6 +79,7 @@ export async function createApiKey(formData: FormData) {
   const secret = requiredValue(formData, "secret")
   const assignedTeamId = optionalValue(formData, "assignedTeamId")
   const visibleFrom = parseOptionalDate(optionalValue(formData, "visibleFrom"))
+  const notes = optionalValue(formData, "notes")
 
   await db.$transaction(async (tx) => {
     if (assignedTeamId) {
@@ -93,11 +102,12 @@ export async function createApiKey(formData: FormData) {
         assignedTeamId,
         assignedAt: assignedTeamId ? new Date() : null,
         visibleFrom,
+        notes,
       },
     })
   })
 
-  revalidatePath("/admin")
+  revalidatePath("/admin", "layout")
 }
 
 export async function assignApiKey(formData: FormData) {
@@ -127,11 +137,28 @@ export async function assignApiKey(formData: FormData) {
         assignedAt: assignedTeamId ? new Date() : null,
         visibleFrom,
         status: assignedTeamId ? "ASSIGNED" : "AVAILABLE",
+        revokedAt: null,
       },
     })
   })
 
-  revalidatePath("/admin")
+  revalidatePath("/admin", "layout")
+}
+
+export async function revokeApiKey(formData: FormData) {
+  const apiKeyId = requiredValue(formData, "apiKeyId")
+
+  await db.apiKey.update({
+    where: { id: apiKeyId },
+    data: {
+      status: "REVOKED",
+      revokedAt: new Date(),
+      assignedTeamId: null,
+      assignedAt: null,
+    },
+  })
+
+  revalidatePath("/admin", "layout")
 }
 
 export async function createEventScore(formData: FormData) {
@@ -167,7 +194,110 @@ export async function createEventScore(formData: FormData) {
     },
   })
 
-  revalidatePath("/admin")
+  revalidatePath("/admin", "layout")
+  revalidatePath("/admin/scoring")
+  revalidatePath("/leaderboard")
+  revalidatePath("/results")
+  revalidatePath("/tv")
+  revalidatePath("/teams/new")
+}
+
+const TEAM_STATUS_ALLOWLIST = new Set(["FORMED", "FORMING", "BUILDING", "SUBMITTED", "LOCKED"])
+
+export async function updateTeamStatus(formData: FormData) {
+  const teamId = requiredValue(formData, "teamId")
+  const status = requiredValue(formData, "status")
+
+  if (!TEAM_STATUS_ALLOWLIST.has(status)) {
+    throw new Error("Unsupported team status")
+  }
+
+  await db.team.update({
+    where: { id: teamId },
+    data: { status },
+  })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/leaderboard")
+  revalidatePath("/tv")
+}
+
+function parsePhaseId(value: string | null): EventPhaseId {
+  if (!value) {
+    return defaultEventPhaseId()
+  }
+
+  const found = EVENT_PHASES.find((p) => p.id === value)
+  return found ? found.id : defaultEventPhaseId()
+}
+
+export async function advanceEventPhase(formData: FormData) {
+  void formData
+  const current = parsePhaseId(await getAppSetting(SETTING_ADMIN_EVENT_PHASE, defaultEventPhaseId()))
+  await setAppSetting(SETTING_ADMIN_EVENT_PHASE, nextPhaseId(current))
+  revalidatePath("/admin", "layout")
+}
+
+export async function setEventPhase(formData: FormData) {
+  const phaseId = parsePhaseId(optionalValue(formData, "phaseId"))
+  await setAppSetting(SETTING_ADMIN_EVENT_PHASE, phaseId)
+  revalidatePath("/admin", "layout")
+}
+
+export async function updateScoreWeights(formData: FormData) {
+  const eventPct = Number(requiredValue(formData, "eventWeightPct"))
+  const judgePct = Number(requiredValue(formData, "judgeWeightPct"))
+
+  if (!Number.isFinite(eventPct) || !Number.isFinite(judgePct) || eventPct < 0 || judgePct < 0) {
+    throw new Error("Weights must be non-negative numbers")
+  }
+
+  const sum = eventPct + judgePct
+  if (sum <= 0) {
+    throw new Error("At least one weight must be positive")
+  }
+
+  await Promise.all([
+    setAppSetting(SETTING_SCORE_EVENT_WEIGHT, String(eventPct / sum)),
+    setAppSetting(SETTING_SCORE_JUDGE_WEIGHT, String(judgePct / sum)),
+  ])
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/leaderboard")
+  revalidatePath("/results")
+  revalidatePath("/tv")
+}
+
+export async function resetScoreWeights(formData: FormData) {
+  void formData
+  await Promise.all([
+    setAppSetting(SETTING_SCORE_EVENT_WEIGHT, "0.4"),
+    setAppSetting(SETTING_SCORE_JUDGE_WEIGHT, "0.6"),
+  ])
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/leaderboard")
+  revalidatePath("/results")
+  revalidatePath("/tv")
+}
+
+export async function publishAdminAnnouncement(formData: FormData) {
+  const title = requiredValue(formData, "title")
+  const message = requiredValue(formData, "message")
+
+  await db.announcement.create({
+    data: {
+      title,
+      message,
+      level: "INFO",
+      isPinned: false,
+      isPublished: true,
+      publishedAt: new Date(),
+    },
+  })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/tv")
 }
 
 export async function toggleEventScore(formData: FormData) {
@@ -179,5 +309,259 @@ export async function toggleEventScore(formData: FormData) {
     data: { isActive: enabled },
   })
 
-  revalidatePath("/admin")
+  revalidatePath("/admin", "layout")
+  revalidatePath("/admin/scoring")
+  revalidatePath("/leaderboard")
+  revalidatePath("/results")
+  revalidatePath("/tv")
+  revalidatePath("/teams/new")
+}
+
+export async function updateJudgeCriterion(formData: FormData) {
+  const criterionId = requiredValue(formData, "criterionId")
+  const label = requiredValue(formData, "label")
+  const description = optionalValue(formData, "description") ?? ""
+  const maxScoreRaw = requiredValue(formData, "maxScore")
+  const maxScore = Number.parseInt(maxScoreRaw, 10)
+  if (!Number.isFinite(maxScore) || maxScore < 1 || maxScore > 999) {
+    throw new Error("Max score must be a whole number from 1 to 999")
+  }
+
+  const existing = await db.scoreCriterion.findFirst({
+    where: { id: criterionId, category: "JUDGE" },
+  })
+  if (!existing) {
+    throw new Error("Judge criterion not found")
+  }
+
+  await db.scoreCriterion.update({
+    where: { id: criterionId },
+    data: {
+      label,
+      description: description.trim() ? description.trim() : null,
+      maxScore,
+    },
+  })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/admin/scoring")
+  revalidatePath("/leaderboard")
+  revalidatePath("/results")
+  revalidatePath("/tv")
+  revalidatePath("/judge")
+}
+
+export async function updateEventCriterion(formData: FormData) {
+  const criterionId = requiredValue(formData, "criterionId")
+  const label = requiredValue(formData, "label")
+  const description = optionalValue(formData, "description") ?? ""
+  const pointsRaw = requiredValue(formData, "pointsValue")
+  const pointsValue = Number.parseInt(pointsRaw, 10)
+  if (!Number.isFinite(pointsValue) || pointsValue < 0 || pointsValue > 999) {
+    throw new Error("Event points must be a whole number from 0 to 999")
+  }
+
+  const sortRaw = requiredValue(formData, "sortOrder")
+  const sortOrder = Number.parseInt(sortRaw, 10)
+  if (!Number.isFinite(sortOrder)) {
+    throw new Error("Sort order must be a number")
+  }
+
+  const existing = await db.scoreCriterion.findFirst({
+    where: { id: criterionId, category: "EVENT" },
+  })
+  if (!existing) {
+    throw new Error("Event criterion not found")
+  }
+
+  await db.scoreCriterion.update({
+    where: { id: criterionId },
+    data: {
+      label,
+      description: description.trim() ? description.trim() : null,
+      pointsValue,
+      sortOrder,
+    },
+  })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/admin/scoring")
+  revalidatePath("/leaderboard")
+  revalidatePath("/results")
+  revalidatePath("/tv")
+  revalidatePath("/teams/new")
+  revalidatePath("/gallery")
+}
+
+export async function createIdeaBankEntry(formData: FormData) {
+  const rawSort = optionalValue(formData, "sortOrder") ?? "0"
+  const sortOrder = Number.parseInt(rawSort, 10)
+  if (!Number.isFinite(sortOrder)) {
+    throw new Error("sort order must be a number")
+  }
+
+  await db.ideaBankEntry.create({
+    data: {
+      title: requiredValue(formData, "title"),
+      problemStatement: requiredValue(formData, "problemStatement"),
+      description: requiredValue(formData, "description"),
+      expectedOutcome: requiredValue(formData, "expectedOutcome"),
+      stackHint: optionalValue(formData, "stackHint"),
+      category: optionalValue(formData, "category"),
+      sortOrder,
+      isActive: true,
+    },
+  })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/gallery")
+}
+
+export async function updateIdeaBankEntry(formData: FormData) {
+  const id = requiredValue(formData, "id")
+  const rawSort = optionalValue(formData, "sortOrder") ?? "0"
+  const sortOrder = Number.parseInt(rawSort, 10)
+  if (!Number.isFinite(sortOrder)) {
+    throw new Error("sort order must be a number")
+  }
+
+  await db.ideaBankEntry.update({
+    where: { id },
+    data: {
+      title: requiredValue(formData, "title"),
+      problemStatement: requiredValue(formData, "problemStatement"),
+      description: requiredValue(formData, "description"),
+      expectedOutcome: requiredValue(formData, "expectedOutcome"),
+      stackHint: optionalValue(formData, "stackHint"),
+      category: optionalValue(formData, "category"),
+      sortOrder,
+    },
+  })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/gallery")
+}
+
+export async function toggleIdeaBankEntry(formData: FormData) {
+  const id = requiredValue(formData, "id")
+  const enabled = requiredValue(formData, "enabled") === "true"
+
+  await db.ideaBankEntry.update({
+    where: { id },
+    data: { isActive: enabled },
+  })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/gallery")
+}
+
+export async function deleteIdeaBankEntry(formData: FormData) {
+  const id = requiredValue(formData, "id")
+
+  await db.ideaBankEntry.delete({
+    where: { id },
+  })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/gallery")
+}
+
+export async function updateUserDetails(formData: FormData) {
+  const userId = requiredValue(formData, "userId")
+  const fullName = requiredValue(formData, "fullName")
+  const email = requiredValue(formData, "email")
+  const password = optionalValue(formData, "password")
+  const title = optionalValue(formData, "title")
+  const employeeId = optionalValue(formData, "employeeId")
+  const reportingManager = optionalValue(formData, "reportingManager")
+  const primaryAssignment = optionalValue(formData, "primaryAssignment")
+  const secondaryAssignment = optionalValue(formData, "secondaryAssignment")
+  const isActive = formData.get("isActive") === "true"
+  const isEligible = formData.get("isEligible") === "true"
+
+  try {
+    await db.user.update({
+      where: { id: userId },
+      data: {
+        fullName,
+        email: email.toLowerCase(),
+        ...(password ? { password } : {}),
+        title,
+        employeeId,
+        reportingManager,
+        primaryAssignment,
+        secondaryAssignment,
+        isActive,
+        isEligible,
+      },
+    })
+  } catch (e: unknown) {
+    const code = (e as { code?: string }).code
+    const fields: string[] = (e as { meta?: { target?: string[] } }).meta?.target ?? []
+    if (code === "P2002") {
+      if (fields.includes("email")) throw new Error("That email is already used by another user.")
+      if (fields.includes("employeeId")) throw new Error("That employee ID is already assigned to another user.")
+      throw new Error("Another user already has those details.")
+    }
+    throw e
+  }
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/admin/people")
+}
+
+export async function createUser(formData: FormData) {
+  const fullName = requiredValue(formData, "fullName")
+  const email = requiredValue(formData, "email").toLowerCase()
+  const password = requiredValue(formData, "password")
+  const title = optionalValue(formData, "title")
+  const employeeId = optionalValue(formData, "employeeId")
+  const reportingManager = optionalValue(formData, "reportingManager")
+  const primaryAssignment = optionalValue(formData, "primaryAssignment")
+  const secondaryAssignment = optionalValue(formData, "secondaryAssignment")
+  const isEligible = formData.get("isEligible") === "true"
+
+  try {
+    await db.user.create({
+      data: {
+        id: email,
+        email,
+        password,
+        fullName,
+        title,
+        employeeId,
+        reportingManager,
+        primaryAssignment,
+        secondaryAssignment,
+        isActive: true,
+        isEligible,
+      },
+    })
+  } catch (e: unknown) {
+    const code = (e as { code?: string }).code
+    const fields: string[] = (e as { meta?: { target?: string[] } }).meta?.target ?? []
+    if (code === "P2002") {
+      if (fields.includes("email") || fields.includes("id")) throw new Error("A user with that email already exists.")
+      if (fields.includes("employeeId")) throw new Error("That employee ID is already assigned to another user.")
+      throw new Error("A user with those details already exists.")
+    }
+    throw e
+  }
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/admin/people")
+}
+
+export async function deleteUser(formData: FormData) {
+  const userId = requiredValue(formData, "userId")
+
+  const ideaCount = await db.idea.count({ where: { submittedById: userId } })
+  if (ideaCount > 0) {
+    throw new Error(`Cannot delete: user has ${ideaCount} submitted idea${ideaCount > 1 ? "s" : ""}. Remove those first.`)
+  }
+
+  await db.user.delete({ where: { id: userId } })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/admin/people")
 }

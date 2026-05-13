@@ -29,3 +29,6 @@ prisma/*.db-journal
 
 # misc
 .vercel/
+playwright-report/
+test-results/
+videos/altir-tech-day-teaser/renders/

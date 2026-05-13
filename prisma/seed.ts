@@ -2,6 +2,17 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+const EVENT_POINT_WEIGHTS = {
+  team_formed: 50,
+  cross_assignment: 40,
+  formed_before_lock: 40,
+  idea_submitted: 50,
+  repo_submitted: 50,
+  demo_uploaded: 80,
+  deck_uploaded: 50,
+  before_515: 40,
+} as const;
+
 const EVENT_DAY = new Date("2026-05-22T09:00:00.000Z");
 const TEAM_LOCK_TIME = new Date("2026-05-22T07:30:00.000Z");
 const API_KEY_RELEASE_TIME = new Date("2026-05-22T09:00:00.000Z");
@@ -63,15 +74,28 @@ const employeeSeedRows = [
 ];
 
 const eventCriteria = [
-  { key: "team_formed", label: "Complete team formed", description: "Two members locked into a team.", category: "EVENT", pointsValue: 10, sortOrder: 1 },
-  { key: "cross_assignment", label: "Different assignments", description: "Members come from different primary assignments.", category: "EVENT", pointsValue: 5, sortOrder: 2 },
-  { key: "formed_before_lock", label: "Formed before lock", description: "Team formed before the 1:00 PM lock time.", category: "EVENT", pointsValue: 5, sortOrder: 3 },
-  { key: "idea_submitted", label: "Idea submitted", description: "Team committed to an idea before build start.", category: "EVENT", pointsValue: 10, sortOrder: 4 },
-  { key: "repo_submitted", label: "GitHub repo submitted", description: "Repository link added for review.", category: "EVENT", pointsValue: 10, sortOrder: 5 },
-  { key: "demo_uploaded", label: "Demo submitted", description: "Demo video uploaded or linked.", category: "EVENT", pointsValue: 15, sortOrder: 6 },
-  { key: "deck_uploaded", label: "Presentation submitted", description: "Presentation deck shared for judges.", category: "EVENT", pointsValue: 10, sortOrder: 7 },
-  { key: "before_515", label: "Submitted before 5:15 PM", description: "Final package ready ahead of the late cutoff.", category: "EVENT", pointsValue: 5, sortOrder: 8 },
+  { key: "team_formed", label: "Complete team formed", description: "Two members locked into a team.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.team_formed, sortOrder: 1 },
+  { key: "cross_assignment", label: "Different assignments", description: "Members come from different primary assignments.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.cross_assignment, sortOrder: 2 },
+  { key: "formed_before_lock", label: "Formed before lock", description: "Team formed before the 1:00 PM lock time.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.formed_before_lock, sortOrder: 3 },
+  { key: "idea_submitted", label: "Idea submitted", description: "Team committed to an idea before build start.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.idea_submitted, sortOrder: 4 },
+  { key: "repo_submitted", label: "GitHub repo submitted", description: "Repository link added for review.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.repo_submitted, sortOrder: 5 },
+  { key: "demo_uploaded", label: "Demo submitted", description: "Demo video uploaded or linked.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.demo_uploaded, sortOrder: 6 },
+  { key: "deck_uploaded", label: "Presentation submitted", description: "Presentation deck shared for judges.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.deck_uploaded, sortOrder: 7 },
+  { key: "before_515", label: "Submitted before 5:15 PM", description: "Final package ready ahead of the late cutoff.", category: "EVENT", pointsValue: EVENT_POINT_WEIGHTS.before_515, sortOrder: 8 },
 ];
+
+function fullEventPointAwards(crossReason: string) {
+  return [
+    { key: "team_formed", points: EVENT_POINT_WEIGHTS.team_formed, reason: "Team formed with two confirmed members." },
+    { key: "cross_assignment", points: EVENT_POINT_WEIGHTS.cross_assignment, reason: crossReason },
+    { key: "formed_before_lock", points: EVENT_POINT_WEIGHTS.formed_before_lock, reason: "Team locked before the cutoff." },
+    { key: "idea_submitted", points: EVENT_POINT_WEIGHTS.idea_submitted, reason: "Idea submitted before API key release." },
+    { key: "repo_submitted", points: EVENT_POINT_WEIGHTS.repo_submitted, reason: "GitHub repository linked." },
+    { key: "demo_uploaded", points: EVENT_POINT_WEIGHTS.demo_uploaded, reason: "Demo video attached." },
+    { key: "deck_uploaded", points: EVENT_POINT_WEIGHTS.deck_uploaded, reason: "Presentation deck shared." },
+    { key: "before_515", points: EVENT_POINT_WEIGHTS.before_515, reason: "Submission package ready before 5:15 PM." },
+  ];
+}
 
 const judgeCriteria = [
   { key: "innovation", label: "Innovation", description: "Novelty of the idea and approach.", category: "JUDGE", maxScore: 10, sortOrder: 101 },
@@ -108,16 +132,7 @@ const teamBlueprints = [
       repoReadmeReady: true,
       submittedAt: new Date("2026-05-22T11:38:00.000Z"),
     },
-    pointAwards: [
-      { key: "team_formed", points: 10, reason: "Team formed with two confirmed members." },
-      { key: "cross_assignment", points: 5, reason: "Chip1 and Hyperfuel pairing." },
-      { key: "formed_before_lock", points: 5, reason: "Team locked before the cutoff." },
-      { key: "idea_submitted", points: 10, reason: "Idea submitted before API key release." },
-      { key: "repo_submitted", points: 10, reason: "GitHub repository linked." },
-      { key: "demo_uploaded", points: 15, reason: "Demo video attached." },
-      { key: "deck_uploaded", points: 10, reason: "Presentation deck shared." },
-      { key: "before_515", points: 5, reason: "Submission package ready before 5:15 PM." },
-    ],
+    pointAwards: fullEventPointAwards("Chip1 and Hyperfuel pairing."),
   },
   {
     slug: "infra-guard",
@@ -145,16 +160,7 @@ const teamBlueprints = [
       repoReadmeReady: true,
       submittedAt: new Date("2026-05-22T11:28:00.000Z"),
     },
-    pointAwards: [
-      { key: "team_formed", points: 10, reason: "Team formed with two confirmed members." },
-      { key: "cross_assignment", points: 5, reason: "Infra and Human Resources pairing." },
-      { key: "formed_before_lock", points: 5, reason: "Team locked before the cutoff." },
-      { key: "idea_submitted", points: 10, reason: "Idea submitted before API key release." },
-      { key: "repo_submitted", points: 10, reason: "GitHub repository linked." },
-      { key: "demo_uploaded", points: 15, reason: "Demo video attached." },
-      { key: "deck_uploaded", points: 10, reason: "Presentation deck shared." },
-      { key: "before_515", points: 5, reason: "Submission package ready before 5:15 PM." },
-    ],
+    pointAwards: fullEventPointAwards("Infra and Human Resources pairing."),
   },
   {
     slug: "stack-signal",
@@ -182,16 +188,7 @@ const teamBlueprints = [
       repoReadmeReady: true,
       submittedAt: new Date("2026-05-22T11:15:00.000Z"),
     },
-    pointAwards: [
-      { key: "team_formed", points: 10, reason: "Team formed with two confirmed members." },
-      { key: "cross_assignment", points: 5, reason: "JK Logix and AI POC pairing." },
-      { key: "formed_before_lock", points: 5, reason: "Team locked before the cutoff." },
-      { key: "idea_submitted", points: 10, reason: "Idea submitted before API key release." },
-      { key: "repo_submitted", points: 10, reason: "GitHub repository linked." },
-      { key: "demo_uploaded", points: 15, reason: "Demo video attached." },
-      { key: "deck_uploaded", points: 10, reason: "Presentation deck shared." },
-      { key: "before_515", points: 5, reason: "Submission package ready before 5:15 PM." },
-    ],
+    pointAwards: fullEventPointAwards("JK Logix and AI POC pairing."),
   },
   {
     slug: "chip-pulse",
@@ -220,11 +217,11 @@ const teamBlueprints = [
       submittedAt: null,
     },
     pointAwards: [
-      { key: "team_formed", points: 10, reason: "Team formed with two confirmed members." },
-      { key: "cross_assignment", points: 5, reason: "Chip1 and Human Resources pairing." },
-      { key: "formed_before_lock", points: 5, reason: "Team locked before the cutoff." },
-      { key: "idea_submitted", points: 10, reason: "Idea submitted before API key release." },
-      { key: "repo_submitted", points: 10, reason: "GitHub repository linked." },
+      { key: "team_formed", points: EVENT_POINT_WEIGHTS.team_formed, reason: "Team formed with two confirmed members." },
+      { key: "cross_assignment", points: EVENT_POINT_WEIGHTS.cross_assignment, reason: "Chip1 and Human Resources pairing." },
+      { key: "formed_before_lock", points: EVENT_POINT_WEIGHTS.formed_before_lock, reason: "Team locked before the cutoff." },
+      { key: "idea_submitted", points: EVENT_POINT_WEIGHTS.idea_submitted, reason: "Idea submitted before API key release." },
+      { key: "repo_submitted", points: EVENT_POINT_WEIGHTS.repo_submitted, reason: "GitHub repository linked." },
     ],
   },
   {
@@ -254,16 +251,17 @@ const teamBlueprints = [
       submittedAt: null,
     },
     pointAwards: [
-      { key: "team_formed", points: 10, reason: "Team formed with two confirmed members." },
-      { key: "cross_assignment", points: 5, reason: "Chip1 and Soundful pairing." },
-      { key: "formed_before_lock", points: 5, reason: "Team locked before the cutoff." },
-      { key: "idea_submitted", points: 10, reason: "Idea submitted before API key release." },
+      { key: "team_formed", points: EVENT_POINT_WEIGHTS.team_formed, reason: "Team formed with two confirmed members." },
+      { key: "cross_assignment", points: EVENT_POINT_WEIGHTS.cross_assignment, reason: "Chip1 and Soundful pairing." },
+      { key: "formed_before_lock", points: EVENT_POINT_WEIGHTS.formed_before_lock, reason: "Team locked before the cutoff." },
+      { key: "idea_submitted", points: EVENT_POINT_WEIGHTS.idea_submitted, reason: "Idea submitted before API key release." },
     ],
   },
 ];
 
-function passwordFromEmail(email: string) {
-  return email.split("@")[0] ?? "";
+function passwordFromEmail(email: string, employeeId: string) {
+  const local = email.split("@")[0] ?? "";
+  return `${local}_${employeeId}`;
 }
 
 async function main() {
@@ -272,11 +270,13 @@ async function main() {
   await prisma.submission.deleteMany();
   await prisma.apiKey.deleteMany();
   await prisma.idea.deleteMany();
+  await prisma.ideaBankEntry.deleteMany();
   await prisma.teamMember.deleteMany();
   await prisma.team.deleteMany();
   await prisma.scoreCriterion.deleteMany();
   await prisma.timelineItem.deleteMany();
   await prisma.announcement.deleteMany();
+  await prisma.appSetting.deleteMany();
   await prisma.user.deleteMany();
 
   await prisma.user.createMany({
@@ -285,7 +285,7 @@ async function main() {
       .map((row) => ({
         id: row.email!.toLowerCase(),
         email: row.email!.toLowerCase(),
-        password: passwordFromEmail(row.email!.toLowerCase()),
+        password: passwordFromEmail(row.email!.toLowerCase(), row.employeeId),
         employeeId: row.employeeId,
         fullName: row.fullName,
         title: row.title,
@@ -303,6 +303,71 @@ async function main() {
 
   await prisma.scoreCriterion.createMany({
     data: criteria,
+  });
+
+  await prisma.appSetting.createMany({
+    data: [
+      { key: "score_event_weight", value: "0.4" },
+      { key: "score_judge_weight", value: "0.6" },
+      { key: "admin_event_phase", value: "BUILD" },
+    ],
+  });
+
+  await prisma.ideaBankEntry.createMany({
+    data: [
+      {
+        title: "Slide composer from raw meeting transcripts",
+        problemStatement:
+          "Teams lose hours turning messy meeting notes into customer-ready decks. Recurring asks need a repeatable first draft, not a blank slide.",
+        description:
+          "A web app where users paste or upload meeting transcripts, pick a tone (exec update vs deep dive), and get structured slides with titles, bullets, and speaker notes. MVP focuses on one template and export to Markdown/PDF.",
+        expectedOutcome:
+          "End-to-end demo: paste sample transcript → generated outline + 4 slides + export. Clear guardrails copy for PII and hallucinations.",
+        stackHint: "~3h · Next.js + Whisper (or mock transcript API)",
+        category: "DESIGN",
+        sortOrder: 1,
+        isActive: true,
+      },
+      {
+        title: "Customer onboarding checklist generator",
+        problemStatement:
+          "Onboarding playbooks live in scattered docs; new CSMs wing it and miss steps. We need a fast way to generate a tailored checklist per account segment.",
+        description:
+          "Simple wizard: industry, product SKU, region → generated checklist with owners, due offsets, and links to internal templates. Save as shareable page for the team.",
+        expectedOutcome:
+          "Working flow with 2 segment presets, editable checklist UI, and 'copy for Slack' summary. Shows how prompts stay grounded in the handbook text.",
+        stackHint: "~3h · Python + OpenAI",
+        category: "OPS",
+        sortOrder: 2,
+        isActive: true,
+      },
+      {
+        title: "Internal docs answer bot",
+        problemStatement:
+          "Engineers ask the same policy and architecture questions in chat because internal search is noisy and stale.",
+        description:
+          "Tiny RAG UI over a bundled markdown corpus (handbook excerpts). Ask a question, see cited snippets, and a short synthesized answer with links to sources.",
+        expectedOutcome:
+          "Demo with ~10 docs, working query box, citations highlighted, and graceful 'not found' state. Shows latency and content safety notes.",
+        stackHint: "~3h · Next.js + pgvector or SQLite FTS mock",
+        category: "ENG",
+        sortOrder: 3,
+        isActive: true,
+      },
+      {
+        title: "Deal desk objection simulator",
+        problemStatement:
+          "New sellers struggle to practice crisp responses to tough objections before live customer calls.",
+        description:
+          "Role-play UI: pick persona (CFO, security, procurement), receive objection prompts, capture rep answer, and return concise coaching bullets plus a model answer.",
+        expectedOutcome:
+          "Three persona cards, timed turns, session recap export. Highlights tone and compliance guardrails for customer-facing language.",
+        stackHint: "~2h · OpenAI API",
+        category: "BIZ",
+        sortOrder: 4,
+        isActive: true,
+      },
+    ],
   });
 
   const criterionByKey: Record<string, { id: string }> = Object.fromEntries(

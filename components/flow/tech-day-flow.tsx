@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
+import { useEffect, useMemo, useState } from "react"
 import {
   ArrowRight,
   Check,
@@ -19,7 +20,39 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { EVENT_POINT_WEIGHTS, EVENT_SUBMISSION_MILESTONES_MAX, EVENT_TEAM_FORMATION_MAX } from "@/lib/event-point-weights"
+import { TECH_DAY_BUILD_START_MS as BUILD_OPENS_AT_MS, TECH_DAY_KEYS_REVEAL_MS } from "@/lib/tech-day-schedule"
+import type { PublicIdeaEntry } from "@/lib/idea-bank-public"
+import { HowItWorks, IdeaBankSection, ScoringSection, DayTimeline, FAQSection, RewardsSection, CTAFooter } from "@/components/landing/lockscreen-sections"
 import { cn } from "@/lib/utils"
+
+/** Agenda wall times are IST; rendered in each viewer's local zone after hydration */
+const LOCKSCREEN_AGENDA_IST = [
+  { atMs: Date.parse("2026-05-22T12:00:00+05:30"), label: "Doors open / check-in", highlight: false },
+  { atMs: Date.parse("2026-05-22T13:00:00+05:30"), label: "Team formation locks", highlight: false },
+  { atMs: TECH_DAY_KEYS_REVEAL_MS, label: "Keys reveal + env setup", highlight: false },
+  { atMs: BUILD_OPENS_AT_MS, label: "Build starts", highlight: true },
+  { atMs: Date.parse("2026-05-22T17:00:00+05:30"), label: "Submission deadline window", highlight: false },
+  { atMs: Date.parse("2026-05-22T17:30:00+05:30"), label: "Demos + judging", highlight: false },
+  { atMs: Date.parse("2026-05-22T18:30:00+05:30"), label: "Wrap up — TBD", highlight: false },
+] as const
+
+function pad2(n: number) {
+  return String(n).padStart(2, "0")
+}
+
+function useCountdownTo(targetMs: number) {
+  const [remainingMs, setRemainingMs] = useState(() => Math.max(0, targetMs - Date.now()))
+
+  useEffect(() => {
+    const tick = () => setRemainingMs(Math.max(0, targetMs - Date.now()))
+    tick()
+    const id = window.setInterval(tick, 1000)
+    return () => window.clearInterval(id)
+  }, [targetMs])
+
+  return remainingMs
+}
 
 type Screen =
   | "lockscreen"
@@ -68,24 +101,44 @@ const availablePeople = [
 ]
 
 const flow = [
-  { label: "Landing", href: "/" },
-  { label: "Login", href: "/login" },
-  { label: "Team", href: "/teams/new" },
-  { label: "Idea", href: "/teams/quotebot/idea" },
-  { label: "Workspace", href: "/teams/quotebot" },
-  { label: "Submit", href: "/teams/quotebot/submit" },
-  { label: "Live", href: "/leaderboard" },
-  { label: "Results", href: "/results" },
+  { key: "workspace", label: "Workspace", href: "/teams/quotebot" },
+  { key: "idea", label: "Idea", href: "/teams/quotebot/idea" },
+  { key: "submit", label: "Submit", href: "/teams/quotebot/submit" },
+  { key: "gallery", label: "Gallery", href: "/gallery" },
+  { key: "leaderboard", label: "Leaderboard", href: "/leaderboard" },
+  { key: "handbook", label: "Handbook", href: "/handbook" },
 ]
 
-export function TechDayScreen({ screen }: { screen: Screen }) {
+export function TechDayScreen({
+  screen,
+  teamsFormed = 0,
+  ideaBankRevealed = false,
+  ideas = [],
+  ideaBankTotal = 0,
+  ideaBankCategoryCounts = {},
+}: {
+  screen: Screen
+  teamsFormed?: number
+  ideaBankRevealed?: boolean
+  ideas?: PublicIdeaEntry[]
+  ideaBankTotal?: number
+  ideaBankCategoryCounts?: Record<string, number>
+}) {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]">
+    <main className="relative min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <div className="grid-overlay absolute inset-0" />
       <div className="scanlines absolute inset-0" />
       <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-[var(--acid)]/10 blur-3xl" />
       <div className="relative z-10">
-        {screen === "lockscreen" && <Lockscreen />}
+        {screen === "lockscreen" && (
+          <Lockscreen
+            teamsFormed={teamsFormed}
+            ideaBankRevealed={ideaBankRevealed}
+            ideas={ideas}
+            ideaBankTotal={ideaBankTotal}
+            ideaBankCategoryCounts={ideaBankCategoryCounts}
+          />
+        )}
         {screen === "login" && <Login />}
         {screen === "form-team" && <FormTeam />}
         {screen === "team-locked" && <TeamLocked />}
@@ -137,22 +190,24 @@ function Topbar({
 }) {
   return (
     <div className="sticky top-0 z-30 border-b border-[var(--line)] bg-black/85 backdrop-blur">
-      <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-3 px-4 py-3 lg:px-8">
+      <div className="mx-auto flex max-w-[1680px] flex-wrap items-center justify-between gap-3 px-4 py-3 lg:px-8">
         <Link href="/" className="flex items-center gap-3">
-          <Image src="/logo.png" alt="Altir" width={34} height={34} className="rounded-sm" />
+          <div className="flex size-9 items-center justify-center border border-[rgba(196,255,0,0.35)] bg-[rgba(196,255,0,0.1)]">
+            <Image src="/logo.png" alt="Altir" width={22} height={22} className="size-6 object-contain" />
+          </div>
           <div>
-            <div className="text-sm font-bold tracking-[0.28em] text-white">ALTIR TECH DAY</div>
-            <div className="text-[10px] uppercase tracking-[0.24em] text-[var(--text-mute)]">command center</div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-white">Altir // Tech-Day-2026</div>
+            <div className="text-[9px] uppercase tracking-[0.2em] text-[var(--text-mute)]">command center</div>
           </div>
         </Link>
-        <nav className="hidden items-center gap-1 lg:flex">
+        <nav className="hidden flex-wrap items-center gap-1 lg:flex">
           {flow.map((item) => (
             <Link
-              key={item.href}
+              key={item.key}
               href={item.href}
               className={cn(
-                "rounded px-3 py-2 text-[11px] uppercase tracking-[0.16em] text-[var(--text-dim)] transition hover:bg-white/5 hover:text-white",
-                active === item.label.toLowerCase() && "bg-[var(--panel-3)] text-white"
+                "rounded-[2px] border px-2.5 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)] transition sm:px-3",
+                active === item.key ? "border-white/80 bg-[var(--panel-3)] text-white" : "border-transparent hover:border-[var(--line)] hover:bg-[var(--panel-2)] hover:text-white"
               )}
             >
               {item.label}
@@ -161,7 +216,7 @@ function Topbar({
         </nav>
         <div className="flex items-center gap-3 text-xs">
           <span className="hidden text-[var(--text-mute)] sm:inline">{phase}</span>
-          <span className="rounded border border-[var(--acid)]/40 bg-[var(--acid)]/10 px-3 py-1 font-bold text-[var(--acid)]">{countdown}</span>
+          <span className="rounded border border-[var(--acid)]/40 bg-[var(--acid)]/10 px-3 py-1 font-bold text-[var(--acid)]">ends in {countdown}</span>
           <span className="hidden text-[var(--text-dim)] md:inline">jordan.l@altir.co</span>
         </div>
       </div>
@@ -282,7 +337,98 @@ function Metric({ label, value, accent = false }: { label: string; value: string
   )
 }
 
-function Lockscreen() {
+function Lockscreen({
+  teamsFormed = 0,
+  ideaBankRevealed = false,
+  ideas = [],
+  ideaBankTotal = 0,
+  ideaBankCategoryCounts = {},
+}: {
+  teamsFormed?: number
+  ideaBankRevealed?: boolean
+  ideas?: PublicIdeaEntry[]
+  ideaBankTotal?: number
+  ideaBankCategoryCounts?: Record<string, number>
+}) {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    queueMicrotask(() => setMounted(true))
+  }, [])
+
+  const remainingMs = useCountdownTo(BUILD_OPENS_AT_MS)
+  const totalSec = Math.floor(remainingMs / 1000)
+  const days = Math.floor(totalSec / 86400)
+  const hours = Math.floor((totalSec % 86400) / 3600)
+  const minutes = Math.floor((totalSec % 3600) / 60)
+  const seconds = totalSec % 60
+
+  const rampMs = 21 * 24 * 60 * 60 * 1000
+  const rampStart = BUILD_OPENS_AT_MS - rampMs
+  const [rampNow, setRampNow] = useState(rampStart)
+  useEffect(() => {
+    const tick = () => setRampNow(Date.now())
+    tick()
+    const id = setInterval(tick, 15_000)
+    return () => clearInterval(id)
+  }, [])
+  const progressPct =
+    rampNow >= BUILD_OPENS_AT_MS ? 100 : rampNow <= rampStart ? 0 : Math.min(100, ((rampNow - rampStart) / rampMs) * 100)
+
+  const buildOpensDate = useMemo(() => new Date(BUILD_OPENS_AT_MS), [])
+
+  const timeFmt = useMemo(
+    () =>
+      new Intl.DateTimeFormat(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
+    []
+  )
+
+  const istAgendaTimeFmt = useMemo(
+    () =>
+      new Intl.DateTimeFormat(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Kolkata",
+      }),
+    []
+  )
+
+  const opensAtLine = useMemo(() => {
+    if (!mounted) return null
+    const full = new Intl.DateTimeFormat(undefined, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      timeZoneName: "short",
+    }).format(buildOpensDate)
+    return full
+  }, [mounted, buildOpensDate])
+
+  const agendaTzLabel = useMemo(() => {
+    if (!mounted) return "IST"
+    return (
+      new Intl.DateTimeFormat(undefined, { timeZoneName: "short" })
+        .formatToParts(buildOpensDate)
+        .find((p) => p.type === "timeZoneName")?.value ?? "local"
+    )
+  }, [mounted, buildOpensDate])
+
+  const countdownCaption =
+    remainingMs <= 0
+      ? mounted && opensAtLine
+        ? `Build window is open · started ${opensAtLine}`
+        : "Build window is open · started May 22, 2026 · 2:30 PM IST"
+      : mounted && opensAtLine
+        ? `Until build opens · ${opensAtLine} (your time)`
+        : "Until build opens · May 22, 2026 · 2:30 PM IST — local times appear after load"
+
   return (
     <>
       <BrowserChrome title="lockscreen - t-minus" url="techday.altir.internal" right={<span className="text-[var(--acid)]">live</span>} />
@@ -291,7 +437,12 @@ function Lockscreen() {
           <section className="flex flex-col justify-between py-6">
             <div>
               <Image src="/logo.png" alt="Altir" width={76} height={76} className="rounded-sm" />
-              <div className="mt-14 text-[11px] uppercase tracking-[0.26em] text-[var(--acid)]"># 22 may 2026 / friday / hq + remote</div>
+              <div className="mt-6 flex items-center gap-2">
+                <span className="text-sm font-bold uppercase tracking-[0.28em] text-white">Altir</span>
+                <span className="text-[var(--line-3)]">/</span>
+                <span className="text-sm uppercase tracking-[0.22em] text-[var(--text-dim)]">Tech Day Hackathon 2026</span>
+              </div>
+              <div className="mt-8 text-[11px] uppercase tracking-[0.26em] text-[var(--acid)]"># 22 may 2026 / friday / hq + remote</div>
               <h1 className="mt-5 max-w-4xl text-6xl font-bold leading-[0.9] tracking-[-0.06em] text-white md:text-8xl">
                 Three hours.
                 <br />
@@ -317,17 +468,40 @@ function Lockscreen() {
           <aside className="flex flex-col gap-4 py-6">
             <Panel className="panel-highlight">
               <CardContent className="p-6">
-                <div className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-mute)]">time to build window</div>
-                <div className="mt-4 flex items-baseline gap-2 text-6xl font-bold tracking-[-0.05em] text-[var(--acid)] md:text-7xl">
-                  <span>04</span>
-                  <span className="text-[var(--text-faint)]">:</span>
-                  <span>23</span>
-                  <span className="text-[var(--text-faint)]">:</span>
-                  <span>11</span>
-                </div>
-                <div className="mt-2 text-[11px] text-[var(--text-mute)]">hh : mm : ss / build opens 14:30 CST</div>
+                <div className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-mute)]">countdown to build opens</div>
+                {days > 0 ? (
+                  <div className="mt-4 space-y-1">
+                    <div className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+                      {days} day{days === 1 ? "" : "s"}
+                    </div>
+                    <div
+                      className="flex flex-wrap items-baseline gap-2 text-5xl font-bold tracking-[-0.05em] text-[var(--acid)] md:text-6xl"
+                      aria-live="polite"
+                      aria-atomic="true"
+                    >
+                      <span>{pad2(hours)}</span>
+                      <span className="text-[var(--text-faint)]">:</span>
+                      <span>{pad2(minutes)}</span>
+                      <span className="text-[var(--text-faint)]">:</span>
+                      <span>{pad2(seconds)}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className="mt-4 flex flex-wrap items-baseline gap-2 text-6xl font-bold tracking-[-0.05em] text-[var(--acid)] md:text-7xl"
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >
+                    <span>{pad2(hours)}</span>
+                    <span className="text-[var(--text-faint)]">:</span>
+                    <span>{pad2(minutes)}</span>
+                    <span className="text-[var(--text-faint)]">:</span>
+                    <span>{pad2(seconds)}</span>
+                  </div>
+                )}
+                <div className="mt-2 text-[11px] text-[var(--text-mute)]">{countdownCaption}</div>
                 <div className="mt-5">
-                  <ProgressBar value={32} />
+                  <ProgressBar value={progressPct} />
                 </div>
                 <div className="mt-2 flex justify-between text-[10px] uppercase text-[var(--text-mute)]">
                   <span>check-in</span>
@@ -338,32 +512,36 @@ function Lockscreen() {
               </CardContent>
             </Panel>
             <Panel>
-              <PanelHead title="// agenda" right="CST" />
+              <PanelHead title="// agenda" right={mounted ? `${agendaTzLabel} · source IST` : "IST"} />
               <CardContent className="p-4">
-                {[
-                  ["12:00", "Doors open / check-in", false],
-                  ["13:00", "Team formation locks", false],
-                  ["14:30", "Build starts / keys reveal", true],
-                  ["17:00", "Submission deadline window", false],
-                  ["17:30", "Demos + judging", false],
-                  ["18:30", "Winners + drinks", false],
-                ].map(([time, label, active]) => (
-                  <div key={String(time)} className="flex gap-4 border-b border-[var(--line)] py-2 last:border-0">
-                    <span className="w-12 text-[var(--text-mute)]">{time}</span>
-                    <span className={active ? "text-[var(--acid)]" : "text-[var(--text-dim)]"}>{label}</span>
-                  </div>
-                ))}
+                {LOCKSCREEN_AGENDA_IST.map((row) => {
+                  const displayTime = mounted
+                    ? timeFmt.format(new Date(row.atMs))
+                    : istAgendaTimeFmt.format(new Date(row.atMs))
+                  return (
+                    <div key={row.atMs} className="flex gap-4 border-b border-[var(--line)] py-2 last:border-0">
+                      <span className="min-w-[3.25rem] text-[var(--text-mute)]">{displayTime}</span>
+                      <span className={row.highlight ? "text-[var(--acid)]" : "text-[var(--text-dim)]"}>{row.label}</span>
+                    </div>
+                  )
+                })}
               </CardContent>
             </Panel>
-            <div className="grid grid-cols-2 gap-3">
-              <Metric label="employees" value="24" />
-              <Metric label="expected teams" value="12" />
-              <Metric label="preloaded keys" value="12" accent />
-              <Metric label="judges" value="4" />
-            </div>
           </aside>
         </div>
       </Stage>
+      <HowItWorks />
+      <IdeaBankSection
+        revealed={ideaBankRevealed}
+        ideas={ideas}
+        ideaBankTotal={ideaBankTotal}
+        ideaBankCategoryCounts={ideaBankCategoryCounts}
+      />
+      <ScoringSection />
+      <DayTimeline />
+      <RewardsSection />
+      <FAQSection />
+      <CTAFooter />
     </>
   )
 }
@@ -431,7 +609,7 @@ function FormTeam() {
   return (
     <>
       <BrowserChrome title="form a team" url="techday.altir.internal/teams/new" />
-      <Topbar active="team" countdown="00:42:17" phase="TEAM LOCK" />
+      <Topbar active="workspace" countdown="00:42:17" phase="TEAM LOCK" />
       <Stage>
         <SectionTitle kicker="step 01 / form a team" right={<Badge tone="warn">team lock 13:00 / in 42 min</Badge>}>
           Pick yourself + one partner.
@@ -507,10 +685,9 @@ function TeamPreview() {
         <div className="mt-5 border border-[var(--line)] bg-[var(--panel-2)] p-4">
           <div className="mb-3 text-[11px] uppercase tracking-[0.2em] text-[var(--text-mute)]">event points you will earn</div>
           {[
-            ["Complete team", "+10"],
-            ["Different departments", "+5"],
-            ["Very different functions", "+10"],
-            ["Formed before lock", "+5"],
+            ["Complete team", `+${EVENT_POINT_WEIGHTS.team_formed}`],
+            ["Different primary assignments", `+${EVENT_POINT_WEIGHTS.cross_assignment}`],
+            ["Formed before lock", `+${EVENT_POINT_WEIGHTS.formed_before_lock}`],
           ].map(([label, value]) => (
             <div key={label} className="flex justify-between py-1 text-xs">
               <span className="text-[var(--text-dim)]">{label}</span>
@@ -518,8 +695,8 @@ function TeamPreview() {
             </div>
           ))}
           <div className="mt-3 flex justify-between border-t border-[var(--line)] pt-3">
-            <span className="text-xs uppercase text-[var(--text-dim)]">subtotal</span>
-            <span className="text-2xl font-bold text-[var(--acid)]">30 pts</span>
+            <span className="text-xs uppercase text-[var(--text-dim)]">max if all apply</span>
+            <span className="text-2xl font-bold text-[var(--acid)]">{EVENT_TEAM_FORMATION_MAX} pts</span>
           </div>
         </div>
         <FlowButton href="/teams/quotebot/locked" className="mt-5 w-full">
@@ -534,7 +711,7 @@ function TeamLocked() {
   return (
     <>
       <BrowserChrome title="team locked" url="techday.altir.internal/teams/quotebot" right={<span className="text-[var(--acid)]">team ready</span>} />
-      <Topbar active="team" countdown="01:34:00" phase="BUILD OPENS" />
+      <Topbar active="workspace" countdown="01:34:00" phase="BUILD OPENS" />
       <Stage>
         <Panel className="relative overflow-hidden">
           <CardContent className="p-8 md:p-12">
@@ -589,11 +766,11 @@ function Confetti() {
 
 function ProgressStrip() {
   const steps = [
-    ["01", "team", "done", "+30"],
-    ["02", "idea", "next", "0/15"],
+    ["01", "team", "done", `+${EVENT_TEAM_FORMATION_MAX}`],
+    ["02", "idea", "next", `0/${EVENT_POINT_WEIGHTS.idea_submitted}`],
     ["03", "key", "wait", "--"],
     ["04", "build", "wait", "--"],
-    ["05", "submit", "wait", "0/40"],
+    ["05", "submit", "wait", `0/${EVENT_SUBMISSION_MILESTONES_MAX}`],
     ["06", "judge", "wait", "--"],
   ]
 
@@ -623,7 +800,7 @@ function IdeaPicker() {
       <BrowserChrome title="idea bank + custom" url="techday.altir.internal/teams/quotebot/idea" />
       <Topbar active="idea" countdown="01:21:10" phase="KEY REVEAL" />
       <Stage>
-        <SectionTitle kicker="step 02 / idea" right={<Badge tone="acid">+15 available</Badge>}>
+        <SectionTitle kicker="step 02 / idea" right={<Badge tone="acid">+{EVENT_POINT_WEIGHTS.idea_submitted} available</Badge>}>
           Claim an idea or write your own.
         </SectionTitle>
         <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
@@ -693,7 +870,7 @@ function Workspace() {
                 <div>
                   <div className="text-[11px] uppercase tracking-[0.22em] text-[var(--acid)]"># current step / build</div>
                   <h1 className="mt-2 text-3xl font-bold tracking-[-0.03em] text-white">Idea locked. API key released. <span className="text-[var(--acid)]">Ship something.</span></h1>
-                  <p className="mt-2 text-sm text-[var(--text-dim)]">Add your GitHub repo before 17:00 to keep the +10 bonus alive.</p>
+                  <p className="mt-2 text-sm text-[var(--text-dim)]">Add your GitHub repo before 17:00 to keep the +{EVENT_POINT_WEIGHTS.before_515} early-submit bonus in play.</p>
                 </div>
                 <div className="min-w-56 text-left md:text-right">
                   <div className="text-[11px] uppercase tracking-[0.2em] text-[var(--text-mute)]">build window left</div>
@@ -838,7 +1015,7 @@ function Gallery() {
   return (
     <>
       <BrowserChrome title="public submission gallery" url="techday.altir.internal/gallery" />
-      <Topbar active="live" countdown="00:11:20" phase="GALLERY LIVE" />
+      <Topbar active="gallery" countdown="00:11:20" phase="GALLERY LIVE" />
       <Stage>
         <SectionTitle kicker="step 05 / gallery" right={<FlowButton href="/leaderboard" variant="outline">Open live energy</FlowButton>}>
           Public submission gallery.
@@ -877,7 +1054,7 @@ function Leaderboard() {
   return (
     <>
       <BrowserChrome title="live energy / participant view" url="techday.altir.internal/leaderboard" />
-      <Topbar active="live" countdown="00:47:03" phase="DEMOS SOON" />
+      <Topbar active="leaderboard" countdown="00:47:03" phase="DEMOS SOON" />
       <Stage>
         <SectionTitle kicker="step 05 / live ops" right={<FlowButton href="/tv" variant="outline">TV mode</FlowButton>}>
           Live energy board.
@@ -975,7 +1152,7 @@ function JudgeConsole() {
   return (
     <>
       <BrowserChrome title="judge scoring console" url="techday.altir.internal/judge/quotebot" />
-      <Topbar active="results" countdown="00:22:00" phase="JUDGING" />
+      <Topbar active="leaderboard" countdown="00:22:00" phase="JUDGING" />
       <Stage>
         <SectionTitle kicker="step 06 / judging" right={<Badge tone="acid">judge console</Badge>}>
           Score QUOTEBOT.
@@ -1030,7 +1207,7 @@ function Results() {
   return (
     <>
       <BrowserChrome title="winners / final standings" url="techday.altir.internal/results" right={<span className="text-[var(--acid)]">final</span>} />
-      <Topbar active="results" countdown="00:00:00" phase="COMPLETE" />
+      <Topbar active="leaderboard" countdown="00:00:00" phase="COMPLETE" />
       <Stage>
         <SectionTitle kicker="step 06 / results">
           Final standings.

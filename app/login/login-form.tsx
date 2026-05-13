@@ -20,7 +20,7 @@ export function LoginForm() {
               type="email"
               required
               autoComplete="email"
-              placeholder="agupta@altir.co"
+              placeholder="psharma@altir.co"
               className="h-11 w-full rounded-none border border-[var(--line)] bg-black px-4 font-mono text-sm text-white outline-none transition placeholder:text-[var(--text-faint)] focus:border-[var(--acid)]"
             />
           </label>
@@ -32,7 +32,7 @@ export function LoginForm() {
               type="password"
               required
               autoComplete="current-password"
-              placeholder="agupta"
+              placeholder="psharma_ATI042"
               className="h-11 w-full rounded-none border border-[var(--line)] bg-black px-4 font-mono text-sm text-white outline-none transition placeholder:text-[var(--text-faint)] focus:border-[var(--acid)]"
             />
           </label>

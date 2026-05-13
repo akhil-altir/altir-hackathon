@@ -2,7 +2,8 @@
 
 import { redirect } from "next/navigation";
 
-import { authenticateUser, getUserTeam } from "@/lib/data";
+import { authenticateUser, getTeamWorkspace, getUserTeam } from "@/lib/data";
+import { getParticipantResumeHref } from "@/lib/participant-onboarding";
 import { createSession, destroySession } from "@/lib/session";
 
 export async function loginAction(_prevState: { error: string } | null, formData: FormData) {
@@ -16,7 +17,7 @@ export async function loginAction(_prevState: { error: string } | null, formData
   const user = await authenticateUser(email, password);
 
   if (!user) {
-    return { error: "Invalid credentials. Password is the local part of your email (e.g. agupta)." };
+    return { error: "Invalid credentials. Password format: emailprefix_EMPID (e.g. psharma_ATI042)." };
   }
 
   await createSession({
@@ -29,16 +30,19 @@ export async function loginAction(_prevState: { error: string } | null, formData
   });
 
   if (user.isAdmin) {
-    redirect("/admin");
+    redirect("/admin/teams");
   }
 
   if (user.isJudge) {
     redirect("/judge");
   }
 
-  // If the user already has a team, go straight to their workspace
   const existingTeam = await getUserTeam(user.id);
   if (existingTeam) {
+    const workspace = await getTeamWorkspace(existingTeam.slug);
+    if (workspace) {
+      redirect(getParticipantResumeHref(workspace));
+    }
     redirect(`/teams/${existingTeam.slug}`);
   }
 
