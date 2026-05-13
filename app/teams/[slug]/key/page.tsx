@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation"
 import { ArrowRight, KeyRound } from "lucide-react"
 
 import { ParticipantOnboardingStrip } from "@/components/team/participant-onboarding-strip"
+import { BuildCountdown } from "@/components/shell/build-countdown"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -36,8 +37,7 @@ export default async function KeyRevealPage({ params }: { params: Promise<{ slug
       workspaceHref={nav.workspaceHref}
       ideaHref={nav.ideaHref}
       submitHref={nav.submitHref}
-      phase="BUILD STARTS IN"
-      countdown="03:00:00"
+      countdownSlot={<BuildCountdown />}
       teamSlug={team.slug}
       teamName={team.name}
       userEmail={session?.email ?? null}

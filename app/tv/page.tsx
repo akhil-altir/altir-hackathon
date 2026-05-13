@@ -1,5 +1,6 @@
 import Image from "next/image"
 
+import { BuildCountdown } from "@/components/shell/build-countdown"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
 import { TvEventTimer } from "@/components/tv/tv-event-timer"
 import { listLeaderboard, getTimelineAndAnnouncements } from "@/lib/data"
@@ -19,8 +20,7 @@ export default async function TVPage() {
       workspaceHref="/leaderboard"
       ideaHref="/gallery"
       submitHref="/results"
-      phase="LIVE"
-      countdown="--:--:--"
+      countdownSlot={<BuildCountdown />}
       browserRight={<span className="text-[var(--acid)]">1920 × 1080</span>}
     >
       <ParticipantStage wide>
