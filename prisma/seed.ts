@@ -1,8 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 
-import { EVENT_POINT_WEIGHTS } from "../lib/event-point-weights";
-
 const prisma = new PrismaClient();
+
+const EVENT_POINT_WEIGHTS = {
+  team_formed: 50,
+  cross_assignment: 40,
+  formed_before_lock: 40,
+  idea_submitted: 50,
+  repo_submitted: 50,
+  demo_uploaded: 80,
+  deck_uploaded: 50,
+  before_515: 40,
+} as const;
 
 const EVENT_DAY = new Date("2026-05-22T09:00:00.000Z");
 const TEAM_LOCK_TIME = new Date("2026-05-22T07:30:00.000Z");
@@ -250,8 +259,9 @@ const teamBlueprints = [
   },
 ];
 
-function passwordFromEmail(email: string) {
-  return email.split("@")[0] ?? "";
+function passwordFromEmail(email: string, employeeId: string) {
+  const local = email.split("@")[0] ?? "";
+  return `${local}_${employeeId}`;
 }
 
 async function main() {
@@ -275,7 +285,7 @@ async function main() {
       .map((row) => ({
         id: row.email!.toLowerCase(),
         email: row.email!.toLowerCase(),
-        password: passwordFromEmail(row.email!.toLowerCase()),
+        password: passwordFromEmail(row.email!.toLowerCase(), row.employeeId),
         employeeId: row.employeeId,
         fullName: row.fullName,
         title: row.title,

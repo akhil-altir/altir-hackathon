@@ -527,12 +527,6 @@ function Lockscreen({
                 })}
               </CardContent>
             </Panel>
-            <div className="grid grid-cols-2 gap-3">
-              <Metric label="employees" value="24" />
-              <Metric label="teams formed" value={String(teamsFormed)} accent={teamsFormed > 0} />
-              <Metric label="preloaded keys" value="12" accent />
-              <Metric label="judges" value="4" />
-            </div>
           </aside>
         </div>
       </Stage>

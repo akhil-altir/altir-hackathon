@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   advanceEventPhase,
   setEventPhase,
@@ -125,7 +126,14 @@ export default async function AdminTeamsPage({ searchParams }: { searchParams: P
                   return (
                     <tr key={row.teamId} className="text-[var(--text-dim)] hover:bg-white/[0.02]">
                       <td className="whitespace-nowrap px-3 py-3 font-mono text-[var(--text-faint)]">{String(idx + 1).padStart(2, "0")}</td>
-                      <td className="whitespace-nowrap px-3 py-3 font-bold text-white">{row.teamName}</td>
+                      <td className="whitespace-nowrap px-3 py-3 font-bold text-white">
+                        <Link
+                          href={`/admin/teams/${row.slug}`}
+                          className="hover:text-[var(--acid)] hover:underline underline-offset-2 transition-colors"
+                        >
+                          {row.teamName}
+                        </Link>
+                      </td>
                       <td className="max-w-[220px] px-3 py-3">
                         <p className="truncate text-white">{abbreviatedMemberNames(row.members)}</p>
                         <p className="mt-0.5 truncate text-[10px] uppercase tracking-[0.14em] text-[var(--text-faint)]">

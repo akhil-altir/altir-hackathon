@@ -17,7 +17,7 @@ export async function loginAction(_prevState: { error: string } | null, formData
   const user = await authenticateUser(email, password);
 
   if (!user) {
-    return { error: "Invalid credentials. Password is the local part of your email (e.g. agupta)." };
+    return { error: "Invalid credentials. Password format: emailprefix_EMPID (e.g. psharma_ATI042)." };
   }
 
   await createSession({

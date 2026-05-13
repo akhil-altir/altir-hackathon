@@ -72,7 +72,7 @@ export default async function LoginPage() {
               </div>
             </div>
             <p className="text-[11px] text-[var(--text-mute)]">
-              Employee IDs come from the imported Excel roster. Password is the local part of the email.
+              Employee IDs come from the imported Excel roster. Password format: emailprefix_EMPID (e.g. psharma_ATI042).
             </p>
           </section>
 
@@ -81,7 +81,7 @@ export default async function LoginPage() {
               <div className="text-[11px] uppercase tracking-[0.24em] text-[var(--warn)]"># /auth/sign-in</div>
               <h1 className="mt-3 text-5xl font-bold tracking-[-0.04em] text-white">Welcome back.</h1>
               <p className="mt-3 text-sm leading-6 text-[var(--text-dim)]">
-                Use your Altir email. Password is the part before the @.
+                Use your Altir email. Password is your email prefix + underscore + employee ID.
               </p>
 
               <LoginForm />
