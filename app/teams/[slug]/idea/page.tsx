@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getTeamWorkspace } from "@/lib/data"
 import { getTeamOnboardingState } from "@/lib/participant-onboarding"
 import { listActiveIdeaBankEntries } from "@/lib/idea-bank"
+import { getIdeaBankVisible } from "@/lib/app-settings"
 import { loadParticipantNavContext } from "@/lib/participant-nav-context"
 import { getSession } from "@/lib/session"
 
@@ -26,9 +27,12 @@ export default async function IdeaPage({ params }: { params: Promise<{ slug: str
 
   if (!team.members.some((m) => m.id === session.userId)) notFound()
 
+  const [nav, bankEntries, ideaBankVisible] = await Promise.all([
+    loadParticipantNavContext(),
+    listActiveIdeaBankEntries(),
+    getIdeaBankVisible(),
+  ])
   const onboarding = getTeamOnboardingState(team)
-  const nav = await loadParticipantNavContext()
-  const bankEntries = await listActiveIdeaBankEntries()
 
   const serializableBank = bankEntries.map((row) => ({
     id: row.id,
@@ -82,7 +86,14 @@ export default async function IdeaPage({ params }: { params: Promise<{ slug: str
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4">
-                <IdeaBankPicker teamSlug={team.slug} entries={serializableBank} currentBankEntryId={currentBankEntryId} />
+                {ideaBankVisible ? (
+                  <IdeaBankPicker teamSlug={team.slug} entries={serializableBank} currentBankEntryId={currentBankEntryId} />
+                ) : (
+                  <div className="flex min-h-[160px] flex-col items-center justify-center gap-2 py-10 text-center">
+                    <p className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--warn)]">// coming soon</p>
+                    <p className="mt-1 text-sm text-[var(--text-dim)]">Ideas will be revealed soon.</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
