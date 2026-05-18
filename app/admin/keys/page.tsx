@@ -11,8 +11,8 @@ import {
   Field,
   Panel,
   SelectField,
-  formatDateInput,
 } from "@/components/admin/admin-ui";
+import { DateTimeUtcInput } from "@/components/admin/datetime-utc-input";
 import { cn } from "@/lib/utils";
 
 export default async function AdminKeysPage() {
@@ -69,7 +69,7 @@ export default async function AdminKeysPage() {
               name="assignedTeamId"
               options={leaderboard.map((t) => ({ label: t.teamName, value: t.teamId }))}
             />
-            <Field label="visible from" name="visibleFrom" type="datetime-local" />
+            <DateTimeUtcInput name="visibleFrom" defaultValue={null} className="h-9 w-full rounded-none border border-[var(--line)] bg-black px-2 font-mono text-[10px] text-white outline-none focus:border-[var(--acid)]" />
             <Button className="rounded-none font-mono uppercase tracking-[0.12em] sm:col-span-2 lg:col-span-4">
               ＋ add key
             </Button>
@@ -164,10 +164,9 @@ export default async function AdminKeysPage() {
                         <option key={t.teamId} value={t.teamId}>{t.teamName}</option>
                       ))}
                     </select>
-                    <input
-                      type="datetime-local"
+                    <DateTimeUtcInput
                       name="visibleFrom"
-                      defaultValue={formatDateInput(apiKey.visibleFrom)}
+                      defaultValue={apiKey.visibleFrom}
                       className="h-7 w-full rounded-none border border-[var(--line)] bg-black px-2 font-mono text-[10px] text-white outline-none focus:border-[var(--acid)]"
                     />
                   </form>
