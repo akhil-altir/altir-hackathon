@@ -1,9 +1,11 @@
 import {
   createIdeaBankEntry,
   deleteIdeaBankEntry,
+  setIdeaBankVisible,
   toggleIdeaBankEntry,
   updateIdeaBankEntry,
 } from "@/app/admin/actions";
+import { getIdeaBankVisible } from "@/lib/app-settings";
 import { listAllIdeaBankEntriesForAdmin } from "@/lib/idea-bank";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +16,10 @@ import {
 } from "@/components/admin/admin-ui";
 
 export default async function AdminIdeasPage() {
-  const ideaBankEntries = await listAllIdeaBankEntriesForAdmin();
+  const [ideaBankEntries, ideaBankVisible] = await Promise.all([
+    listAllIdeaBankEntriesForAdmin(),
+    getIdeaBankVisible(),
+  ]);
   const ideaBankActiveCount = ideaBankEntries.filter((e) => e.isActive).length;
 
   return (
@@ -26,6 +31,27 @@ export default async function AdminIdeasPage() {
           Only <strong className="text-white">active</strong> entries appear on the team idea page. Use expand to edit in place.
         </p>
       </header>
+
+      <div className={`flex items-center justify-between gap-4 border px-5 py-4 ${ideaBankVisible ? "border-[var(--line)]" : "border-[var(--warn)]/40 bg-[var(--warn)]/5"}`}>
+        <div>
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-white">Idea bank visibility</p>
+          <p className="mt-1 text-[11px] text-[var(--text-mute)]">
+            {ideaBankVisible
+              ? "Participants can browse the idea bank."
+              : "Idea bank is hidden — participants see a placeholder."}
+          </p>
+        </div>
+        <form action={setIdeaBankVisible}>
+          <input type="hidden" name="visible" value={ideaBankVisible ? "false" : "true"} />
+          <Button
+            type="submit"
+            variant="outline"
+            className={`rounded-none font-mono text-[10px] uppercase tracking-[0.14em] ${!ideaBankVisible ? "border-[var(--warn)]/60 text-[var(--warn)] hover:bg-[var(--warn)]/10" : ""}`}
+          >
+            {ideaBankVisible ? "Hide from participants" : "Reveal to participants"}
+          </Button>
+        </form>
+      </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
         <Panel title={"// idea bank · publish entries"} right={`${ideaBankActiveCount} live / ${ideaBankEntries.length} total`}>
