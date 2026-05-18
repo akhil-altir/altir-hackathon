@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { ArrowRight, Lock, Zap, Trophy, BookOpen } from "lucide-react"
@@ -650,6 +651,101 @@ export function RewardsSection() {
             </p>
           </div>
         </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── JUDGES ──────────────────────────────────────────────────────────────────
+
+const JUDGES = [
+  { name: "Graeson", title: "Judge", photo: "/judge-graeson.jpeg" },
+  { name: "Sai Nagboth", title: "Judge", photo: "/judge-sai-nagboth.jpeg" },
+]
+
+export function JudgesSection() {
+  return (
+    <section className="mx-auto w-full max-w-[1440px] px-4 py-14 lg:px-8">
+      <Divider />
+      <div className="mt-10">
+        {/* Header */}
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <SectionKicker># our esteemed judges</SectionKicker>
+            <SectionHeading>Who&apos;s scoring your work.</SectionHeading>
+          </div>
+          <div className="flex items-center gap-2 border border-[var(--line-2)] bg-[var(--panel-2)] px-4 py-2">
+            <span className="size-1.5 animate-pulse rounded-full bg-[var(--acid)]" />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--text-mute)]">
+              {JUDGES.length} judges confirmed
+            </span>
+          </div>
+        </div>
+
+        {/* Judge cards */}
+        <div className="grid gap-px border border-[var(--line)] bg-[var(--line)] sm:grid-cols-2">
+          {JUDGES.map((judge, i) => (
+            <div
+              key={judge.name}
+              className="group relative overflow-hidden bg-[var(--panel)] p-8 transition-colors hover:bg-[var(--panel-2)]"
+            >
+              {/* Corner bracket decoration */}
+              <span className="pointer-events-none absolute left-3 top-3 text-[var(--acid)]/20 text-2xl font-bold leading-none select-none group-hover:text-[var(--acid)]/40 transition-colors">[</span>
+              <span className="pointer-events-none absolute right-3 top-3 text-[var(--acid)]/20 text-2xl font-bold leading-none select-none group-hover:text-[var(--acid)]/40 transition-colors">]</span>
+
+              {/* Index */}
+              <div className="mb-6 text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--text-faint)]">
+                judge · {String(i + 1).padStart(2, "0")}
+              </div>
+
+              <div className="flex items-center gap-6">
+                {/* Photo */}
+                <div className="relative shrink-0">
+                  <div
+                    className="relative size-28 overflow-hidden rounded-full"
+                    style={{ boxShadow: "0 0 0 2px rgba(196,255,0,0.35), 0 0 32px rgba(196,255,0,0.12)" }}
+                  >
+                    <Image
+                      src={judge.photo}
+                      alt={judge.name}
+                      fill
+                      className="object-cover"
+                      sizes="112px"
+                    />
+                  </div>
+                  {/* Glow pulse ring */}
+                  <span
+                    className="pointer-events-none absolute inset-0 rounded-full animate-ping opacity-0 group-hover:opacity-100"
+                    style={{ boxShadow: "0 0 0 4px rgba(196,255,0,0.15)", animationDuration: "2s" }}
+                  />
+                </div>
+
+                {/* Info */}
+                <div className="min-w-0">
+                  <div className="text-2xl font-bold tracking-[-0.03em] text-white md:text-3xl">
+                    {judge.name}
+                  </div>
+                  <div className="mt-2 inline-flex items-center gap-2 border border-[var(--acid)]/30 bg-[var(--acid)]/8 px-3 py-1">
+                    <span className="size-1.5 rounded-full bg-[var(--acid)]" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.26em] text-[var(--acid)]">
+                      {judge.title}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-xs leading-5 text-[var(--text-mute)]">
+                    Scoring demos live · 60% of final score
+                  </p>
+                </div>
+              </div>
+
+              {/* Bottom accent bar */}
+              <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-[var(--acid)] transition-all duration-500 group-hover:w-full" />
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-4 text-center text-[11px] text-[var(--text-faint)]">
+          Judging criteria · Innovation · Technical execution · Demo quality · Feasibility · Cross-dept impact
+        </p>
       </div>
     </section>
   )

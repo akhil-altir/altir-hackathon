@@ -23,7 +23,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { EVENT_POINT_WEIGHTS, EVENT_SUBMISSION_MILESTONES_MAX, EVENT_TEAM_FORMATION_MAX } from "@/lib/event-point-weights"
 import { TECH_DAY_BUILD_START_MS as BUILD_OPENS_AT_MS, TECH_DAY_KEYS_REVEAL_MS } from "@/lib/tech-day-schedule"
 import type { PublicIdeaEntry } from "@/lib/idea-bank-public"
-import { HowItWorks, IdeaBankSection, ScoringSection, DayTimeline, FAQSection, RewardsSection, CTAFooter } from "@/components/landing/lockscreen-sections"
+import { HowItWorks, IdeaBankSection, ScoringSection, DayTimeline, FAQSection, RewardsSection, JudgesSection, CTAFooter } from "@/components/landing/lockscreen-sections"
 import { cn } from "@/lib/utils"
 
 /** Agenda wall times are IST; rendered in each viewer's local zone after hydration */
@@ -538,6 +538,7 @@ function Lockscreen({
         ideaBankCategoryCounts={ideaBankCategoryCounts}
       />
       <ScoringSection />
+      <JudgesSection />
       <DayTimeline />
       <RewardsSection />
       <FAQSection />
