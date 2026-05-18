@@ -62,7 +62,7 @@ export default async function JudgeTeamPage({ params }: { params: Promise<{ slug
     id: c.id,
     label: c.label,
     description: c.description,
-    maxScore: c.maxScore ?? 10,
+    maxScore: c.maxScore ?? 100,
   }))
 
   const teamEventPts = team.pointBreakdown.reduce((s, a) => s + a.points, 0)

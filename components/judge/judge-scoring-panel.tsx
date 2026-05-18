@@ -138,10 +138,9 @@ export function JudgeScoringPanel({
     [criteria, initialScores, touched],
   )
 
-  const composite =
-    includedIds.length > 0
-      ? (includedIds.reduce((s, id) => s + (values[id] ?? 0), 0) / includedIds.length).toFixed(1)
-      : "—"
+  const judgeSum = criteria.reduce((s, c) => s + (values[c.id] ?? 0), 0)
+  const judgeMax = criteria.reduce((s, c) => s + c.maxScore, 0)
+  const composite = includedIds.length > 0 ? String(judgeSum) : "—"
 
   const maxRef = criteria[0]?.maxScore ?? 100
   const draftLabel =
@@ -262,10 +261,15 @@ export function JudgeScoringPanel({
       <aside className="space-y-4">
         <Card className="panel-surface gap-0 rounded-none py-0">
           <CardContent className="p-6 text-center">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">your composite</div>
-            <div className="acid-text-shadow mt-2 text-5xl font-bold tabular-nums text-[var(--acid)]">{composite}</div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">your score total</div>
+            <div className="acid-text-shadow mt-2 text-5xl font-bold tabular-nums text-[var(--acid)]">
+              {composite}
+              {includedIds.length > 0 && (
+                <span className="ml-1 text-2xl font-normal text-[var(--text-mute)]">/ {judgeMax}</span>
+              )}
+            </div>
             <p className="mt-2 text-[11px] text-[var(--text-dim)]">
-              avg of {includedIds.length} / {criteria.length} criteria entered · weight 1.0
+              {includedIds.length} / {criteria.length} criteria entered · unscored = 0
             </p>
             <div className="mt-4 space-y-2 border-t border-[var(--line)] pt-4 text-left text-[11px] text-[var(--text-dim)]">
               <div className="flex justify-between gap-2">

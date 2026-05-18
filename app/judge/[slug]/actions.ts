@@ -28,7 +28,7 @@ export async function submitJudgeScoresAction(formData: FormData) {
     if (rawScore === null || rawScore === "") continue;
 
     const score = Number(rawScore);
-    if (Number.isNaN(score) || score < 0 || score > (criterion.maxScore ?? 10)) continue;
+    if (Number.isNaN(score) || score < 0 || score > (criterion.maxScore ?? 100)) continue;
 
     await db.judgeScore.upsert({
       where: {

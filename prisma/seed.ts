@@ -87,11 +87,11 @@ const eventCriteria = [
 
 
 const judgeCriteria = [
-  { key: "innovation", label: "Innovation", description: "Novelty of the idea and approach.", category: "JUDGE", maxScore: 10, sortOrder: 101 },
-  { key: "business_value", label: "Business usefulness", description: "How relevant the solution is for Altir teams or customers.", category: "JUDGE", maxScore: 10, sortOrder: 102 },
-  { key: "execution", label: "Execution", description: "Delivery quality within the event window.", category: "JUDGE", maxScore: 10, sortOrder: 103 },
-  { key: "demo_quality", label: "Demo quality", description: "Clarity and polish of the demo.", category: "JUDGE", maxScore: 10, sortOrder: 104 },
-  { key: "presentation", label: "Presentation clarity", description: "How well the team explains the outcome.", category: "JUDGE", maxScore: 10, sortOrder: 105 },
+  { key: "innovation", label: "Innovation", description: "Novelty of the idea and approach.", category: "JUDGE", maxScore: 100, sortOrder: 101 },
+  { key: "business_value", label: "Business usefulness", description: "How relevant the solution is for Altir teams or customers.", category: "JUDGE", maxScore: 100, sortOrder: 102 },
+  { key: "execution", label: "Execution", description: "Delivery quality within the event window.", category: "JUDGE", maxScore: 100, sortOrder: 103 },
+  { key: "demo_quality", label: "Demo quality", description: "Clarity and polish of the demo.", category: "JUDGE", maxScore: 100, sortOrder: 104 },
+  { key: "presentation", label: "Presentation clarity", description: "How well the team explains the outcome.", category: "JUDGE", maxScore: 100, sortOrder: 105 },
 ];
 
 
