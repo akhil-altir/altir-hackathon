@@ -2,6 +2,8 @@ import Link from "next/link"
 import { notFound, redirect } from "next/navigation"
 import { ArrowRight, KeyRound } from "lucide-react"
 
+import { ApiKeyField } from "@/components/ui/copy-button"
+
 import { ParticipantOnboardingStrip } from "@/components/team/participant-onboarding-strip"
 import { BuildCountdown } from "@/components/shell/build-countdown"
 import { ParticipantAppShell, ParticipantStage } from "@/components/shell/participant-app-shell"
@@ -59,8 +61,8 @@ export default async function KeyRevealPage({ params }: { params: Promise<{ slug
                   <h1 className="mt-4 text-4xl font-bold leading-none tracking-[-0.05em] text-white md:text-6xl">
                     Your key is live. Three hours. Go.
                   </h1>
-                  <div className="mx-auto mt-7 max-w-xl border border-[var(--acid)]/40 bg-black p-4 text-left font-mono text-sm text-[var(--acid)]">
-                    {team.apiKey.value}
+                  <div className="mx-auto mt-7 max-w-xl">
+                    <ApiKeyField value={team.apiKey.value} />
                   </div>
                   <p className="mt-4 text-xs text-[var(--text-dim)]">Budget capped for event use. Do not paste in public repos.</p>
                 </>

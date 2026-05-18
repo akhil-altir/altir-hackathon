@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { notFound, redirect } from "next/navigation"
-import { Copy, GitBranch, KeyRound, MonitorPlay, Upload } from "lucide-react"
+import { GitBranch, KeyRound, MonitorPlay, Upload } from "lucide-react"
+
+import { ApiKeyField } from "@/components/ui/copy-button"
 
 import { ParticipantOnboardingStrip } from "@/components/team/participant-onboarding-strip"
 import { getTeamWorkspace } from "@/lib/data"
@@ -178,10 +180,7 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
                       <div className="text-[11px] uppercase tracking-[0.2em] text-[var(--text-mute)]">
                         {team.apiKey.provider} / {team.apiKey.label}
                       </div>
-                      <div className="mt-3 flex items-center justify-between border border-[var(--acid)]/40 bg-black p-3 font-mono text-xs text-[var(--acid)]">
-                        <span>{team.apiKey.value}</span>
-                        <Copy className="size-4" />
-                      </div>
+                      <ApiKeyField value={team.apiKey.value} />
                       <p className="mt-3 text-xs leading-5 text-[var(--text-dim)]">
                         Budget capped for event use. Do not paste in public repos.
                       </p>

@@ -5,6 +5,7 @@ import { useActionState } from "react"
 import { loginAction } from "./actions"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { PasswordInput } from "@/components/ui/copy-button"
 
 export function LoginForm() {
   const [state, formAction, pending] = useActionState(loginAction, null)
@@ -27,14 +28,7 @@ export function LoginForm() {
 
           <label className="block">
             <span className="mb-2 block text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">password</span>
-            <input
-              name="password"
-              type="password"
-              required
-              autoComplete="current-password"
-              placeholder="psharma_ATI042"
-              className="h-11 w-full rounded-none border border-[var(--line)] bg-black px-4 font-mono text-sm text-white outline-none transition placeholder:text-[var(--text-faint)] focus:border-[var(--acid)]"
-            />
+            <PasswordInput name="password" placeholder="psharma_ATI042" autoComplete="current-password" />
           </label>
 
           {state?.error && (
