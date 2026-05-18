@@ -8,6 +8,7 @@ import {
   getAppSetting,
   setAppSetting,
   SETTING_ADMIN_EVENT_PHASE,
+  SETTING_IDEA_BANK_VISIBLE,
   SETTING_SCORE_EVENT_WEIGHT,
   SETTING_SCORE_JUDGE_WEIGHT,
 } from "@/lib/app-settings"
@@ -648,4 +649,12 @@ export async function deleteUser(formData: FormData) {
 
   revalidatePath("/admin", "layout")
   revalidatePath("/admin/people")
+}
+
+export async function setIdeaBankVisible(formData: FormData) {
+  const visible = formData.get("visible") === "true";
+  await setAppSetting(SETTING_IDEA_BANK_VISIBLE, visible ? "true" : "false");
+  revalidatePath("/admin/ideas");
+  revalidatePath("/");
+  revalidatePath("/teams", "layout");
 }
