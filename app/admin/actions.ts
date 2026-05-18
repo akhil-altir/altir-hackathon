@@ -552,6 +552,33 @@ export async function createUser(formData: FormData) {
   revalidatePath("/admin/people")
 }
 
+export async function deleteTeam(formData: FormData) {
+  const teamId = requiredValue(formData, "teamId")
+
+  await db.$transaction(async (tx) => {
+    // Free any API key assigned to this team
+    await tx.apiKey.updateMany({
+      where: { assignedTeamId: teamId },
+      data: {
+        assignedTeamId: null,
+        assignedAt: null,
+        status: "AVAILABLE",
+        revokedAt: null,
+      },
+    })
+
+    // Cascade in schema handles: TeamMember, Idea, Submission, EventPointAward, JudgeScore
+    await tx.team.delete({ where: { id: teamId } })
+  })
+
+  revalidatePath("/admin", "layout")
+  revalidatePath("/admin/teams")
+  revalidatePath("/leaderboard")
+  revalidatePath("/tv")
+  revalidatePath("/gallery")
+  revalidatePath("/results")
+}
+
 export async function deleteUser(formData: FormData) {
   const userId = requiredValue(formData, "userId")
 

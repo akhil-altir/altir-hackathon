@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getTeamWorkspace } from "@/lib/data";
 import { Panel } from "@/components/admin/admin-ui";
 import { cn } from "@/lib/utils";
+import { DeleteTeamButton } from "./delete-team-button";
 
 function ArtifactRow({
   label,
@@ -237,6 +238,20 @@ export default async function AdminTeamDetailPage({
           ) : null}
         </Panel>
       </div>
+
+      {/* Danger zone */}
+      <Panel title={"// danger zone"} right="irreversible" className="border-red-900/40">
+        <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-4">
+          <div>
+            <p className="text-sm font-semibold text-red-400">Delete team</p>
+            <p className="mt-0.5 text-xs text-[var(--text-dim)]">
+              Removes team, all members, idea, scores, and submission. Frees the assigned API key.
+              Members can form a new team.
+            </p>
+          </div>
+          <DeleteTeamButton teamId={team.id} teamName={team.name} />
+        </div>
+      </Panel>
     </div>
   );
 }
