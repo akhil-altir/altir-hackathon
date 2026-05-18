@@ -1,8 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getTeamWorkspace } from "@/lib/data";
+import { getAvailableEmployees, getTeamWorkspace } from "@/lib/data";
+import { db } from "@/lib/db";
+import { getSession } from "@/lib/session";
 import { Panel } from "@/components/admin/admin-ui";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { adminAddTeamMember, adminGrantEventPoint, adminRemoveTeamMember, adminDeleteEventPointAward } from "@/app/admin/actions";
 import { DeleteTeamButton } from "./delete-team-button";
 
 function ArtifactRow({
@@ -51,11 +55,14 @@ export default async function AdminTeamDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const team = await getTeamWorkspace(slug);
+  const session = await getSession();
+  const [team, availableEmployees, eventCriteria] = await Promise.all([
+    getTeamWorkspace(slug),
+    getAvailableEmployees(),
+    db.scoreCriterion.findMany({ where: { category: "EVENT", isActive: true }, orderBy: { sortOrder: "asc" } }),
+  ]);
 
-  if (!team) {
-    notFound();
-  }
+  if (!team) notFound();
 
   const sub = team.submission;
   const idea = team.currentIdea;
@@ -185,7 +192,7 @@ export default async function AdminTeamDetailPage({
         <Panel title={"// members"} right={`${team.members.length} members`}>
           <div className="divide-y divide-[var(--line)]">
             {team.members.map((member) => (
-              <div key={member.id} className="flex items-start justify-between gap-4 px-4 py-3">
+              <div key={member.id} className="flex items-center justify-between gap-4 px-4 py-3">
                 <div className="min-w-0">
                   <p className="font-semibold text-white">{member.fullName}</p>
                   <p className="mt-0.5 font-mono text-[11px] text-[var(--text-mute)]">{member.email}</p>
@@ -193,12 +200,22 @@ export default async function AdminTeamDetailPage({
                     <p className="mt-0.5 text-[11px] text-[var(--text-faint)]">{member.title}</p>
                   ) : null}
                 </div>
-                <div className="shrink-0 text-right">
+                <div className="flex shrink-0 items-center gap-2">
                   {member.primaryAssignment ? (
                     <span className="border border-[var(--line)] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--text-mute)]">
                       {member.primaryAssignment}
                     </span>
                   ) : null}
+                  <form action={adminRemoveTeamMember}>
+                    <input type="hidden" name="teamId" value={team.id} />
+                    <input type="hidden" name="userId" value={member.id} />
+                    <button
+                      type="submit"
+                      className="border border-red-900/50 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-red-400 hover:border-red-500/60 hover:text-red-300 transition-colors"
+                    >
+                      remove
+                    </button>
+                  </form>
                 </div>
               </div>
             ))}
@@ -210,13 +227,24 @@ export default async function AdminTeamDetailPage({
           <div className="divide-y divide-[var(--line)]">
             {team.pointBreakdown.length > 0 ? (
               team.pointBreakdown.map((award) => (
-                <div key={award.id} className="flex items-center justify-between px-4 py-2">
-                  <span className="text-xs text-[var(--text-dim)]">
-                    {award.criterion?.label ?? award.criterionId}
+                <div key={award.id} className="flex items-center justify-between gap-3 px-4 py-2">
+                  <span className="min-w-0 truncate text-xs text-[var(--text-dim)]">
+                    {award.criterion?.label ?? award.reason}
                   </span>
-                  <span className="font-mono text-xs font-bold text-[var(--acid)]">
-                    +{award.criterion?.pointsValue ?? award.points}
-                  </span>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-[var(--acid)]">
+                      +{award.criterion?.pointsValue ?? award.points}
+                    </span>
+                    <form action={adminDeleteEventPointAward}>
+                      <input type="hidden" name="awardId" value={award.id} />
+                      <button
+                        type="submit"
+                        className="border border-red-900/50 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-red-400 hover:border-red-500/60 hover:text-red-300 transition-colors"
+                      >
+                        ×
+                      </button>
+                    </form>
+                  </div>
                 </div>
               ))
             ) : (
@@ -238,6 +266,60 @@ export default async function AdminTeamDetailPage({
           ) : null}
         </Panel>
       </div>
+
+      {/* Add member */}
+      <Panel title={"// add member"} right="admin override">
+        <form action={adminAddTeamMember} className="flex flex-wrap items-end gap-3 px-4 py-4">
+          <input type="hidden" name="teamId" value={team.id} />
+          <div className="flex-1 min-w-[200px]">
+            <label className="mb-1 block text-[10px] uppercase tracking-[0.18em] text-[var(--text-mute)]">employee</label>
+            <select
+              name="userId"
+              required
+              className="h-10 w-full rounded-none border border-[var(--line)] bg-black px-2 font-mono text-xs text-white"
+            >
+              <option value="">— select —</option>
+              {availableEmployees.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.fullName} · {e.primaryAssignment ?? "unassigned"}
+                </option>
+              ))}
+            </select>
+          </div>
+          <Button type="submit" variant="outline" className="h-10 rounded-none font-mono text-[10px] uppercase tracking-[0.12em]">
+            Add to team
+          </Button>
+        </form>
+        {availableEmployees.length === 0 && (
+          <p className="px-4 pb-4 text-xs text-[var(--text-faint)]">All employees are already on teams.</p>
+        )}
+      </Panel>
+
+      {/* Grant event point */}
+      <Panel title={"// grant event point"} right="admin override">
+        <form action={adminGrantEventPoint} className="flex flex-wrap items-end gap-3 px-4 py-4">
+          <input type="hidden" name="teamId" value={team.id} />
+          <input type="hidden" name="adminId" value={session?.userId ?? ""} />
+          <div className="flex-1 min-w-[200px]">
+            <label className="mb-1 block text-[10px] uppercase tracking-[0.18em] text-[var(--text-mute)]">criterion</label>
+            <select
+              name="criterionKey"
+              required
+              className="h-10 w-full rounded-none border border-[var(--line)] bg-black px-2 font-mono text-xs text-white"
+            >
+              <option value="">— select —</option>
+              {eventCriteria.map((c) => (
+                <option key={c.id} value={c.key}>
+                  {c.label} · +{c.pointsValue} pts
+                </option>
+              ))}
+            </select>
+          </div>
+          <Button type="submit" variant="outline" className="h-10 rounded-none font-mono text-[10px] uppercase tracking-[0.12em]">
+            Grant points
+          </Button>
+        </form>
+      </Panel>
 
       {/* Danger zone */}
       <Panel title={"// danger zone"} right="irreversible" className="border-red-900/40">

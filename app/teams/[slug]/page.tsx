@@ -54,7 +54,7 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
     >
       <ParticipantStage>
         <div className="grid gap-5 lg:grid-cols-[230px_1fr]">
-          {/* Sidebar — workspace sub-nav only (global pages live in topbar) */}
+          {/* Sidebar */}
           <div className="panel-surface self-start p-3">
             <div className="mb-2 px-2 text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">workspace</div>
             {[
@@ -81,7 +81,6 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
               </Link>
             ))}
 
-            {/* Static info items — not links, just scoreboard context */}
             <div className="mt-1 flex items-center justify-between rounded-[2px] px-2 py-2 font-mono text-[11px] text-[var(--text-dim)]">
               <span>  Event points</span>
               <span className="text-[10px] font-bold text-[var(--acid)]">{eventPoints}</span>
@@ -113,22 +112,16 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
           <div className="space-y-4">
             <Card
               className="panel-surface gap-0 rounded-none py-0"
-              style={{
-                boxShadow: "inset 0 0 0 1px rgba(196, 255, 0, 0.42), 0 0 28px rgba(196, 255, 0, 0.16)",
-              }}
+              style={{ boxShadow: "inset 0 0 0 1px rgba(196, 255, 0, 0.42), 0 0 28px rgba(196, 255, 0, 0.16)" }}
             >
               <CardContent className="grid gap-5 p-5 md:grid-cols-[1fr_auto] md:items-center">
                 <div>
                   <div className="text-[11px] uppercase tracking-[0.22em] text-[var(--warn)]"># current step / build</div>
                   <h1 className="mt-2 text-3xl font-bold tracking-[-0.03em] text-white">
                     {team.currentIdea ? (
-                      <>
-                        Idea locked. API key released. <span className="text-[var(--acid)]">Ship something.</span>
-                      </>
+                      <>Idea locked. API key released. <span className="text-[var(--acid)]">Ship something.</span></>
                     ) : (
-                      <>
-                        Team formed. <span className="text-[var(--acid)]">Submit an idea to unlock your key.</span>
-                      </>
+                      <>Team formed. <span className="text-[var(--acid)]">Submit an idea to unlock your key.</span></>
                     )}
                   </h1>
                   <p className="mt-2 text-sm text-[var(--text-dim)]">
@@ -196,9 +189,7 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
                   ) : team.apiKey ? (
                     <div className="space-y-2">
                       <KeyRound className="size-8 text-[var(--text-mute)]" />
-                      <p className="text-sm text-[var(--text-dim)]">
-                        Key assigned but not yet visible. Submit an idea and wait for the release window.
-                      </p>
+                      <p className="text-sm text-[var(--text-dim)]">Key assigned but not yet visible. Submit an idea and wait for the release window.</p>
                     </div>
                   ) : (
                     <p className="text-sm text-[var(--text-mute)]">No API key assigned to this team yet. An admin will assign one.</p>
@@ -208,10 +199,7 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
             </div>
 
             <div className="grid gap-4 lg:grid-cols-3">
-              <Link
-                href={`/teams/${team.slug}/submit`}
-                className="block border border-[var(--line)] bg-[var(--panel-2)] p-4 transition hover:border-[var(--acid)]/60"
-              >
+              <Link href={`/teams/${team.slug}/submit`} className="block border border-[var(--line)] bg-[var(--panel-2)] p-4 transition hover:border-[var(--acid)]/60">
                 <GitBranch className="mb-4 text-[var(--acid)]" />
                 <div className="font-bold text-white">Submission</div>
                 <div className="mt-1 text-xs text-[var(--text-dim)]">

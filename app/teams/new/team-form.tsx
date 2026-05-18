@@ -74,12 +74,12 @@ export function TeamFormClient({
     !!partner.primaryAssignment &&
     !!currentUser.primaryAssignment &&
     partner.primaryAssignment !== currentUser.primaryAssignment
-  const earnFormedBeforeLock = !!partner // granted when team forms, not before
+  const earnFormedBeforeLock = true // solo and duo both get this
 
   const livePoints =
     (earnCompleteTeam ? fp.completeTeam : 0) +
     (earnCrossAssignment ? fp.crossAssignment : 0) +
-    (earnFormedBeforeLock ? fp.formedBeforeLock : 0)
+    fp.formedBeforeLock
 
   return (
     <form action={formAction} className="mt-8 grid gap-6 lg:grid-cols-[1.35fr_0.85fr]">
@@ -123,7 +123,7 @@ export function TeamFormClient({
         <input type="hidden" name="partnerId" value={selectedPartner} />
 
         <div>
-          <div className="mb-2 block text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">your teammate</div>
+          <div className="mb-2 block text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">your teammate <span className="text-[var(--text-faint)]">(optional — go solo or pick one)</span></div>
           <div className="grid max-h-[400px] gap-2 overflow-auto terminal-scrollbar md:grid-cols-2">
             {filtered.map((person) => (
               <button
@@ -214,7 +214,9 @@ export function TeamFormClient({
             </button>
           </div>
         ) : (
-          <div className="py-4 text-center text-sm text-[var(--text-mute)]">Select a teammate →</div>
+          <div className="py-4 text-center text-sm text-[var(--text-mute)]">
+            Solo builder · <span className="text-[var(--text-faint)]">or select a teammate above</span>
+          </div>
         )}
 
         <div className="mt-4 border border-[var(--line)] bg-[var(--panel-2)] p-4">
@@ -239,12 +241,8 @@ export function TeamFormClient({
             </div>
           ))}
           <div className="mt-3 flex justify-between border-t border-[var(--line)] pt-3">
-            <span className="text-xs uppercase text-[var(--text-dim)]">
-              {partner ? "you'll earn" : "select teammate to see your points"}
-            </span>
-            <span className={`text-2xl font-bold tabular-nums ${partner ? "text-[var(--acid)]" : "text-[var(--text-mute)]"}`}>
-              {partner ? `${livePoints} pts` : "— pts"}
-            </span>
+            <span className="text-xs uppercase text-[var(--text-dim)]">you&apos;ll earn</span>
+            <span className="text-2xl font-bold tabular-nums text-[var(--acid)]">{livePoints} pts</span>
           </div>
         </div>
 
@@ -254,7 +252,7 @@ export function TeamFormClient({
 
         <Button
           type="submit"
-          disabled={pending || !selectedPartner || !nameOk}
+          disabled={pending || !nameOk}
           className="mt-5 w-full rounded-none bg-[var(--acid)] font-mono text-black uppercase tracking-[0.12em] hover:bg-[var(--acid-2)]"
         >
           {pending ? "Creating team..." : "▶ Lock it in"}

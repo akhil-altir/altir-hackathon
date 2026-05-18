@@ -579,6 +579,63 @@ export async function deleteTeam(formData: FormData) {
   revalidatePath("/results")
 }
 
+export async function adminRemoveTeamMember(formData: FormData) {
+  const teamId = requiredValue(formData, "teamId")
+  const userId = requiredValue(formData, "userId")
+
+  await db.teamMember.deleteMany({ where: { teamId, userId } })
+
+  revalidatePath("/admin/teams", "layout")
+  revalidatePath("/leaderboard")
+}
+
+export async function adminDeleteEventPointAward(formData: FormData) {
+  const awardId = requiredValue(formData, "awardId")
+
+  await db.eventPointAward.delete({ where: { id: awardId } })
+
+  revalidatePath("/admin/teams", "layout")
+  revalidatePath("/leaderboard")
+}
+
+export async function adminAddTeamMember(formData: FormData) {
+  const teamId = requiredValue(formData, "teamId")
+  const userId = requiredValue(formData, "userId")
+
+  const existing = await db.teamMember.findFirst({ where: { userId } })
+  if (existing) throw new Error("User is already on a team.")
+
+  await db.teamMember.create({ data: { teamId, userId, isCaptain: false } })
+
+  revalidatePath("/admin/teams", "layout")
+  revalidatePath("/leaderboard")
+}
+
+export async function adminGrantEventPoint(formData: FormData) {
+  const teamId = requiredValue(formData, "teamId")
+  const criterionKey = requiredValue(formData, "criterionKey")
+  const adminId = requiredValue(formData, "adminId")
+
+  const criterion = await db.scoreCriterion.findFirst({
+    where: { key: criterionKey, category: "EVENT" },
+  })
+  if (!criterion) throw new Error("Criterion not found.")
+
+  await db.eventPointAward.create({
+    data: {
+      teamId,
+      criterionId: criterion.id,
+      grantedById: adminId,
+      points: criterion.pointsValue ?? 0,
+      source: "ADMIN",
+      reason: `Admin grant: ${criterion.label}`,
+    },
+  })
+
+  revalidatePath("/admin/teams", "layout")
+  revalidatePath("/leaderboard")
+}
+
 export async function deleteUser(formData: FormData) {
   const userId = requiredValue(formData, "userId")
 
