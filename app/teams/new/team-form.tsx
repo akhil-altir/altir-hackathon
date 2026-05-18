@@ -68,6 +68,19 @@ export function TeamFormClient({
   const displayName = teamName.trim() || "YOUR TEAM"
   const nameOk = teamName.trim().length >= 2
 
+  const earnCompleteTeam = !!partner
+  const earnCrossAssignment =
+    !!partner &&
+    !!partner.primaryAssignment &&
+    !!currentUser.primaryAssignment &&
+    partner.primaryAssignment !== currentUser.primaryAssignment
+  const earnFormedBeforeLock = !!partner // granted when team forms, not before
+
+  const livePoints =
+    (earnCompleteTeam ? fp.completeTeam : 0) +
+    (earnCrossAssignment ? fp.crossAssignment : 0) +
+    (earnFormedBeforeLock ? fp.formedBeforeLock : 0)
+
   return (
     <form action={formAction} className="mt-8 grid gap-6 lg:grid-cols-[1.35fr_0.85fr]">
       <div className="space-y-6">
@@ -116,7 +129,7 @@ export function TeamFormClient({
               <button
                 key={person.id}
                 type="button"
-                onClick={() => setSelectedPartner(person.id)}
+                onClick={() => setSelectedPartner(selectedPartner === person.id ? "" : person.id)}
                 className={`flex items-center gap-3 border p-3 text-left transition hover:border-[var(--acid)]/60 ${
                   selectedPartner === person.id
                     ? "border-[var(--acid)]/60 bg-[var(--acid)]/10"
@@ -185,12 +198,20 @@ export function TeamFormClient({
             >
               {initials(partner.fullName)}
             </span>
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="font-bold text-white">{partner.fullName}</div>
               <div className="text-xs text-[var(--text-dim)]">
                 {partner.primaryAssignment ?? "Unassigned"} · {partner.title ?? "—"}
               </div>
             </div>
+            <button
+              type="button"
+              onClick={() => setSelectedPartner("")}
+              className="shrink-0 text-[var(--text-mute)] hover:text-red-400 transition-colors text-lg leading-none"
+              title="Remove teammate"
+            >
+              ×
+            </button>
           </div>
         ) : (
           <div className="py-4 text-center text-sm text-[var(--text-mute)]">Select a teammate →</div>
@@ -198,19 +219,32 @@ export function TeamFormClient({
 
         <div className="mt-4 border border-[var(--line)] bg-[var(--panel-2)] p-4">
           <div className="mb-3 text-[10px] uppercase tracking-[0.2em] text-[var(--text-mute)]">event points you&apos;ll earn</div>
-          {[
-            ["Complete team", `+${fp.completeTeam}`],
-            ["Different primary assignments", `+${fp.crossAssignment}`],
-            ["Formed before lock", `+${fp.formedBeforeLock}`],
-          ].map(([label, value]) => (
+          {(
+            [
+              ["Complete team", fp.completeTeam, earnCompleteTeam],
+              ["Cross-department pair", fp.crossAssignment, earnCrossAssignment],
+              ["Formed before lock", fp.formedBeforeLock, earnFormedBeforeLock],
+            ] as [string, number, boolean][]
+          ).map(([label, value, earned]) => (
             <div key={label} className="flex justify-between py-1 text-xs">
-              <span className="text-[var(--text-dim)]">{label}</span>
-              <span className="font-bold text-[var(--acid)]">{value}</span>
+              <span className={`flex items-center gap-1.5 ${earned ? "text-white" : "text-[var(--text-mute)]"}`}>
+                <span className={`text-[10px] ${earned ? "text-[var(--acid)]" : "text-[var(--text-mute)]"}`}>
+                  {earned ? "✓" : "○"}
+                </span>
+                {label}
+              </span>
+              <span className={`font-bold tabular-nums ${earned ? "text-[var(--acid)]" : "text-[var(--text-mute)]"}`}>
+                +{value}
+              </span>
             </div>
           ))}
           <div className="mt-3 flex justify-between border-t border-[var(--line)] pt-3">
-            <span className="text-xs uppercase text-[var(--text-dim)]">max if all apply</span>
-            <span className="text-2xl font-bold text-[var(--acid)]">{fp.maxIfAllApply} pts</span>
+            <span className="text-xs uppercase text-[var(--text-dim)]">
+              {partner ? "you'll earn" : "select teammate to see your points"}
+            </span>
+            <span className={`text-2xl font-bold tabular-nums ${partner ? "text-[var(--acid)]" : "text-[var(--text-mute)]"}`}>
+              {partner ? `${livePoints} pts` : "— pts"}
+            </span>
           </div>
         </div>
 
