@@ -1,6 +1,7 @@
 import type { IdeaBankEntry } from "@prisma/client";
 
 import { db } from "@/lib/db";
+import { getIdeaBankVisible } from "@/lib/app-settings";
 
 export function buildIdeaSummaryFromBankEntry(entry: Pick<IdeaBankEntry, "problemStatement" | "description" | "expectedOutcome">) {
   const parts = [
@@ -18,6 +19,8 @@ export function buildIdeaSummaryFromBankEntry(entry: Pick<IdeaBankEntry, "proble
 }
 
 export async function listActiveIdeaBankEntries() {
+  const visible = await getIdeaBankVisible();
+  if (!visible) return [];
   return db.ideaBankEntry.findMany({
     where: { isActive: true },
     orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
