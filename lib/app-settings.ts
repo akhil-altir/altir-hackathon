@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 export const SETTING_SCORE_EVENT_WEIGHT = "score_event_weight";
 export const SETTING_SCORE_JUDGE_WEIGHT = "score_judge_weight";
 export const SETTING_ADMIN_EVENT_PHASE = "admin_event_phase";
+export const SETTING_IDEA_BANK_VISIBLE = "idea_bank_visible";
 
 export async function getAppSetting(key: string, defaultValue: string) {
   const row = await db.appSetting.findUnique({ where: { key } });
@@ -28,4 +29,9 @@ export async function getScoreWeights() {
     return { event: 0.4, judge: 0.6 };
   }
   return { event: rawEvent / sum, judge: rawJudge / sum };
+}
+
+export async function getIdeaBankVisible(): Promise<boolean> {
+  const value = await getAppSetting(SETTING_IDEA_BANK_VISIBLE, "false");
+  return value === "true";
 }
