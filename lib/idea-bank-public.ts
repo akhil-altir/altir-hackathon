@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { getIdeaBankVisible } from "@/lib/app-settings"
 
 export type PublicIdeaEntry = {
   id: string
@@ -9,6 +10,8 @@ export type PublicIdeaEntry = {
 }
 
 export async function listPublicIdeaBankEntries(): Promise<PublicIdeaEntry[]> {
+  const visible = await getIdeaBankVisible();
+  if (!visible) return [];
   return db.ideaBankEntry.findMany({
     where: { isActive: true },
     orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
