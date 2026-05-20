@@ -162,6 +162,24 @@ export async function revokeApiKey(formData: FormData) {
   revalidatePath("/admin", "layout")
 }
 
+export async function updateApiKeyDetails(formData: FormData) {
+  const apiKeyId = requiredValue(formData, "apiKeyId")
+  const label = requiredValue(formData, "label")
+  const secret = requiredValue(formData, "secret")
+  const notes = optionalValue(formData, "notes")
+
+  await db.apiKey.update({
+    where: { id: apiKeyId },
+    data: {
+      label,
+      secret,
+      notes,
+    },
+  })
+
+  revalidatePath("/admin", "layout")
+}
+
 export async function createEventScore(formData: FormData) {
   const label = requiredValue(formData, "label")
   const description = optionalValue(formData, "description")

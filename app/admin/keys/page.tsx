@@ -5,7 +5,6 @@ import {
 } from "@/app/admin/actions";
 import { listLeaderboard } from "@/lib/data";
 import { db } from "@/lib/db";
-import { maskSecret } from "@/lib/admin-display";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -13,6 +12,8 @@ import {
   SelectField,
 } from "@/components/admin/admin-ui";
 import { DateTimeUtcInput } from "@/components/admin/datetime-utc-input";
+import { AdminApiKeySecretCell } from "@/components/admin/api-key-secret-cell";
+import { TECH_DAY_KEYS_REVEAL_MS } from "@/lib/tech-day-schedule";
 import { cn } from "@/lib/utils";
 
 export default async function AdminKeysPage() {
@@ -69,7 +70,11 @@ export default async function AdminKeysPage() {
               name="assignedTeamId"
               options={leaderboard.map((t) => ({ label: t.teamName, value: t.teamId }))}
             />
-            <DateTimeUtcInput name="visibleFrom" defaultValue={null} className="h-9 w-full rounded-none border border-[var(--line)] bg-black px-2 font-mono text-[10px] text-white outline-none focus:border-[var(--acid)]" />
+            <DateTimeUtcInput
+              name="visibleFrom"
+              defaultValue={new Date(TECH_DAY_KEYS_REVEAL_MS)}
+              className="h-9 w-full rounded-none border border-[var(--line)] bg-black px-2 font-mono text-[10px] text-white outline-none focus:border-[var(--acid)]"
+            />
             <Button className="rounded-none font-mono uppercase tracking-[0.12em] sm:col-span-2 lg:col-span-4">
               ＋ add key
             </Button>
@@ -127,12 +132,13 @@ export default async function AdminKeysPage() {
                   className="grid items-center gap-x-3 px-4 pt-2.5 pb-1 text-[11px]"
                   style={{ gridTemplateColumns: "2fr 0.6fr 1fr 0.75fr 1.1fr 1.1fr 0.5fr" }}
                 >
-                  <span
-                    className="truncate font-mono text-xs"
-                    style={{ color: isRevoked ? "var(--text-mute)" : "white", textDecoration: isRevoked ? "line-through" : "none" }}
-                  >
-                    {maskSecret(apiKey.secret)}
-                  </span>
+                  <AdminApiKeySecretCell
+                    apiKeyId={apiKey.id}
+                    label={apiKey.label}
+                    secret={apiKey.secret}
+                    notes={apiKey.notes}
+                    isRevoked={isRevoked}
+                  />
                   <span className="text-[10px] text-[var(--text-mute)]">{apiKey.provider}</span>
                   <span>
                     {apiKey.assignedTeam ? (
