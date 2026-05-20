@@ -16,6 +16,8 @@ import { AdminApiKeySecretCell } from "@/components/admin/api-key-secret-cell";
 import { TECH_DAY_KEYS_REVEAL_MS } from "@/lib/tech-day-schedule";
 import { cn } from "@/lib/utils";
 
+const KEY_TABLE_COLUMNS = "minmax(460px,1.7fr) minmax(72px,0.55fr) minmax(150px,0.95fr) minmax(120px,0.8fr) minmax(170px,1fr) minmax(200px,1fr) minmax(98px,0.6fr)";
+
 export default async function AdminKeysPage() {
   const [leaderboard, apiKeys, teamCount] = await Promise.all([
     listLeaderboard(),
@@ -106,7 +108,7 @@ export default async function AdminKeysPage() {
         {/* Table column headers */}
         <div
           className="grid border-b border-[var(--line)] px-4 py-2 text-[9px] uppercase tracking-[0.14em] text-[var(--text-mute)]"
-          style={{ gridTemplateColumns: "2fr 0.6fr 1fr 0.75fr 1.1fr 1.1fr 0.5fr" }}
+          style={{ gridTemplateColumns: KEY_TABLE_COLUMNS }}
         >
           <span>KEY</span>
           <span>PROV</span>
@@ -124,13 +126,13 @@ export default async function AdminKeysPage() {
             return (
               <div
                 key={apiKey.id}
-                className="min-w-[860px]"
+                className="min-w-[1280px]"
                 style={{ background: isRevoked ? "rgba(255,77,77,0.04)" : "transparent" }}
               >
                 {/* Info + label row */}
                 <div
                   className="grid items-center gap-x-3 px-4 pt-2.5 pb-1 text-[11px]"
-                  style={{ gridTemplateColumns: "2fr 0.6fr 1fr 0.75fr 1.1fr 1.1fr 0.5fr" }}
+                  style={{ gridTemplateColumns: KEY_TABLE_COLUMNS }}
                 >
                   <AdminApiKeySecretCell
                     apiKeyId={apiKey.id}

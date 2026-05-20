@@ -27,8 +27,8 @@ export function AdminApiKeySecretCell({ apiKeyId, label, secret, notes, isRevoke
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
+    <div className="w-full space-y-2">
+      <div className="flex w-full items-center gap-2">
         <span
           className="min-w-0 flex-1 truncate font-mono text-xs"
           style={{ color: isRevoked ? "var(--text-mute)" : "white", textDecoration: isRevoked ? "line-through" : "none" }}
@@ -61,7 +61,7 @@ export function AdminApiKeySecretCell({ apiKeyId, label, secret, notes, isRevoke
       </div>
 
       {editing && (
-        <form action={updateApiKeyDetails} className="grid gap-1.5">
+        <form action={updateApiKeyDetails} className="grid gap-1.5 pr-2">
           <input type="hidden" name="apiKeyId" value={apiKeyId} />
           <input
             name="label"
