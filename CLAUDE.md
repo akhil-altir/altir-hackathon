@@ -159,6 +159,12 @@ npm start
 
 **Production = Railway.** Deploy guide at `docs/deployment-guide.md`.
 
+**Deploy command (Railway CLI):**
+```bash
+railway up --detach
+```
+Use `railway up --detach` to trigger a production deploy. Never use Vercel CLI — this project is not linked to Vercel.
+
 **NEVER on redeploy:**
 - ❌ Run `prisma db push` automatically (schema changes are manual)
 - ❌ Run `prisma migrate deploy` automatically
