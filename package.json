@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit",
     "db:push": "node scripts/sync-schema-provider.mjs && prisma db push",
     "db:seed": "prisma db seed",
+    "db:seed:keys": "tsx prisma/seed-keys.ts",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed"
   },
