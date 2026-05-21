@@ -4,6 +4,57 @@ This handbook helps teams get productive quickly during Tech Day. Use any stack 
 
 Last link check: 12 May 2026
 
+## Team API Key Setup
+
+Use the team OpenAI API key from the Tech Day platform. Do not use ChatGPT login auth for the event setup flow.
+
+### Codex CLI
+
+1. Install Codex CLI:
+
+   ```bash
+   npm i -g @openai/codex
+   ```
+
+2. Start Codex:
+
+   ```bash
+   codex
+   ```
+
+3. When Codex asks how to sign in, choose `3. Provide your own API key`.
+
+   ![Codex CLI login screen with option 3, Provide your own API key, visible.](/handbook/codex-login-options.png)
+
+4. Paste the team OpenAI API key and press enter to save it locally.
+
+   ![Codex CLI API key entry screen asking for an OpenAI API key.](/handbook/codex-api-key-entry.png)
+
+### Cursor
+
+1. Open Cursor Settings.
+
+   ![Cursor Settings page showing the General section and Models tab in the left sidebar.](/handbook/cursor-settings-general.png)
+
+2. Select `Models` from the left sidebar.
+
+   ![Cursor Models tab selected, with model toggles visible.](/handbook/cursor-models-tab.png)
+
+3. Scroll to `API Keys`, find `OpenAI API Key`, and paste the team key.
+
+   ![Cursor Models settings API Keys section with an OpenAI API Key input field.](/handbook/cursor-openai-api-key.png)
+
+4. Once the key is accepted, use OpenAI models directly from Cursor.
+
+Cursor API-key support is configured in Models settings and uses the provided key for provider calls.
+
+### API Key Safety
+
+- Never commit API keys.
+- Never paste API keys into frontend code.
+- Prefer environment variables or the tool's secure key field.
+- If a key leaks, tell an admin so it can be revoked or replaced.
+
 ## Quick Links
 
 | Tool | Best for | Link |
